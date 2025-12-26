@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:smart_queue/features/home/presentation/view/home_screen.dart';
+import 'package:smart_queue/features/main/main_screen.dart';
 
 void main() {
   runApp(const SmartQueueApp());
@@ -13,7 +13,7 @@ class SmartQueueApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData.light(),
-      home: HomeScreen(),
+      home: MainScreen(),
     );
   }
 }

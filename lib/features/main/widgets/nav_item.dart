@@ -27,7 +27,7 @@ class NavItem extends StatelessWidget {
           Text(
             label,
             style: TextStyle(
-              fontSize: 12,
+              fontSize: isActive ? 14 : 12,
               color: isActive ? Colors.black : Colors.grey,
             ),
           ),

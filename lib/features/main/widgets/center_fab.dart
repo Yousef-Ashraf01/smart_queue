@@ -12,7 +12,11 @@ class CenterFab extends StatelessWidget {
       width: 70,
       decoration: const BoxDecoration(
         shape: BoxShape.circle,
-        gradient: LinearGradient(colors: [Colors.greenAccent, Colors.green]),
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xff49FC5E), Color(0xff2B8235)],
+        ),
       ),
       child: IconButton(
         icon: SvgPicture.asset(AppAssets.iconAi, color: Colors.white),

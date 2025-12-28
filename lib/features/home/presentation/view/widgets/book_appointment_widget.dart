@@ -40,7 +40,7 @@ class BookAppointmentWidget extends StatelessWidget {
                     height: 62,
                     fit: BoxFit.cover,
                   ),
-                  SizedBox(width: 15),
+                  SizedBox(width: 10),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -55,7 +55,7 @@ class BookAppointmentWidget extends StatelessWidget {
                         "Savings Account Passbook Issuance",
                         style: AppStyle.medium14gray.copyWith(
                           fontWeight: FontWeight.normal,
-                          fontSize: 11,
+                          fontSize: 10,
                           color: Color(0xff898EBC),
                         ),
                       ),
@@ -63,11 +63,13 @@ class BookAppointmentWidget extends StatelessWidget {
                   ),
                 ],
               ),
-              Image.asset(
-                AppAssets.imagePersonal,
-                width: 60,
-                height: 60,
-                fit: BoxFit.cover,
+              Expanded(
+                child: Image.asset(
+                  AppAssets.imagePersonal,
+                  width: 60,
+                  height: 60,
+                  fit: BoxFit.cover,
+                ),
               ),
             ],
           ),

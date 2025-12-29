@@ -38,7 +38,10 @@ class BranchesBottomSheet extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            Text('Nearby Branches', style: AppStyle.bold18black),
+            Text(
+              'Nearby Branches',
+              style: AppStyle.bold16black.copyWith(fontSize: 18),
+            ),
             const Text(
               'Choose the nearest branch',
               style: TextStyle(color: AppColors.greyColor),

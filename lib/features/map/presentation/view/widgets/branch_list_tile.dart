@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:smart_queue/features/branch_booking/presentation/view/branch_booking_screen.dart';
 import 'package:smart_queue/features/map/data/models/government_branch.dart';
-import 'package:smart_queue/features/map/presentation/view/map_screen.dart';
 
 class BranchListTile extends StatelessWidget {
   final GovernmentBranch branch;

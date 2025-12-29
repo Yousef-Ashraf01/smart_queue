@@ -30,6 +30,28 @@ class _MapScreenState extends State<MapScreen> {
 
   Future<void> _getUserLocation() async {
     try {
+      LocationPermission permission = await Geolocator.checkPermission();
+
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          setState(() {
+            error = "Location permission denied by user.";
+            isLoading = false;
+          });
+          return;
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        setState(() {
+          error =
+              "Location permission denied permanently. Please enable it from settings.";
+          isLoading = false;
+        });
+        return;
+      }
+
       final position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
       );
@@ -92,20 +114,6 @@ class _MapScreenState extends State<MapScreen> {
           BranchesBottomSheet(branches: nearbyBranches),
         ],
       ),
-    );
-  }
-}
-
-class BranchBookingScreen extends StatelessWidget {
-  final GovernmentBranch branch;
-
-  const BranchBookingScreen({super.key, required this.branch});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(branch.name)),
-      body: const Center(child: Text('Booking UI here')),
     );
   }
 }

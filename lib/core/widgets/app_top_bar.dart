@@ -8,7 +8,15 @@ class AppTopBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: const [Icon(Icons.arrow_back, size: 30), NotificationWidget()],
+      children: [
+        IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: Icon(Icons.arrow_back, size: 30),
+        ),
+        NotificationWidget(),
+      ],
     );
   }
 }

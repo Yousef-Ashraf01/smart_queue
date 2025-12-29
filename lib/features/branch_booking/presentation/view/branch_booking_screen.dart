@@ -51,7 +51,7 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 AppTopBar(),
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
                 Text(
                   widget.branch.name,
                   style: AppStyle.bold24black,

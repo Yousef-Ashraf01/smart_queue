@@ -36,7 +36,7 @@ class HomeScreen extends StatelessWidget {
               ServicesListView(),
               SizedBox(height: 23),
               Text("Booking appointment", style: AppStyle.bold16black),
-              SizedBox(height: 25),
+              SizedBox(height: 20),
               BookAppointmentWidget(),
             ],
           ),

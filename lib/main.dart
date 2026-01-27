@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:smart_queue/features/auth/presentaion/view/login_page.dart';
-import 'package:smart_queue/features/main/main_screen.dart';
+import 'package:smart_queue/core/routing/app_router.dart';
 
 void main() {
   runApp(const SmartQueueApp());
@@ -11,10 +10,10 @@ class SmartQueueApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
+      routerConfig: AppRouter.router,
       debugShowCheckedModeBanner: false,
       theme: ThemeData.light(),
-      home: LoginPage(),
     );
   }
 }

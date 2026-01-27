@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:smart_queue/core/constants/app_assets.dart';
+import 'package:smart_queue/core/routing/app_routes.dart';
 
 class CenterFab extends StatelessWidget {
   const CenterFab({super.key});
@@ -21,13 +23,7 @@ class CenterFab extends StatelessWidget {
       child: IconButton(
         icon: SvgPicture.asset(AppAssets.iconAi, color: Colors.white),
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder:
-                  (_) => const Scaffold(body: Center(child: Text("AI Screen"))),
-            ),
-          );
+          context.push(AppRoutes.ai);
         },
       ),
     );

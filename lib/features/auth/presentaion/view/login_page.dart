@@ -1,7 +1,8 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:smart_queue/core/routing/app_routes.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
-import 'package:smart_queue/features/auth/presentaion/view/register_page.dart';
 import 'package:smart_queue/features/auth/presentaion/view/widgets/custom_mesh_gradient.dart';
 import 'package:smart_queue/features/auth/presentaion/view/widgets/custom_text_field.dart';
 
@@ -104,7 +105,8 @@ class _LoginPageState extends State<LoginPage> {
                   SizedBox(height: 30),
 
                   _gradientButton("Login", () {
-                    if (_formKey.currentState!.validate()) {}
+                    // if (_formKey.currentState!.validate()) {}
+                    context.push(AppRoutes.main);
                   }),
 
                   SizedBox(height: 25),
@@ -127,12 +129,7 @@ class _LoginPageState extends State<LoginPage> {
                             recognizer:
                                 TapGestureRecognizer()
                                   ..onTap = () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => RegisterPage(),
-                                      ),
-                                    );
+                                    context.push(AppRoutes.register);
                                   },
                           ),
                         ],

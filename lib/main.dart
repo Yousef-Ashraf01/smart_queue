@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smart_queue/features/auth/presentaion/view/login_page.dart';
 import 'package:smart_queue/features/main/main_screen.dart';
 
 void main() {
@@ -13,7 +14,7 @@ class SmartQueueApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData.light(),
-      home: MainScreen(),
+      home: LoginPage(),
     );
   }
 }

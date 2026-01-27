@@ -1,8 +1,9 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import '../../widgets/custom_text_field.dart';
-import '../../widgets/custom_mesh_gradient.dart';
-import '../../core/app_colors.dart';
-import 'register_page.dart';
+import 'package:smart_queue/core/styling/app_colors.dart';
+import 'package:smart_queue/features/auth/presentaion/view/register_page.dart';
+import 'package:smart_queue/features/auth/presentaion/view/widgets/custom_mesh_gradient.dart';
+import 'package:smart_queue/features/auth/presentaion/view/widgets/custom_text_field.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -30,7 +31,7 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SizedBox(height: 10),
+                  SizedBox(height: 50),
                   Text(
                     "Welcome Back",
                     style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
@@ -82,8 +83,25 @@ class _LoginPageState extends State<LoginPage> {
                       return null;
                     },
                   ),
+                  SizedBox(height: 2),
 
-                  SizedBox(height: 10),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: GestureDetector(
+                      onTap: () {
+                        // Navigator.push(...)
+                      },
+                      child: Text(
+                        'Forgot password?',
+                        style: TextStyle(
+                          color: AppColors.blackColor,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(height: 30),
 
                   _gradientButton("Login", () {
                     if (_formKey.currentState!.validate()) {}
@@ -92,16 +110,33 @@ class _LoginPageState extends State<LoginPage> {
                   SizedBox(height: 25),
 
                   Center(
-                    child: TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const RegisterPage(),
+                    child: RichText(
+                      text: TextSpan(
+                        style: Theme.of(context).textTheme.bodyMedium,
+                        children: [
+                          TextSpan(
+                            text: 'Don\'t have an account? ',
+                            style: TextStyle(color: AppColors.greyColor),
                           ),
-                        );
-                      },
-                      child: const Text("Don't have an account? Register"),
+                          TextSpan(
+                            text: 'Register',
+                            style: TextStyle(
+                              color: AppColors.blackColor,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            recognizer:
+                                TapGestureRecognizer()
+                                  ..onTap = () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => RegisterPage(),
+                                      ),
+                                    );
+                                  },
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],

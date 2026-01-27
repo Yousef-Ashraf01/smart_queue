@@ -1,8 +1,9 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../widgets/custom_text_field.dart';
-import '../../widgets/custom_mesh_gradient.dart';
-import '../../core/app_colors.dart';
+import 'package:smart_queue/core/styling/app_colors.dart';
+import 'package:smart_queue/features/auth/presentaion/view/widgets/custom_mesh_gradient.dart';
+import 'package:smart_queue/features/auth/presentaion/view/widgets/custom_text_field.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -33,7 +34,7 @@ class _RegisterPageState extends State<RegisterPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 50),
                   const Text(
                     "Create Your Account",
                     style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
@@ -153,9 +154,28 @@ class _RegisterPageState extends State<RegisterPage> {
                   const SizedBox(height: 20),
 
                   Center(
-                    child: TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text("Already have an account? Login"),
+                    child: RichText(
+                      text: TextSpan(
+                        style: Theme.of(context).textTheme.bodyMedium,
+                        children: [
+                          TextSpan(
+                            text: 'Already have an account? ',
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                          TextSpan(
+                            text: 'Login',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            recognizer:
+                                TapGestureRecognizer()
+                                  ..onTap = () {
+                                    Navigator.pop(context);
+                                  },
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],

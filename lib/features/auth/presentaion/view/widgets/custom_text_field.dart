@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:smart_queue/core/styling/app_colors.dart';
 
 class CustomTextField extends StatefulWidget {
   final String label;
@@ -21,7 +22,7 @@ class CustomTextField extends StatefulWidget {
     this.keyboardType = TextInputType.text,
     this.icon,
     this.validator,
-    this.inputFormatters, 
+    this.inputFormatters,
   });
 
   @override
@@ -36,12 +37,10 @@ class _CustomTextFieldState extends State<CustomTextField> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          widget.label,
-          style: const TextStyle(fontWeight: FontWeight.w500),
-        ),
+        Text(widget.label, style: const TextStyle(fontWeight: FontWeight.w500)),
         const SizedBox(height: 8),
         TextFormField(
+          cursorColor: AppColors.greenStart,
           controller: widget.controller,
           obscureText: widget.isPassword ? _obscure : false,
           keyboardType: widget.keyboardType,
@@ -53,16 +52,17 @@ class _CustomTextFieldState extends State<CustomTextField> {
             hintText: widget.hint,
             hintStyle: TextStyle(color: Colors.grey.shade400),
             prefixIcon: widget.icon != null ? Icon(widget.icon) : null,
-            suffixIcon: widget.isPassword
-                ? IconButton(
-                    icon: Icon(
-                      _obscure ? Icons.visibility_off : Icons.visibility,
-                    ),
-                    onPressed: () {
-                      setState(() => _obscure = !_obscure);
-                    },
-                  )
-                : null,
+            suffixIcon:
+                widget.isPassword
+                    ? IconButton(
+                      icon: Icon(
+                        _obscure ? Icons.visibility_off : Icons.visibility,
+                      ),
+                      onPressed: () {
+                        setState(() => _obscure = !_obscure);
+                      },
+                    )
+                    : null,
             filled: true,
             fillColor: Colors.white,
             border: OutlineInputBorder(

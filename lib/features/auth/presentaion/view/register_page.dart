@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
 import 'package:smart_queue/features/auth/presentaion/view/widgets/custom_mesh_gradient.dart';
 import 'package:smart_queue/features/auth/presentaion/view/widgets/custom_text_field.dart';
@@ -171,7 +172,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             recognizer:
                                 TapGestureRecognizer()
                                   ..onTap = () {
-                                    Navigator.pop(context);
+                                    context.pop(context);
                                   },
                           ),
                         ],

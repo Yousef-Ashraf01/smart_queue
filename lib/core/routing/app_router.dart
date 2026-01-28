@@ -4,10 +4,11 @@ import 'package:smart_queue/features/ai/ai_screen.dart';
 import 'package:smart_queue/features/auth/presentaion/view/login_page.dart';
 import 'package:smart_queue/features/auth/presentaion/view/register_page.dart';
 import 'package:smart_queue/features/main/main_screen.dart';
+import 'package:smart_queue/features/verification/presentation/view/verification_screen.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
-    initialLocation: AppRoutes.login,
+    initialLocation: AppRoutes.verification,
     debugLogDiagnostics: true,
     routes: [
       GoRoute(
@@ -29,6 +30,11 @@ class AppRouter {
         path: AppRoutes.ai,
         name: 'ai',
         builder: (context, state) => const AiScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.verification,
+        name: 'verification',
+        builder: (context, state) => const VerificationScreen(),
       ),
     ],
   );

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:smart_queue/core/constants/app_assets.dart';
 
 class ServiceCard extends StatelessWidget {
   const ServiceCard({super.key}); // ✔ super parameter
@@ -23,51 +25,33 @@ class ServiceCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Container(
-                width: 56,
-                height: 56,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Color(0xFF2ECC71), width: 2),
-                  image: DecorationImage(
-                    image: AssetImage(
-                      'assets/images/b8016935c8f612b88435ec703a7bd7e49d662a8a.png',
-                    ),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
+              Image.asset(AppAssets.imageLogoBook, width: 60, height: 60),
               SizedBox(width: 7),
               Text(
                 "Salah tarek",
                 style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
               ),
               Spacer(),
-              Image.asset(
-                'assets/images/ac4851ebdc4b817d026c08c6ff00a0f68b5119a0.png',
-                width: 60,
-                height: 60,
-              ),
+              Image.asset(AppAssets.imagePersonal, width: 60, height: 60),
             ],
           ),
           SizedBox(height: 4),
           Expanded(
             child: Align(
-              alignment: Alignment.centerRight,
+              alignment: AlignmentDirectional.centerStart,
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    ": الخدمه",
-                    textAlign: TextAlign.right,
+                    "Service: ",
                     style: TextStyle(fontSize: 19, fontWeight: FontWeight.w700),
                   ),
                   SizedBox(height: 1),
                   Text(
-                    "استخراج دفتر توفير",
+                    "Extracting a savings book",
                     textAlign: TextAlign.right,
-                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -78,8 +62,14 @@ class ServiceCard extends StatelessWidget {
 
           Row(
             children: [
-              Icon(Icons.location_on, color: Color(0xFF2ECC71), size: 22),
-              SizedBox(width: 8),
+              SvgPicture.asset(
+                AppAssets.iconLocation,
+                fit: BoxFit.cover,
+                height: 22,
+                width: 22,
+                color: Color(0xFF2ECC71),
+              ),
+              SizedBox(width: 10),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

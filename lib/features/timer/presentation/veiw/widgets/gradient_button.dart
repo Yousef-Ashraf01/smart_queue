@@ -32,24 +32,40 @@ class _GradientButtonState extends State<GradientButton> {
           highlightColor: Colors.white.withValues(alpha: 0.08),
           child: Ink(
             height: 60,
+            width: double.infinity,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(28),
               gradient: LinearGradient(
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
-                colors: _isPressed
-                    ? [Color(0xFF702E2E), Color(0xFFFF3C3C)]
-                    : [Color(0xFFFF3C3C), Color(0xFF702E2E)],
+                colors:
+                    _isPressed
+                        ? [Color(0xFF702E2E), Color(0xFFFF3C3C)]
+                        : [Color(0xFFFF3C3C), Color(0xFF702E2E)],
               ),
             ),
             child: Center(
-              child: Text(
-                widget.text,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 18,
+                    height: 18,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    widget.text,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),

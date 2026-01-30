@@ -1,12 +1,13 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
-import '../widgets/time_circle.dart';
-import '../widgets/service_card.dart';
-import '../widgets/gradient_button(Cansle.dart';
+import 'package:smart_queue/core/widgets/notification_widget.dart';
+import 'package:smart_queue/features/timer/presentation/veiw/widgets/gradient_button.dart';
+import 'package:smart_queue/features/timer/presentation/veiw/widgets/service_card.dart';
+import 'package:smart_queue/features/timer/presentation/veiw/widgets/time_circle.dart';
 
-class QueuePage extends StatelessWidget {
-  const QueuePage({super.key});
+class TimerScreen extends StatelessWidget {
+  const TimerScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,19 +18,8 @@ class QueuePage extends StatelessWidget {
       body: SafeArea(
         child: Stack(
           children: [
-            /// Back button (no background, no action)
-            Positioned(
-              top: 16,
-              left: 16,
-              child: _iconButton(icon: Icons.arrow_back),
-            ),
-
             /// Bell button (no background, no action)
-            Positioned(
-              top: 16,
-              right: 16,
-              child: _iconButton(icon: Icons.notifications_none),
-            ),
+            Positioned(top: 16, right: 16, child: NotificationWidget()),
 
             /// Title
             Positioned(
@@ -38,7 +28,7 @@ class QueuePage extends StatelessWidget {
               right: 0,
               child: Center(
                 child: Text(
-                  "الهيئة القومية للبريد",
+                  "National Postal Authority",
                   style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
                 ),
               ),
@@ -46,19 +36,19 @@ class QueuePage extends StatelessWidget {
 
             /// Time circle
             Positioned(
-              top: 120,
+              top: 150,
               left: width / 2 - 142,
               child: TimeCircle(time: "09:25 AM", progress: 0.75),
             ),
 
             /// Service card
-            Positioned(bottom: 120, left: 16, right: 16, child: ServiceCard()),
+            Positioned(bottom: 130, left: 16, right: 16, child: ServiceCard()),
 
             /// Cancel button
             Positioned(
               bottom: 24,
-              left: 48,
-              right: 48,
+              left: 20,
+              right: 20,
               child: GradientButton(text: "Cancel", onTap: () {}),
             ),
           ],
@@ -67,10 +57,9 @@ class QueuePage extends StatelessWidget {
     );
   }
 
-  /// 🔘 Icon button with hover / ripple – no background, no action
   Widget _iconButton({required IconData icon}) {
     return InkWell(
-      onTap: () {}, // ❌ intentionally no action
+      onTap: () {},
       borderRadius: BorderRadius.circular(30),
       splashColor: Colors.black.withValues(alpha: 0.08),
       highlightColor: Colors.black.withValues(alpha: 0.04),

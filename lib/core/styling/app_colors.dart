@@ -16,4 +16,12 @@ class AppColors {
 
   static const Color greenStart = Color(0xFF4CD964);
   static const Color greenEnd = Color(0xFF2ECC71);
+
+  static const Color primaryDark = Color(0xFF1A1D4E);
+  static const Color greyText = Color(0xFF8E8E93);
+  static const Color blackText = Color(0xFF000000);
+  static const Color dividerColor = Color(0x1A9E9E9E);
+  static const Color white = Colors.white;
+
+
 }

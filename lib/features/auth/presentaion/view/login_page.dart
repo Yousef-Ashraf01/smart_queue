@@ -1,10 +1,10 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
 import 'package:smart_queue/features/auth/presentaion/view/widgets/custom_mesh_gradient.dart';
 import 'package:smart_queue/features/auth/presentaion/view/widgets/custom_text_field.dart';
+import 'package:go_router/go_router.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -32,7 +32,7 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SizedBox(height: 50),
+                  SizedBox(height: 10),
                   Text(
                     "Welcome Back",
                     style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
@@ -84,29 +84,12 @@ class _LoginPageState extends State<LoginPage> {
                       return null;
                     },
                   ),
-                  SizedBox(height: 2),
 
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: GestureDetector(
-                      onTap: () {
-                        // Navigator.push(...)
-                      },
-                      child: Text(
-                        'Forgot password?',
-                        style: TextStyle(
-                          color: AppColors.blackColor,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  SizedBox(height: 30),
+                  SizedBox(height: 10),
 
                   _gradientButton("Login", () {
-                    // if (_formKey.currentState!.validate()) {}
                     context.push(AppRoutes.main);
+                   // if (_formKey.currentState!.validate()) {}
                   }),
 
                   SizedBox(height: 25),

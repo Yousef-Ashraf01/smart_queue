@@ -9,7 +9,7 @@ import 'package:smart_queue/features/verification/presentation/view/verification
 
 class AppRouter {
   static final GoRouter router = GoRouter(
-    initialLocation: AppRoutes.login,
+    initialLocation: AppRoutes.ai,
     debugLogDiagnostics: true,
     routes: [
       GoRoute(
@@ -30,7 +30,7 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.ai,
         name: 'ai',
-        builder: (context, state) => const AiScreen(),
+        builder: (context, state) => const ChatScreen(),
       ),
       GoRoute(
         path: AppRoutes.verification,

@@ -4,12 +4,14 @@ import 'package:smart_queue/features/ai/ai_screen.dart';
 import 'package:smart_queue/features/auth/presentaion/view/login_page.dart';
 import 'package:smart_queue/features/auth/presentaion/view/register_page.dart';
 import 'package:smart_queue/features/main/main_screen.dart';
+import 'package:smart_queue/features/personal_info/presentation/view/personal_info_screen.dart';
+import 'package:smart_queue/features/profile_settings/presentation/view/profile_settings_screen.dart';
 import 'package:smart_queue/features/timer/presentation/veiw/timer_screen.dart';
 import 'package:smart_queue/features/verification/presentation/view/verification_screen.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
-    initialLocation: AppRoutes.ai,
+    initialLocation: AppRoutes.main,
     debugLogDiagnostics: true,
     routes: [
       GoRoute(
@@ -41,6 +43,18 @@ class AppRouter {
         path: AppRoutes.timer,
         name: 'timer',
         builder: (context, state) => const TimerScreen(),
+      ),
+
+      GoRoute(
+        path: AppRoutes.profileSettings,
+        name: 'profileSettings',
+        builder: (context, state) => const ProfileSettingsScreen(),
+      ),
+
+      GoRoute(
+        path: AppRoutes.personalInfo,
+        name: 'personalInfo',
+        builder: (context, state) => const PersonalInfoScreen(),
       ),
     ],
   );

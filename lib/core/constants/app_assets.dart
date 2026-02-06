@@ -13,5 +13,17 @@ class AppAssets {
   static const String imagePostal = 'assets/images/postal.png';
   static const String imagePersonal = 'assets/images/personal.png';
   static const String imageLogoBook = 'assets/images/logo_book.png';
+  static const String iconArrowLeft = 'assets/icons/Arrow_alt_left.svg';
+  static const String iconBell = 'assets/icons/bell.svg';
+  static const String iconUserSquare = 'assets/icons/user-square.svg';
+  static const String iconSetting = 'assets/icons/setting.svg';
+  static const String iconMessageQuestion = 'assets/icons/message-question.svg';
+  static const String iconProfile2User = 'assets/icons/profile-2user.svg';
+  static const String iconDocument = 'assets/icons/document.svg';
+  static const String iconChevronRight = 'assets/icons/Chevron-Right.svg';
+  static const String iconCountryFlag = 'assets/icons/Country_Flag.svg';
+  static const String iconloginout = 'assets/icons/login.svg';
 
+  static const String userAvatar = 'assets/images/user_avatar.png';
+  static const String aiRobot = 'assets/images/rebot.png';
 }

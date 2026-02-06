@@ -94,4 +94,40 @@ class AppStyle {
     fontSize: 20,
     color: AppColors.blackColor,
   );
+
+  static const String fontFamily = 'Inter Tight';
+
+  static const TextStyle appBarTitle = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 25,
+    fontWeight: FontWeight.w700,
+    color: AppColors.blackText,
+  );
+
+  static const TextStyle userName = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 22,
+    fontWeight: FontWeight.w800,
+    color: AppColors.primaryDark,
+  );
+
+  static const TextStyle sectionHeader = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 18,
+    fontWeight: FontWeight.w700,
+    color: AppColors.primaryDark,
+  );
+
+  static const TextStyle fieldLabel = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 14,
+    fontWeight: FontWeight.w500,
+    color: AppColors.greyText,
+  );
+
+  static const TextStyle inputTextStyle = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 16,
+    color: AppColors.greyText,
+  );
 }

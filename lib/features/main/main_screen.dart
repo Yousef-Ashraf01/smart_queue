@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:smart_queue/features/home/presentation/view/home_screen.dart';
 import 'package:smart_queue/features/operations_history/presentation/view/operations_history_screen.dart';
+import 'package:smart_queue/features/profile_settings/presentation/view/profile_settings_screen.dart';
 
 import 'widgets/center_fab.dart';
 import 'widgets/custom_bottom_bar.dart';
@@ -19,7 +20,7 @@ class _MainScreenState extends State<MainScreen> {
     HomeScreen(),
     Container(color: Colors.brown),
     OperationsHistoryScreen(),
-    Container(color: Colors.yellow),
+    ProfileSettingsScreen(),
   ];
 
   void onTabChanged(int index) {

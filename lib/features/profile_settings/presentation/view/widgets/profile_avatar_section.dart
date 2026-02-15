@@ -48,20 +48,19 @@ class ProfileAvatarSection extends StatelessWidget {
                       color: const Color.fromRGBO(0, 0, 0, 0.1),
                       blurRadius: 5,
                       spreadRadius: 1,
-                    )
+                    ),
                   ],
                 ),
-                child: const Icon(Icons.camera_alt, size: 18, color: Colors.black),
+                child: const Icon(
+                  Icons.camera_alt,
+                  size: 18,
+                  color: Colors.black,
+                ),
               ),
             ),
           ],
         ),
-        const SizedBox(height: 16),
-        Text(
-          name,
-          style: AppStyle.userName,
-          textAlign: TextAlign.center,
-        ),
+        Text(name, style: AppStyle.userName, textAlign: TextAlign.center),
         const SizedBox(height: 4),
         Text(
           email,

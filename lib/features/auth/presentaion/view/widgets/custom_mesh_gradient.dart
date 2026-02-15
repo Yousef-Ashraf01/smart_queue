@@ -1,4 +1,5 @@
 import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 class CustomMeshGradient extends StatelessWidget {
@@ -19,7 +20,7 @@ class CustomMeshGradient extends StatelessWidget {
       children: [
         Container(color: colors[1]),
         Positioned(top: -100, left: -50, child: _circle(colors[0], 400)),
-        Positioned(top: 200, right: -100, child: _circle(colors[2], 500)),
+        Positioned(top: 200, right: -100, child: _circle(colors[1], 500)),
         Positioned(bottom: -100, left: -50, child: _circle(colors[3], 450)),
         BackdropFilter(
           filter: ImageFilter.blur(sigmaX: blurSigma, sigmaY: blurSigma),

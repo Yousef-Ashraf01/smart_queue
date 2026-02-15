@@ -1,5 +1,6 @@
+// import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:country_picker/country_picker.dart';
+
 import 'custom_text_field.dart';
 
 class PhoneInputField extends StatefulWidget {
@@ -12,7 +13,6 @@ class PhoneInputField extends StatefulWidget {
 }
 
 class _PhoneInputFieldState extends State<PhoneInputField> {
-
   String countryCode = "20";
   String countryFlag = "🇪🇬";
 
@@ -23,16 +23,16 @@ class _PhoneInputFieldState extends State<PhoneInputField> {
       children: [
         GestureDetector(
           onTap: () {
-            showCountryPicker(
-              context: context,
-              showPhoneCode: true,
-              onSelect: (Country country) {
-                setState(() {
-                  countryCode = country.phoneCode;
-                  countryFlag = country.flagEmoji;
-                });
-              },
-            );
+            // showCountryPicker(
+            //   context: context,
+            //   showPhoneCode: true,
+            //   onSelect: (Country country) {
+            //     setState(() {
+            //       countryCode = country.phoneCode;
+            //       countryFlag = country.flagEmoji;
+            //     });
+            //   },
+            // );
           },
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
@@ -47,9 +47,16 @@ class _PhoneInputFieldState extends State<PhoneInputField> {
                 const SizedBox(width: 8),
                 Text(
                   "+$countryCode",
-                  style: const TextStyle(color: Color(0xFF8E8E93), fontSize: 15),
+                  style: const TextStyle(
+                    color: Color(0xFF8E8E93),
+                    fontSize: 15,
+                  ),
                 ),
-                const Icon(Icons.keyboard_arrow_down, size: 18, color: Color(0xFF8E8E93)),
+                const Icon(
+                  Icons.keyboard_arrow_down,
+                  size: 18,
+                  color: Color(0xFF8E8E93),
+                ),
               ],
             ),
           ),

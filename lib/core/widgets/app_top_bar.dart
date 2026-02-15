@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:smart_queue/core/constants/app_assets.dart';
 import 'package:smart_queue/core/widgets/notification_widget.dart';
 
 class AppTopBar extends StatelessWidget {
@@ -13,9 +15,10 @@ class AppTopBar extends StatelessWidget {
           onPressed: () {
             Navigator.pop(context);
           },
-          icon: Icon(Icons.arrow_back, size: 30),
+          icon: SvgPicture.asset(AppAssets.iconBack, width: 20, height: 20),
         ),
-        NotificationWidget(),
+
+        const NotificationWidget(),
       ],
     );
   }

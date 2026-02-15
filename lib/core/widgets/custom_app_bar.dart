@@ -3,7 +3,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:smart_queue/core/constants/app_assets.dart';
 import 'package:smart_queue/core/styling/app_styles.dart';
 
-
 class CustomAppBar extends StatelessWidget {
   final String title;
   final VoidCallback? onBackPress;
@@ -27,18 +26,18 @@ class CustomAppBar extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              IconButton(
-                icon: SvgPicture.asset(AppAssets.iconArrowLeft, width: 30),
-                onPressed: () {
-                  if (onBackPress != null) {
-                    onBackPress!();
-                  } else if (Navigator.canPop(context)) {
-                    Navigator.pop(context);
-                  } else {
-                    debugPrint("لا يوجد صفحة سابقة للرجوع إليها");
-                  }
-                },
-              ),
+              // IconButton(
+              //   icon: SvgPicture.asset(AppAssets.iconArrowLeft, width: 30),
+              //   onPressed: () {
+              //     if (onBackPress != null) {
+              //       onBackPress!();
+              //     } else if (Navigator.canPop(context)) {
+              //       Navigator.pop(context);
+              //     } else {
+              //       debugPrint("لا يوجد صفحة سابقة للرجوع إليها");
+              //     }
+              //   },
+              // ),
               Stack(
                 clipBehavior: Clip.none,
                 children: [
@@ -68,11 +67,7 @@ class CustomAppBar extends StatelessWidget {
 
           const SizedBox(height: 10),
 
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: AppStyle.appBarTitle,
-          ),
+          Text(title, textAlign: TextAlign.center, style: AppStyle.appBarTitle),
         ],
       ),
     );

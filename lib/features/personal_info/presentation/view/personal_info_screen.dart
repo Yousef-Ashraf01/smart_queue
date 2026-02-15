@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:smart_queue/core/constants/app_assets.dart';
-import 'package:smart_queue/core/widgets/custom_app_bar.dart';
-import 'package:smart_queue/core/widgets/status_bar_scaffold.dart';
+import 'package:smart_queue/core/styling/app_styles.dart';
+import 'package:smart_queue/core/widgets/app_top_bar.dart';
 import 'package:smart_queue/features/auth/presentaion/view/widgets/custom_text_field.dart';
 import 'package:smart_queue/features/personal_info/presentation/view/widgets/app_button.dart';
 import 'package:smart_queue/features/personal_info/presentation/view/widgets/date_fields_group.dart';
@@ -57,74 +57,87 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return StatusBarScaffold(
-      child: Column(
+    return Scaffold(
+      body: Stack(
         children: [
-          CustomAppBar(
-            title: 'Personal information',
-            showNotificationDot: true,
-            onNotificationPress: () {},
+          Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [Color(0xffEEFEFF), Color(0xffD6F9F7)],
+              ),
+            ),
           ),
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Center(
-                    child: ProfileAvatarSection(
-                      name: 'Mohamed Ayad',
-                      email: 'mo3yad57@gmail.com',
+          Padding(
+            padding: const EdgeInsets.fromLTRB(30, 50, 30, 20),
+            child: Column(
+              children: [
+                AppTopBar(),
+                Text('Personal information', style: AppStyle.appBarTitle),
+                SizedBox(height: 20),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Center(
+                          child: ProfileAvatarSection(
+                            name: 'Mohamed Ayad',
+                            email: 'mo3yad57@gmail.com',
+                          ),
+                        ),
+                        const SizedBox(height: 25),
+
+                        CustomTextField(
+                          label: "Full name",
+                          controller: nameController,
+                          hint: 'Enter your full name',
+                        ),
+                        const SizedBox(height: 16),
+
+                        CustomTextField(
+                          label: "Email",
+                          hint: "Enter your email",
+                          controller: emailController,
+                          keyboardType: TextInputType.emailAddress,
+                        ),
+                        const SizedBox(height: 16),
+
+                        CustomTextField(
+                          label: "ID",
+                          hint: "Enter your ID",
+                          controller: idController,
+                          keyboardType: TextInputType.number,
+                        ),
+                        const SizedBox(height: 16),
+
+                        const FieldLabel(text: "Phone number"),
+                        PhoneInputField(controller: phoneController),
+                        const SizedBox(height: 16),
+
+                        const FieldLabel(text: "Birth date"),
+                        DateFieldsGroup(
+                          dayController: dayController,
+                          monthController: monthController,
+                          yearController: yearController,
+                          onTap: _selectDate,
+                        ),
+
+                        const SizedBox(height: 40),
+
+                        AppButton(
+                          text: "Log out",
+                          iconPath: AppAssets.iconloginout,
+                          backgroundColor: Colors.red,
+                          onPressed: () {},
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 25),
-
-                  CustomTextField(
-                    label: "Full name",
-                    controller: nameController, hint: 'Enter your full name',
-                  ),
-                  const SizedBox(height: 16),
-
-                  CustomTextField(
-                    label: "Email",
-                    hint: "Enter your email",
-                    controller: emailController,
-                    keyboardType: TextInputType.emailAddress,
-                  ),
-                  const SizedBox(height: 16),
-
-                  CustomTextField(
-                    label: "ID",
-                    hint: "Enter your ID",
-                    controller: idController,
-                    keyboardType: TextInputType.number,
-                  ),
-                  const SizedBox(height: 16),
-
-                  const FieldLabel(text: "Phone number"),
-                  PhoneInputField(controller: phoneController),
-                  const SizedBox(height: 16),
-
-                  const FieldLabel(text: "Birth date"),
-                  DateFieldsGroup(
-                    dayController: dayController,
-                    monthController: monthController,
-                    yearController: yearController,
-                    onTap: _selectDate,
-                  ),
-
-                  const SizedBox(height: 40),
-
-                  AppButton(
-                    text: "Log out",
-                    iconPath: AppAssets.iconloginout,
-                    backgroundColor: Colors.red,
-                    onPressed: () {
-                    },
-                  ),
-                  const SizedBox(height: 20),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ],
@@ -144,9 +157,10 @@ class FieldLabel extends StatelessWidget {
       child: Text(
         text,
         style: const TextStyle(
-            color: Color(0xFF8E8E93),
-            fontSize: 14,
-            fontWeight: FontWeight.w500),
+          color: Color(0xFF8E8E93),
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+        ),
       ),
     );
   }

@@ -6,12 +6,13 @@ import 'package:smart_queue/features/auth/presentaion/view/register_page.dart';
 import 'package:smart_queue/features/main/main_screen.dart';
 import 'package:smart_queue/features/personal_info/presentation/view/personal_info_screen.dart';
 import 'package:smart_queue/features/profile_settings/presentation/view/profile_settings_screen.dart';
+import 'package:smart_queue/features/scan_id_card/presentation/view/scan_id_card_screen.dart';
 import 'package:smart_queue/features/timer/presentation/veiw/timer_screen.dart';
 import 'package:smart_queue/features/verification/presentation/view/verification_screen.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
-    initialLocation: AppRoutes.main,
+    initialLocation: AppRoutes.login,
     debugLogDiagnostics: true,
     routes: [
       GoRoute(
@@ -55,6 +56,12 @@ class AppRouter {
         path: AppRoutes.personalInfo,
         name: 'personalInfo',
         builder: (context, state) => const PersonalInfoScreen(),
+      ),
+
+      GoRoute(
+        path: AppRoutes.scanIdCard,
+        name: 'scanIdCard',
+        builder: (context, state) => const ScanIdCardScreen(),
       ),
     ],
   );

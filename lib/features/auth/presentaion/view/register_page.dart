@@ -2,8 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
-import 'package:smart_queue/core/styling/app_colors.dart';
-import 'package:smart_queue/features/auth/presentaion/view/widgets/custom_mesh_gradient.dart';
+import 'package:smart_queue/core/routing/app_routes.dart';
 import 'package:smart_queue/features/auth/presentaion/view/widgets/custom_text_field.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -24,9 +23,16 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CustomMeshGradient(
-        colors: AppColors.meshGradient,
-        blurSigma: 70,
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xffEEFEFF), Color(0xffD6F9F7)],
+          ),
+        ),
         child: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(20),
@@ -146,10 +152,11 @@ class _RegisterPageState extends State<RegisterPage> {
 
                   const SizedBox(height: 10),
 
-                  _gradientButton("Register", () {
-                    if (_formKey.currentState!.validate()) {
-                      // submit logic
-                    }
+                  _gradientButton("Continue", () {
+                    // if (_formKey.currentState!.validate()) {
+                    //   // submit logic
+                    // }
+                    context.push(AppRoutes.scanIdCard);
                   }),
 
                   const SizedBox(height: 20),

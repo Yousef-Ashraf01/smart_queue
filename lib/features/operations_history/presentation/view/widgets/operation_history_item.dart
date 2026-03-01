@@ -1,80 +1,98 @@
 import 'package:flutter/material.dart';
-import 'package:smart_queue/core/constants/app_assets.dart';
 
 import '../../../../../core/styling/app_colors.dart';
 
 class OperationHistoryItem extends StatelessWidget {
-  const OperationHistoryItem({super.key});
+  final String title;
+  final String location;
+  final String date;
+  final String imageAsset;
+
+  const OperationHistoryItem({
+    super.key,
+    required this.title,
+    required this.location,
+    required this.date,
+    required this.imageAsset,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.fromLTRB(27, 4, 27, 8),
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.symmetric(vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 24),
       decoration: BoxDecoration(
         color: AppColors.whiteColor.withOpacity(0.4),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.08),
-            blurRadius: 20,
-            offset: const Offset(0, 6),
+            blurRadius: 24,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(color: Colors.grey.shade300),
                 ),
-                child: const Icon(Icons.bookmark_border),
+                child: const Icon(Icons.bookmark_border, size: 26),
               ),
-              const Spacer(),
-              const Text(
-                'National Postal Authority',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-              const Spacer(),
+              const SizedBox(width: 16),
               CircleAvatar(
-                radius: 22,
+                radius: 28,
                 backgroundColor: AppColors.whiteColor,
                 child: Image.asset(
-                  AppAssets.imagePostal,
-                  height: 35,
-                  width: 35,
+                  imageAsset,
+                  height: 48,
+                  width: 48,
                   fit: BoxFit.cover,
                 ),
               ),
             ],
           ),
-
-          const SizedBox(height: 14),
-
-          Divider(color: Colors.grey.shade300, thickness: 1),
-
-          const SizedBox(height: 10),
-
+          Divider(color: Colors.grey.shade300, thickness: 1.5),
+          SizedBox(height: 5),
           Row(
             children: [
               const Icon(
                 Icons.location_on_outlined,
-                size: 18,
+                size: 22,
                 color: Colors.grey,
               ),
-              const SizedBox(width: 6),
-              const Text(
-                'Zagazig, Sharqia, Egypt',
-                style: TextStyle(color: Colors.grey, fontSize: 14),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  location,
+                  style: const TextStyle(color: Colors.grey, fontSize: 16),
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-              const Spacer(),
-              const Text(
-                '27/1/2025',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              const SizedBox(width: 12),
+              Text(
+                date,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ],
           ),

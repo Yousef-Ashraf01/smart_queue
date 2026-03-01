@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smart_queue/core/constants/app_assets.dart';
 import 'package:smart_queue/core/styling/app_styles.dart';
 import 'package:smart_queue/core/widgets/notification_widget.dart';
 import 'package:smart_queue/features/operations_history/presentation/view/widgets/operation_history_item.dart';
@@ -8,44 +9,64 @@ class OperationsHistoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Container(
-          width: double.infinity,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Color(0xffEEFEFF), Color(0xffD6F9F7)],
-            ),
-          ),
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xffEEFEFF), Color(0xffD6F9F7)],
         ),
-        SizedBox(
-          width: double.infinity,
+      ),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(30, 10, 30, 20),
           child: Column(
             children: [
-              SizedBox(height: 50),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 30),
-                child: Align(
-                  alignment: AlignmentDirectional.centerEnd,
-                  child: NotificationWidget(),
-                ),
+              Align(
+                alignment: AlignmentDirectional.centerEnd,
+                child: NotificationWidget(),
               ),
-              SizedBox(height: 15),
+              const SizedBox(height: 10),
               Text("Operations History", style: AppStyle.bold24black),
-              const SizedBox(height: 20),
+              const SizedBox(height: 5),
               Expanded(
-                child: ListView.builder(
-                  padding: EdgeInsets.only(top: 4, bottom: 40),
-                  itemCount: 5,
-                  itemBuilder: (context, index) => OperationHistoryItem(),
+                child: ListView(
+                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                  children: const [
+                    OperationHistoryItem(
+                      title: 'National Postal Authority',
+                      location: 'Helwan, Cairo, Egypt',
+                      date: '7/6/2025',
+                      imageAsset: AppAssets.imagePostal,
+                    ),
+                    OperationHistoryItem(
+                      title: 'Civil Affairs Sector',
+                      location: 'Helwan, Cairo, Egypt',
+                      date: '12/6/2025',
+                      imageAsset: AppAssets.imagePostal,
+                    ),
+                    OperationHistoryItem(
+                      title:
+                          'General Administration of Passports and Nationality',
+                      location: 'Helwan, Cairo, Egypt',
+                      date: '18/5/2025',
+                      imageAsset: AppAssets.imagePostal,
+                    ),
+                    OperationHistoryItem(
+                      title: 'General Traffic Department',
+                      location: 'Helwan, Cairo, Egypt',
+                      date: '5/6/2025',
+                      imageAsset: AppAssets.imagePostal,
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
         ),
-      ],
+      ),
     );
   }
 }

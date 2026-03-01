@@ -1,58 +1,63 @@
 import 'package:flutter/material.dart';
 import 'package:smart_queue/core/constants/app_assets.dart';
-import 'package:smart_queue/core/widgets/custom_app_bar.dart';
-import 'package:smart_queue/core/widgets/status_bar_scaffold.dart';
-
+import 'package:smart_queue/core/widgets/app_top_bar.dart';
 
 class ChatScreen extends StatelessWidget {
   const ChatScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return StatusBarScaffold(
-      child: Column(
-        children: [
-          CustomAppBar(
-            title: '',
-            showNotificationDot: true,
-            onNotificationPress: () {},
+    return Scaffold(
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xffEEFEFF), Color(0xffD6F9F7)],
           ),
+        ),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(30, 50, 30, 20),
+              child: AppTopBar(),
+            ),
 
-          Expanded(
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const SizedBox(height: 60),
-                  Image.asset(
-                    AppAssets.aiRobot,
-                    height: 220,
-                  ),
-                  const SizedBox(height: 32),
-                  const Text(
-                    "Hello, Mohamed Ayad",
-                    style: TextStyle(
-                      fontSize: 26,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
+            Expanded(
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 60),
+                    Image.asset(AppAssets.aiRobot, height: 220),
+                    const SizedBox(height: 32),
+                    const Text(
+                      "Hello, Mohamed Ayad",
+                      style: TextStyle(
+                        fontSize: 26,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    "How can I help you?",
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey.shade600,
+                    const SizedBox(height: 10),
+                    Text(
+                      "How can I help you?",
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey.shade600,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
 
-          _buildInputArea(),
-        ],
+            _buildInputArea(),
+          ],
+        ),
       ),
     );
   }
@@ -70,7 +75,11 @@ class ChatScreen extends StatelessWidget {
               shape: BoxShape.circle,
             ),
             child: IconButton(
-              icon: const Icon(Icons.attach_file, color: Colors.black, size: 26),
+              icon: const Icon(
+                Icons.attach_file,
+                color: Colors.black,
+                size: 26,
+              ),
               onPressed: () {},
             ),
           ),
@@ -106,7 +115,11 @@ class ChatScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(27),
                     ),
                     child: IconButton(
-                      icon: const Icon(Icons.auto_awesome_outlined, color: Colors.white, size: 20),
+                      icon: const Icon(
+                        Icons.auto_awesome_outlined,
+                        color: Colors.white,
+                        size: 20,
+                      ),
                       onPressed: () {},
                     ),
                   ),

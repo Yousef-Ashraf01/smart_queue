@@ -7,6 +7,5 @@ class AppRoutes {
   static const String timer = '/timer';
   static const String profileSettings = '/profileSettings';
   static const String personalInfo = '/personalInfo';
-
-
+  static const String scanIdCard = '/scanIdCard';
 }

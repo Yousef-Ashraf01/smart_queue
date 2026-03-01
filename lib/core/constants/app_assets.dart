@@ -15,6 +15,7 @@ class AppAssets {
   static const String imagePostal = 'assets/images/postal.png';
   static const String imagePersonal = 'assets/images/personal.png';
   static const String imageLogoBook = 'assets/images/logo_book.png';
+  static const String imageIdCard = 'assets/images/id_card.png';
   static const String iconArrowLeft = 'assets/svg/Arrow_alt_left.svg';
   static const String iconBell = 'assets/svg/bell.svg';
   static const String iconUserSquare = 'assets/svg/user-square.svg';

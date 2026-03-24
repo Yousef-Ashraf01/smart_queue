@@ -36,28 +36,28 @@ class ProfileAvatarSection extends StatelessWidget {
                 backgroundImage: AssetImage(imagePath),
               ),
             ),
-            GestureDetector(
-              onTap: onCameraTap,
-              child: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color.fromRGBO(0, 0, 0, 0.1),
-                      blurRadius: 5,
-                      spreadRadius: 1,
-                    ),
-                  ],
-                ),
-                child: const Icon(
-                  Icons.camera_alt,
-                  size: 18,
-                  color: Colors.black,
-                ),
-              ),
-            ),
+            // GestureDetector(
+            //   onTap: onCameraTap,
+            //   child: Container(
+            //     padding: const EdgeInsets.all(8),
+            //     decoration: BoxDecoration(
+            //       color: Colors.white,
+            //       shape: BoxShape.circle,
+            //       boxShadow: [
+            //         BoxShadow(
+            //           color: const Color.fromRGBO(0, 0, 0, 0.1),
+            //           blurRadius: 5,
+            //           spreadRadius: 1,
+            //         ),
+            //       ],
+            //     ),
+            //     child: const Icon(
+            //       Icons.camera_alt,
+            //       size: 18,
+            //       color: Colors.black,
+            //     ),
+            //   ),
+            // ),
           ],
         ),
         Text(name, style: AppStyle.userName, textAlign: TextAlign.center),

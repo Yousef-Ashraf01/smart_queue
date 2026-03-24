@@ -1,68 +1,113 @@
 import 'package:go_router/go_router.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
+import 'package:smart_queue/core/routing/auth_notifier.dart';
 import 'package:smart_queue/features/ai/ai_screen.dart';
+import 'package:smart_queue/features/auth/presentaion/cubit/auth_cubit.dart';
 import 'package:smart_queue/features/auth/presentaion/view/login_page.dart';
 import 'package:smart_queue/features/auth/presentaion/view/register_page.dart';
+import 'package:smart_queue/features/forget_password/presentation/view/create_new_password_screen.dart';
+import 'package:smart_queue/features/forget_password/presentation/view/forget_password_screen.dart';
 import 'package:smart_queue/features/main/main_screen.dart';
 import 'package:smart_queue/features/personal_info/presentation/view/personal_info_screen.dart';
 import 'package:smart_queue/features/profile_settings/presentation/view/profile_settings_screen.dart';
 import 'package:smart_queue/features/scan_id_card/presentation/view/scan_id_card_screen.dart';
 import 'package:smart_queue/features/timer/presentation/veiw/timer_screen.dart';
 import 'package:smart_queue/features/verification/presentation/view/verification_screen.dart';
+import 'package:smart_queue/features/verification_code/presentation/view/verification_code_screen.dart';
 
 class AppRouter {
-  static final GoRouter router = GoRouter(
-    initialLocation: AppRoutes.login,
-    debugLogDiagnostics: true,
-    routes: [
-      GoRoute(
-        path: AppRoutes.login,
-        name: 'login',
-        builder: (context, state) => const LoginPage(),
-      ),
-      GoRoute(
-        path: AppRoutes.register,
-        name: 'register',
-        builder: (context, state) => const RegisterPage(),
-      ),
-      GoRoute(
-        path: AppRoutes.main,
-        name: 'main',
-        builder: (context, state) => const MainScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.ai,
-        name: 'ai',
-        builder: (context, state) => const ChatScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.verification,
-        name: 'verification',
-        builder: (context, state) => const VerificationScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.timer,
-        name: 'timer',
-        builder: (context, state) => const TimerScreen(),
-      ),
+  static GoRouter createRouter(AuthCubit authCubit) {
+    final authNotifier = AuthNotifier(authCubit);
 
-      GoRoute(
-        path: AppRoutes.profileSettings,
-        name: 'profileSettings',
-        builder: (context, state) => const ProfileSettingsScreen(),
-      ),
+    return GoRouter(
+      refreshListenable: authNotifier,
+      initialLocation: AppRoutes.login,
 
-      GoRoute(
-        path: AppRoutes.personalInfo,
-        name: 'personalInfo',
-        builder: (context, state) => const PersonalInfoScreen(),
-      ),
+      redirect: (context, state) {
+        final isLoggedIn = authNotifier.isLoggedIn;
+        final isGoingToLogin =
+            state.matchedLocation == AppRoutes.login ||
+            state.matchedLocation == AppRoutes.register ||
+            state.matchedLocation == AppRoutes.createNewPassword ||
+            state.matchedLocation == AppRoutes.verificationCode ||
+            state.matchedLocation == AppRoutes.forgetPassword;
 
-      GoRoute(
-        path: AppRoutes.scanIdCard,
-        name: 'scanIdCard',
-        builder: (context, state) => const ScanIdCardScreen(),
-      ),
-    ],
-  );
+        if (!isLoggedIn && !isGoingToLogin) {
+          return AppRoutes.login;
+        }
+
+        if (isLoggedIn && isGoingToLogin) {
+          return AppRoutes.main;
+        }
+
+        return null;
+      },
+
+      routes: [
+        GoRoute(
+          path: AppRoutes.login,
+          name: 'login',
+          builder: (context, state) => const LoginPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.register,
+          name: 'register',
+          builder: (context, state) => const RegisterPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.forgetPassword,
+          name: 'forgetPassword',
+          builder: (context, state) => const ForgetPasswordScreen(),
+        ),
+        GoRoute(
+          path: AppRoutes.verificationCode,
+          name: 'verificationCode',
+          builder: (context, state) => const VerificationCodeScreen(),
+        ),
+        GoRoute(
+          path: AppRoutes.createNewPassword,
+          name: 'createNewPassword',
+          builder: (context, state) => const CreateNewPasswordScreen(),
+        ),
+        GoRoute(
+          path: AppRoutes.main,
+          name: 'main',
+          builder: (context, state) => MainScreen(),
+        ),
+        GoRoute(
+          path: AppRoutes.ai,
+          name: 'ai',
+          builder: (context, state) => const ChatScreen(),
+        ),
+        GoRoute(
+          path: AppRoutes.verification,
+          name: 'verification',
+          builder: (context, state) => const VerificationScreen(),
+        ),
+        GoRoute(
+          path: AppRoutes.timer,
+          name: 'timer',
+          builder: (context, state) => const TimerScreen(),
+        ),
+
+        GoRoute(
+          path: AppRoutes.profileSettings,
+          name: 'profileSettings',
+          builder: (context, state) => const ProfileSettingsScreen(),
+        ),
+
+        GoRoute(
+          path: AppRoutes.personalInfo,
+          name: 'personalInfo',
+          builder: (context, state) => const PersonalInfoScreen(),
+        ),
+
+        GoRoute(
+          path: AppRoutes.scanIdCard,
+          name: 'scanIdCard',
+          builder: (context, state) => const ScanIdCardScreen(),
+        ),
+      ],
+    );
+  }
 }

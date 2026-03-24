@@ -8,4 +8,7 @@ class AppRoutes {
   static const String profileSettings = '/profileSettings';
   static const String personalInfo = '/personalInfo';
   static const String scanIdCard = '/scanIdCard';
+  static const String forgetPassword = '/forgetPassword';
+  static const String verificationCode = '/verificationCode';
+  static const String createNewPassword = '/createNewPassword';
 }

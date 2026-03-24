@@ -1,9 +1,10 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:smart_queue/core/constants/app_assets.dart';
-import 'package:smart_queue/core/widgets/status_bar_scaffold.dart';
-import 'package:smart_queue/features/forget_password/presentation/view/create_new_password_screen.dart';
+import 'package:smart_queue/core/routing/app_routes.dart';
 
 class VerificationCodeScreen extends StatefulWidget {
   const VerificationCodeScreen({super.key});
@@ -13,7 +14,10 @@ class VerificationCodeScreen extends StatefulWidget {
 }
 
 class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
-  final List<TextEditingController> controllers = List.generate(4, (index) => TextEditingController());
+  final List<TextEditingController> controllers = List.generate(
+    4,
+    (index) => TextEditingController(),
+  );
 
   Timer? _timer;
   int _secondsRemaining = 10;
@@ -53,132 +57,156 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return StatusBarScaffold(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 20),
-            IconButton(
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(),
-              icon: SvgPicture.asset(AppAssets.iconArrowLeft, width: 30),
-              onPressed: () => Navigator.pop(context),
-            ),
-            const SizedBox(height: 20),
-            const Center(
-              child: Text(
-                'Verification Code',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
+    return Scaffold(
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xffEEFEFF), Color(0xffD6F9F7)],
+          ),
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                IconButton(
+                  padding: EdgeInsets.zero,
+                  icon: SvgPicture.asset(AppAssets.iconArrowLeft, width: 30),
+                  onPressed: () => Navigator.pop(context),
                 ),
-              ),
-            ),
-            Expanded(
-              child: CustomScrollView(
-                physics: const BouncingScrollPhysics(),
-                slivers: [
-                  SliverFillRemaining(
-                    hasScrollBody: false,
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 15),
-                        const Text(
-                          'We sent otp verification to your phone\nthis code will expired in',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 15, color: Color(0xFF8E8E93)),
-                        ),
-                        const SizedBox(height: 8),
-
-                        Text(
-                          _timerDisplay,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: Color(0xFF8E8E93),
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-
-                        const SizedBox(height: 40),
-
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: List.generate(4, (index) => _buildOTPField(index)),
-                        ),
-
-                        const SizedBox(height: 30),
-
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                const SizedBox(height: 20),
+                const Center(
+                  child: Text(
+                    'Verification Code',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: CustomScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    slivers: [
+                      SliverFillRemaining(
+                        hasScrollBody: false,
+                        child: Column(
                           children: [
-                            const Text("Didn't receive the code? ", style: TextStyle(color: Color(0xFF8E8E93))),
+                            const SizedBox(height: 15),
+                            const Text(
+                              'We sent otp verification to your phone\nthis code will expired in',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: Color(0xFF8E8E93),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+
+                            Text(
+                              _timerDisplay,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Color(0xFF8E8E93),
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+
+                            const SizedBox(height: 40),
+
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: List.generate(
+                                4,
+                                (index) => _buildOTPField(index),
+                              ),
+                            ),
+
+                            const SizedBox(height: 30),
+
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Text(
+                                  "Didn't receive the code? ",
+                                  style: TextStyle(color: Color(0xFF8E8E93)),
+                                ),
+                                GestureDetector(
+                                  onTap:
+                                      _secondsRemaining == 0
+                                          ? () {
+                                            setState(() {
+                                              _secondsRemaining = 59;
+                                              _startTimer();
+                                            });
+                                          }
+                                          : null,
+                                  child: Text(
+                                    "Resend Code",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color:
+                                          _secondsRemaining == 0
+                                              ? Colors.black
+                                              : Colors.grey,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            const Spacer(),
+
                             GestureDetector(
-                              onTap: _secondsRemaining == 0 ? () {
-                                setState(() {
-                                  _secondsRemaining = 59;
-                                  _startTimer();
-                                });
-                              } : null,
-                              child: Text(
-                                "Resend Code",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: _secondsRemaining == 0 ? Colors.black : Colors.grey,
+                              onTap: () {
+                                context.push(AppRoutes.createNewPassword);
+                              },
+                              child: Container(
+                                width: double.infinity,
+                                height: 56,
+                                margin: const EdgeInsets.only(
+                                  bottom: 40,
+                                  top: 20,
+                                ),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(30),
+                                  gradient: const LinearGradient(
+                                    begin: Alignment.centerLeft,
+                                    end: Alignment.centerRight,
+                                    colors: [
+                                      Color(0xFF63D98A),
+                                      Color(0xFF1B4332),
+                                    ],
+                                  ),
+                                ),
+                                child: const Center(
+                                  child: Text(
+                                    "Send",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
                           ],
                         ),
-
-                        const Spacer(),
-
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const CreateNewPasswordScreen(),
-                              ),
-                            );
-                          },
-                          child: Container(
-                            width: double.infinity,
-                            height: 56,
-                            margin: const EdgeInsets.only(bottom: 40, top: 20),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(30),
-                              gradient: const LinearGradient(
-                                begin: Alignment.centerLeft,
-                                end: Alignment.centerRight,
-                                colors: [
-                                  Color(0xFF63D98A),
-                                  Color(0xFF1B4332),
-                                ],
-                              ),
-                            ),
-                            child: const Center(
-                              child: Text(
-                                "Send",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

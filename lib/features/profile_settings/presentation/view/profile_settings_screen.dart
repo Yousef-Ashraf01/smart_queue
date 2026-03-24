@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smart_queue/core/constants/app_assets.dart';
@@ -6,8 +7,11 @@ import 'package:smart_queue/core/routing/app_routes.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
 import 'package:smart_queue/core/styling/app_styles.dart';
 import 'package:smart_queue/core/widgets/notification_widget.dart';
+import 'package:smart_queue/features/personal_info/presentation/cubit/personal_info_cubit.dart';
+import 'package:smart_queue/features/personal_info/presentation/cubit/personal_info_state.dart';
 import 'package:smart_queue/features/profile_settings/data/models/setting_option.dart';
 import 'package:smart_queue/features/profile_settings/presentation/view/widgets/profile_avatar_section.dart';
+import 'package:smart_queue/features/profile_settings/presentation/view/widgets/profile_avatar_shimmer.dart';
 
 class ProfileSettingsScreen extends StatelessWidget {
   const ProfileSettingsScreen({super.key});
@@ -72,9 +76,21 @@ class ProfileSettingsScreen extends StatelessWidget {
                   padding: EdgeInsets.zero,
                   physics: const BouncingScrollPhysics(),
                   children: [
-                    const ProfileAvatarSection(
-                      name: 'Mohamed Ayad',
-                      email: 'mo3yad57@gmail.com',
+                    BlocBuilder<PersonalInfoCubit, PersonalInfoState>(
+                      builder: (context, state) {
+                        if (state is PersonalInfoLoaded) {
+                          return ProfileAvatarSection(
+                            name: state.profile.username,
+                            email: state.profile.email,
+                          );
+                        }
+
+                        if (state is PersonalInfoLoading) {
+                          return const ProfileAvatarShimmer();
+                        }
+
+                        return const SizedBox();
+                      },
                     ),
                     const SizedBox(height: 35),
                     const SectionHeader(title: 'Accounts'),

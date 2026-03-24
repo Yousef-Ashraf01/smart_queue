@@ -9,7 +9,11 @@ class CustomTextField extends StatefulWidget {
   final bool isPassword;
   final TextInputType keyboardType;
   final IconData? icon;
+  final FocusNode? focusNode;
+  final bool readOnly;
   final String? Function(String?)? validator;
+  final void Function(String)? onChanged;
+  final double? height;
 
   final List<TextInputFormatter>? inputFormatters;
 
@@ -20,9 +24,13 @@ class CustomTextField extends StatefulWidget {
     required this.controller,
     this.isPassword = false,
     this.keyboardType = TextInputType.text,
+    this.readOnly = false,
     this.icon,
     this.validator,
     this.inputFormatters,
+    this.focusNode,
+    this.onChanged,
+    this.height,
   });
 
   @override
@@ -40,14 +48,15 @@ class _CustomTextFieldState extends State<CustomTextField> {
         Text(widget.label, style: const TextStyle(fontWeight: FontWeight.w500)),
         const SizedBox(height: 8),
         TextFormField(
+          onChanged: widget.onChanged,
+          readOnly: widget.readOnly,
           cursorColor: AppColors.greenStart,
           controller: widget.controller,
           obscureText: widget.isPassword ? _obscure : false,
           keyboardType: widget.keyboardType,
           validator: widget.validator,
-
+          focusNode: widget.focusNode,
           inputFormatters: widget.inputFormatters,
-
           decoration: InputDecoration(
             hintText: widget.hint,
             hintStyle: TextStyle(color: Colors.grey.shade400),
@@ -71,7 +80,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
             ),
           ),
         ),
-        const SizedBox(height: 18),
+        SizedBox(height: widget.height ?? 18),
       ],
     );
   }

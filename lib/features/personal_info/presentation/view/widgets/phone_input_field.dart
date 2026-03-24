@@ -1,20 +1,32 @@
-// import 'package:country_picker/country_picker.dart';
+import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
-
-import 'custom_text_field.dart';
+import 'package:smart_queue/features/personal_info/presentation/view/widgets/custom_text_field.dart';
 
 class PhoneInputField extends StatefulWidget {
   final TextEditingController controller;
+  final String? initialCountryCode;
+  final void Function(String phone, String countryCode)? onChanged;
 
-  const PhoneInputField({super.key, required this.controller});
+  const PhoneInputField({
+    super.key,
+    required this.controller,
+    this.initialCountryCode,
+    this.onChanged,
+  });
 
   @override
   State<PhoneInputField> createState() => _PhoneInputFieldState();
 }
 
 class _PhoneInputFieldState extends State<PhoneInputField> {
-  String countryCode = "20";
+  late String countryCode;
   String countryFlag = "🇪🇬";
+
+  @override
+  void initState() {
+    super.initState();
+    countryCode = widget.initialCountryCode ?? "20";
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,16 +35,17 @@ class _PhoneInputFieldState extends State<PhoneInputField> {
       children: [
         GestureDetector(
           onTap: () {
-            // showCountryPicker(
-            //   context: context,
-            //   showPhoneCode: true,
-            //   onSelect: (Country country) {
-            //     setState(() {
-            //       countryCode = country.phoneCode;
-            //       countryFlag = country.flagEmoji;
-            //     });
-            //   },
-            // );
+            showCountryPicker(
+              context: context,
+              showPhoneCode: true,
+              onSelect: (Country country) {
+                setState(() {
+                  countryCode = country.phoneCode;
+                  countryFlag = country.flagEmoji;
+                });
+                widget.onChanged?.call(widget.controller.text, countryCode);
+              },
+            );
           },
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
@@ -67,6 +80,18 @@ class _PhoneInputFieldState extends State<PhoneInputField> {
             hintText: "Phone number",
             controller: widget.controller,
             keyboardType: TextInputType.phone,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return "Phone number is required";
+              }
+              if (!RegExp(r'^\d{10}$').hasMatch(value)) {
+                return "Phone must be 11 digits";
+              }
+              return null;
+            },
+            onChanged: (val) {
+              widget.onChanged?.call(val, countryCode);
+            },
           ),
         ),
       ],

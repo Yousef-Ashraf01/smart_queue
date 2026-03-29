@@ -1,53 +1,88 @@
 import 'package:flutter/material.dart';
-import 'package:smart_queue/core/constants/app_assets.dart';
+import 'package:go_router/go_router.dart';
+import 'package:smart_queue/core/routing/app_routes.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
 import 'package:smart_queue/core/styling/app_styles.dart';
-import 'package:smart_queue/features/map/presentation/view/map_screen.dart';
+import 'package:smart_queue/features/home/data/models/organization_model.dart';
 
 class ServicesItem extends StatelessWidget {
-  const ServicesItem({super.key});
+  final OrganizationModel organization;
+
+  const ServicesItem({super.key, required this.organization});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(10),
-      width: 121,
+      width: 140,
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
+        color: AppColors.whiteColor,
+        borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.09),
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 10,
             offset: const Offset(0, 4),
-            blurRadius: 12,
           ),
         ],
-        borderRadius: BorderRadius.circular(15),
-        color: AppColors.whiteColor,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CircleAvatar(
-            backgroundColor: AppColors.whiteColor,
-            child: Image.asset(AppAssets.imagePostal, fit: BoxFit.cover),
-          ),
-          SizedBox(height: 15),
-          Text("National Postal Authority", style: AppStyle.bold16black),
-          OutlinedButton(
-            style: OutlinedButton.styleFrom(
-              side: BorderSide(color: Color(0xff3CC572)),
-              alignment: Alignment.center,
-              minimumSize: Size(91, 30),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(50),
-              ),
+          /// Image Section
+          Container(
+            height: 60,
+            width: 60,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.grey.shade100,
             ),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const MapScreen()),
-              );
-            },
-            child: Text("Book", style: AppStyle.regular14black),
+            child: ClipOval(
+              child:
+                  organization.image != null
+                      ? Image.network(
+                        organization.image!,
+                        fit: BoxFit.cover,
+                        errorBuilder:
+                            (_, __, ___) => const Icon(Icons.account_balance),
+                      )
+                      : const Icon(Icons.account_balance),
+            ),
+          ),
+
+          const SizedBox(height: 12),
+
+          /// Name
+          Text(
+            organization.name,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: AppStyle.bold16black.copyWith(fontSize: 14),
+          ),
+
+          Text(
+            organization.code,
+            style: TextStyle(color: Colors.grey, fontSize: 12),
+          ),
+
+          const Spacer(),
+
+          SizedBox(
+            width: double.infinity,
+            height: 32,
+            child: OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                side: const BorderSide(color: Color(0xff3CC572)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                padding: EdgeInsets.zero,
+              ),
+              onPressed: () {
+                context.push(AppRoutes.map);
+              },
+              child: Text("Book", style: AppStyle.regular14black),
+            ),
           ),
         ],
       ),

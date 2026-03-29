@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:smart_queue/features/branch_booking/presentation/view/branch_booking_screen.dart';
+import 'package:go_router/go_router.dart';
+import 'package:smart_queue/core/routing/app_routes.dart';
 import 'package:smart_queue/features/map/data/models/government_branch.dart';
 
 class BranchListTile extends StatelessWidget {
@@ -28,12 +29,7 @@ class BranchListTile extends StatelessWidget {
         child: Icon(Icons.calendar_month, color: Colors.grey[600]),
       ),
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => BranchBookingScreen(branch: branch),
-          ),
-        );
+        context.push(AppRoutes.branchBooking, extra: branch);
       },
     );
   }

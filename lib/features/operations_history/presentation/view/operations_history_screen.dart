@@ -1,11 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_queue/core/constants/app_assets.dart';
 import 'package:smart_queue/core/styling/app_styles.dart';
 import 'package:smart_queue/core/widgets/notification_widget.dart';
+import 'package:smart_queue/features/operations_history/presentation/cubit/operations_cubit.dart';
 import 'package:smart_queue/features/operations_history/presentation/view/widgets/operation_history_item.dart';
+import 'package:smart_queue/features/operations_history/presentation/view/widgets/operation_skeleton_item.dart';
 
-class OperationsHistoryScreen extends StatelessWidget {
+class OperationsHistoryScreen extends StatefulWidget {
   const OperationsHistoryScreen({super.key});
+
+  @override
+  State<OperationsHistoryScreen> createState() =>
+      _OperationsHistoryScreenState();
+}
+
+class _OperationsHistoryScreenState extends State<OperationsHistoryScreen> {
+  final ScrollController scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    scrollController.addListener(() {
+      if (scrollController.position.pixels >=
+          scrollController.position.maxScrollExtent - 100) {
+        context.read<OperationsCubit>().loadMore();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,35 +61,55 @@ class OperationsHistoryScreen extends StatelessWidget {
               Text("Operations History", style: AppStyle.bold24black),
               const SizedBox(height: 5),
               Expanded(
-                child: ListView(
-                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                  children: const [
-                    OperationHistoryItem(
-                      title: 'National Postal Authority',
-                      location: 'Helwan, Cairo, Egypt',
-                      date: '7/6/2025',
-                      imageAsset: AppAssets.imagePostal,
-                    ),
-                    OperationHistoryItem(
-                      title: 'Civil Affairs Sector',
-                      location: 'Helwan, Cairo, Egypt',
-                      date: '12/6/2025',
-                      imageAsset: AppAssets.imagePostal,
-                    ),
-                    OperationHistoryItem(
-                      title:
-                          'General Administration of Passports and Nationality',
-                      location: 'Helwan, Cairo, Egypt',
-                      date: '18/5/2025',
-                      imageAsset: AppAssets.imagePostal,
-                    ),
-                    OperationHistoryItem(
-                      title: 'General Traffic Department',
-                      location: 'Helwan, Cairo, Egypt',
-                      date: '5/6/2025',
-                      imageAsset: AppAssets.imagePostal,
-                    ),
-                  ],
+                child: BlocBuilder<OperationsCubit, OperationsState>(
+                  builder: (context, state) {
+                    if (state is OperationsLoading) {
+                      return ListView.builder(
+                        itemCount: 6,
+                        itemBuilder: (_, __) => const OperationSkeletonItem(),
+                      );
+                    }
+
+                    if (state is OperationsError) {
+                      return Center(child: Text(state.message));
+                    }
+
+                    if (state is OperationsLoaded) {
+                      if (state.operations.isEmpty) {
+                        return Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Icon(Icons.history, size: 60, color: Colors.grey),
+                            SizedBox(height: 10),
+                            Text("No operations yet"),
+                          ],
+                        );
+                      }
+
+                      return RefreshIndicator(
+                        onRefresh: () async {
+                          context.read<OperationsCubit>().fetchOperations();
+                        },
+                        color: Colors.green[200],
+                        child: ListView.builder(
+                          controller: scrollController,
+                          itemCount: state.operations.length,
+                          itemBuilder: (context, index) {
+                            final item = state.operations[index];
+
+                            return OperationHistoryItem(
+                              title: "Appointment #${item.id}",
+                              location: item.address,
+                              date: item.id.toString(),
+                              imageAsset: AppAssets.imagePostal,
+                            );
+                          },
+                        ),
+                      );
+                    }
+
+                    return const SizedBox();
+                  },
                 ),
               ),
             ],

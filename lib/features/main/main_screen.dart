@@ -19,7 +19,7 @@ class _MainScreenState extends State<MainScreen> {
   final screens = [
     HomeScreen(),
     Container(color: Colors.brown),
-    OperationsHistoryScreen(),
+    const OperationsHistoryScreen(),
     ProfileSettingsScreen(),
   ];
 

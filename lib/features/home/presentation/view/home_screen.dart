@@ -1,9 +1,13 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_queue/core/styling/app_styles.dart';
+import 'package:smart_queue/features/home/presentation/cubit/organization_cubit.dart';
 import 'package:smart_queue/features/home/presentation/view/widgets/book_appointment_widget.dart';
 import 'package:smart_queue/features/home/presentation/view/widgets/home_app_bar.dart';
 import 'package:smart_queue/features/home/presentation/view/widgets/search_text_field.dart';
 import 'package:smart_queue/features/home/presentation/view/widgets/services_list_view.dart';
+
+import '../../../../core/di/service_locator.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -31,9 +35,12 @@ class HomeScreen extends StatelessWidget {
               SizedBox(height: 23),
               SearchTextField(),
               SizedBox(height: 23),
-              Text("Most popular services", style: AppStyle.bold16black),
+              Text("Government agencies", style: AppStyle.bold16black),
               SizedBox(height: 23),
-              ServicesListView(),
+              BlocProvider(
+                create: (_) => sl<OrganizationsCubit>()..fetchOrganizations(),
+                child: ServicesListView(),
+              ),
               SizedBox(height: 23),
               Text("Booking appointment", style: AppStyle.bold16black),
               SizedBox(height: 20),

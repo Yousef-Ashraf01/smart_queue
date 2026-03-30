@@ -11,4 +11,6 @@ class AppRoutes {
   static const String forgetPassword = '/forgetPassword';
   static const String verificationCode = '/verificationCode';
   static const String createNewPassword = '/createNewPassword';
+  static const String branchBooking = '/branchBooking';
+  static const String map = '/map';
 }

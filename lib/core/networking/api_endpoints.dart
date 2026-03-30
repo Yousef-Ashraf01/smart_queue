@@ -7,4 +7,14 @@ class ApiEndpoints {
 
   // Profile
   static const String getProfileData = '/app/profiles/';
+
+  // Booking
+  static const String appointmentRequests = '/api/appointment-requests/';
+  static const String appointments = '/api/appointments/';
+
+  // Services
+  static const String services = '/api/services/';
+
+  // Organizations
+  static const String organizations = '/api/organizations/';
 }

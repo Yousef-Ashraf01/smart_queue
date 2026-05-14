@@ -1,18 +1,16 @@
 class AppointmentModel {
-  final int? id;
-  final int appointmentRequest;
-  final String phone;
-  final String address;
+  final String date;
+  final String startTime;
+  final String counterId;
   final bool wantReminder;
   final String additionalInfo;
   final bool paid;
   final double amountToPay;
 
   AppointmentModel({
-    this.id,
-    required this.appointmentRequest,
-    required this.phone,
-    required this.address,
+    required this.date,
+    required this.startTime,
+    required this.counterId,
     required this.wantReminder,
     required this.additionalInfo,
     required this.paid,
@@ -21,9 +19,9 @@ class AppointmentModel {
 
   Map<String, dynamic> toJson() {
     return {
-      "appointment_request": appointmentRequest,
-      "phone": phone,
-      "address": address,
+      "date": date,
+      "start_time": startTime,
+      "counter_id": counterId,
       "want_reminder": wantReminder,
       "additional_info": additionalInfo,
       "paid": paid,
@@ -33,10 +31,9 @@ class AppointmentModel {
 
   factory AppointmentModel.fromJson(Map<String, dynamic> json) {
     return AppointmentModel(
-      id: json['id'],
-      appointmentRequest: json['appointment_request'],
-      phone: json['phone'],
-      address: json['address'],
+      date: json['date'],
+      startTime: json['start_time'],
+      counterId: json['counter_id'].toString(),
       wantReminder: json['want_reminder'],
       additionalInfo: json['additional_info'],
       paid: json['paid'],

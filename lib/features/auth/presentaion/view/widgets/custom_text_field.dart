@@ -14,6 +14,7 @@ class CustomTextField extends StatefulWidget {
   final String? Function(String?)? validator;
   final void Function(String)? onChanged;
   final double? height;
+  final bool isDisabled;
 
   final List<TextInputFormatter>? inputFormatters;
 
@@ -31,6 +32,7 @@ class CustomTextField extends StatefulWidget {
     this.focusNode,
     this.onChanged,
     this.height,
+    this.isDisabled = false,
   });
 
   @override
@@ -56,24 +58,32 @@ class _CustomTextFieldState extends State<CustomTextField> {
           keyboardType: widget.keyboardType,
           validator: widget.validator,
           focusNode: widget.focusNode,
+          style: TextStyle(
+            color: widget.isDisabled ? Colors.grey : Colors.black,
+            fontSize: 15,
+          ),
           inputFormatters: widget.inputFormatters,
           decoration: InputDecoration(
             hintText: widget.hint,
             hintStyle: TextStyle(color: Colors.grey.shade400),
             prefixIcon: widget.icon != null ? Icon(widget.icon) : null,
+
             suffixIcon:
                 widget.isPassword
                     ? IconButton(
                       icon: Icon(
                         _obscure ? Icons.visibility_off : Icons.visibility,
                       ),
-                      onPressed: () {
-                        setState(() => _obscure = !_obscure);
-                      },
+                      onPressed:
+                          widget.isDisabled
+                              ? null
+                              : () {
+                                setState(() => _obscure = !_obscure);
+                              },
                     )
                     : null,
             filled: true,
-            fillColor: Colors.white,
+            fillColor: widget.isDisabled ? Colors.grey.shade200 : Colors.white,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(30),
               borderSide: BorderSide.none,

@@ -111,9 +111,8 @@ class _RegisterPageState extends State<RegisterPage> {
                       "Make your visit smoother with early booking",
                       style: TextStyle(color: Colors.grey),
                     ),
-                    const SizedBox(height: 40),
+                    const SizedBox(height: 20),
 
-                    // ===== Name =====
                     CustomTextField(
                       label: "Name",
                       hint: "Enter your name",
@@ -137,7 +136,6 @@ class _RegisterPageState extends State<RegisterPage> {
                       },
                     ),
 
-                    // ===== Email =====
                     CustomTextField(
                       label: "Email",
                       hint: "Enter your email",
@@ -158,7 +156,6 @@ class _RegisterPageState extends State<RegisterPage> {
                       },
                     ),
 
-                    // ===== National ID =====
                     CustomTextField(
                       label: "National ID",
                       hint: "Enter your 14-digit national ID",
@@ -189,75 +186,29 @@ class _RegisterPageState extends State<RegisterPage> {
                       },
                     ),
                     const SizedBox(height: 10),
-                    Align(alignment: AlignmentDirectional.centerStart, child: Text("Birth Date", style: TextStyle(fontWeight: FontWeight.w500,))),
+                    Align(alignment: AlignmentDirectional.centerStart,
+                        child: Text("Birth Date",
+                            style: TextStyle(fontWeight: FontWeight.w500,))),
                     const SizedBox(height: 8),
-                    DateFieldsGroup(
-                      dayController: dayController,
-                      monthController: monthController,
-                      yearController: yearController,
-                      onTap: _selectDate,
+                    AbsorbPointer(
+                      child: DateFieldsGroup(
+                        dayController: dayController,
+                        monthController: monthController,
+                        yearController: yearController,
+                        onTap: _selectDate,
+                      ),
                     ),
-                    // Row(
-                    //   children: [
-                    //     Expanded(
-                    //       child: TextField(
-                    //         controller: dayController,
-                    //         decoration: const InputDecoration(hintText: "DD"),
-                    //         keyboardType: TextInputType.number,
-                    //         readOnly: true,
-                    //         onTap: _selectDate,
-                    //       ),
-                    //     ),
-                    //     const SizedBox(width: 8),
-                    //     Expanded(
-                    //       child: TextField(
-                    //         controller: monthController,
-                    //         decoration: const InputDecoration(hintText: "MM"),
-                    //         keyboardType: TextInputType.number,
-                    //         readOnly: true,
-                    //         onTap: _selectDate,
-                    //       ),
-                    //     ),
-                    //     const SizedBox(width: 8),
-                    //     Expanded(
-                    //       child: TextField(
-                    //         controller: yearController,
-                    //         decoration: const InputDecoration(hintText: "YYYY"),
-                    //         keyboardType: TextInputType.number,
-                    //         readOnly: true,
-                    //         onTap: _selectDate,
-                    //       ),
-                    //     ),
-                    //   ],
-                    // ),
-
-                    // CustomTextField(
-                    //   label: "Phone",
-                    //   hint: "Enter your phone number",
-                    //   controller: phoneController,
-                    //   keyboardType: TextInputType.phone,
-                    //   icon: Icons.phone,
-                    //   focusNode: phoneFocus,
-                    //   validator: (value) {
-                    //     if (value == null || value.isEmpty) {
-                    //       return "Phone number is required";
-                    //     }
-                    //     if (!RegExp(r'^\d{11}$').hasMatch(value)) {
-                    //       return "Phone must be 11 digits";
-                    //     }
-                    //     return null;
-                    //   },
-                    // ),
                     const SizedBox(height: 16,),
-                    Align(alignment: AlignmentDirectional.centerStart, child: Text("Phone number", style: TextStyle(fontWeight: FontWeight.w500,))),
+                    Align(alignment: AlignmentDirectional.centerStart,
+                        child: Text("Phone number",
+                            style: TextStyle(fontWeight: FontWeight.w500,))),
                     SizedBox(height: 8,),
                     PhoneInputField(
                       controller: phoneController,
                       onChanged: (phone, code) {
                         selectedCountryCode = code;
                       },
-                    ),                    const SizedBox(height: 16,),
-                    // ===== Password =====
+                    ), const SizedBox(height: 16,),
                     CustomTextField(
                       label: "Password",
                       hint: "Enter your password",
@@ -286,8 +237,11 @@ class _RegisterPageState extends State<RegisterPage> {
                     BlocBuilder<AuthCubit, AuthState>(
                       builder: (context, state) {
                         return _gradientButton("Continue", () {
+                          FocusScope.of(context).unfocus();
+
                           if (_formKey.currentState!.validate()) {
-                            final fullPhone = '+$selectedCountryCode${phoneController.text}';
+                            final fullPhone = '+$selectedCountryCode${phoneController
+                                .text}';
                             final birthError = validateBirthDate(
                               dayController.text,
                               monthController.text,
@@ -295,7 +249,8 @@ class _RegisterPageState extends State<RegisterPage> {
                             );
 
                             if (birthError != null) {
-                              AppFlushbar.show(context, message: birthError, type: MessageType.error);
+                              AppFlushbar.show(context, message: birthError,
+                                  type: MessageType.error);
                               return;
                             }
                             final birthDate = DateTime(
@@ -312,9 +267,9 @@ class _RegisterPageState extends State<RegisterPage> {
                               email: emailController.text,
                               password: passwordController.text,
                               client: ClientRequestModel(
-                                nationalId: nationalIdController.text,
-                                phone: fullPhone,
-                                birthDate: formattedDate
+                                  nationalId: nationalIdController.text,
+                                  phone: fullPhone,
+                                  birthDate: formattedDate
                               ),
                             );
                             context.read<AuthCubit>().register(request);
@@ -498,9 +453,8 @@ class _RegisterPageState extends State<RegisterPage> {
       });
     }
   }
-  String? validateBirthDate(
-      String day, String month, String year,
-      ) {
+
+  String? validateBirthDate(String day, String month, String year,) {
     if (day.isEmpty || month.isEmpty || year.isEmpty) {
       return "Birth date is required";
     }

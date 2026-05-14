@@ -20,7 +20,6 @@ class ServicesItemSkeleton extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            /// Circle Image
             Container(
               height: 60,
               width: 60,
@@ -32,17 +31,14 @@ class ServicesItemSkeleton extends StatelessWidget {
 
             const SizedBox(height: 12),
 
-            /// Title line 1
             Container(height: 10, width: double.infinity, color: Colors.grey),
 
             const SizedBox(height: 8),
 
-            /// Title line 2
             Container(height: 10, width: 80, color: Colors.grey),
 
             const Spacer(),
 
-            /// Button
             Container(
               height: 32,
               width: double.infinity,

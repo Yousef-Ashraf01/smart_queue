@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'custom_text_field.dart';
 
+import 'custom_text_field.dart';
 
 class DateFieldsGroup extends StatelessWidget {
   final TextEditingController dayController;
@@ -36,6 +36,7 @@ class DateFieldsGroup extends StatelessWidget {
         controller: controller,
         isReadOnly: true,
         onTap: onTap,
+        isDisabled: true,
       ),
     );
   }

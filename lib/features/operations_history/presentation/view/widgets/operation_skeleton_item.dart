@@ -20,7 +20,6 @@ class OperationSkeletonItem extends StatelessWidget {
           children: [
             Row(
               children: [
-                // Icon circle
                 Container(
                   width: 50,
                   height: 50,
@@ -31,7 +30,6 @@ class OperationSkeletonItem extends StatelessWidget {
                 ),
                 const SizedBox(width: 16),
 
-                // Title
                 Expanded(
                   child: Container(
                     height: 16,
@@ -44,7 +42,6 @@ class OperationSkeletonItem extends StatelessWidget {
 
                 const SizedBox(width: 16),
 
-                // Image circle
                 Container(
                   width: 56,
                   height: 56,
@@ -58,7 +55,6 @@ class OperationSkeletonItem extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            // Divider fake
             Container(height: 1.5, color: Colors.white),
 
             const SizedBox(height: 12),

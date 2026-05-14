@@ -3,7 +3,16 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:smart_queue/core/constants/app_assets.dart';
 
 class ServiceCard extends StatelessWidget {
-  const ServiceCard({super.key}); // ✔ super parameter
+  final String serviceName;
+  final String branchName;
+  final String branchAddress;
+
+  const ServiceCard({
+    super.key,
+    required this.serviceName,
+    required this.branchName,
+    required this.branchAddress,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +37,7 @@ class ServiceCard extends StatelessWidget {
               Image.asset(AppAssets.imageLogoBook, width: 60, height: 60),
               SizedBox(width: 7),
               Text(
-                "Salah tarek",
+                branchName,
                 style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
               ),
               Spacer(),
@@ -44,13 +53,12 @@ class ServiceCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "Service: ",
+                    "Service:",
                     style: TextStyle(fontSize: 19, fontWeight: FontWeight.w700),
                   ),
                   SizedBox(height: 1),
                   Text(
-                    "Extracting a savings book",
-                    textAlign: TextAlign.right,
+                    serviceName,
                     style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -59,12 +67,10 @@ class ServiceCard extends StatelessWidget {
               ),
             ),
           ),
-
           Row(
             children: [
               SvgPicture.asset(
                 AppAssets.iconLocation,
-                fit: BoxFit.cover,
                 height: 22,
                 width: 22,
                 color: Color(0xFF2ECC71),
@@ -74,10 +80,10 @@ class ServiceCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Your address",
+                    "Branch",
                     style: TextStyle(fontSize: 12, color: Color(0xFF898EBC)),
                   ),
-                  Text("Helwan, Cairo, Egypt", style: TextStyle(fontSize: 14)),
+                  Text(branchAddress, style: TextStyle(fontSize: 14)),
                 ],
               ),
             ],

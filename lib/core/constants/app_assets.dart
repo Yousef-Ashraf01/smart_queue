@@ -10,6 +10,7 @@ class AppAssets {
   static const String iconProfile = 'assets/svg/profile.svg';
   static const String iconNotifications = 'assets/svg/notifications.svg';
   static const String iconBack = 'assets/svg/back.svg';
+  static const String iconBookmark = 'assets/svg/bookmark.svg';
   // Images
   static const String imageProfile = 'assets/images/personal_profile.png';
   static const String imagePostal = 'assets/images/postal.png';

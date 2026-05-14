@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:smart_queue/features/home/presentation/cubit/organization_cubit.dart';
 import 'package:smart_queue/features/home/presentation/view/widgets/service_item_skeleton.dart';
 import 'package:smart_queue/features/home/presentation/view/widgets/services_item.dart';
@@ -32,15 +33,26 @@ class ServicesListView extends StatelessWidget {
         if (state is OrganizationsLoaded) {
           return SizedBox(
             height: 192,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemCount: state.organizations.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 10),
-              itemBuilder: (context, index) {
-                final org = state.organizations[index];
+            child: AnimationLimiter(
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: state.organizations.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 10),
+                itemBuilder: (context, index) {
+                  final org = state.organizations[index];
 
-                return ServicesItem(organization: org);
-              },
+                  return AnimationConfiguration.staggeredList(
+                    position: index,
+                    duration: const Duration(milliseconds: 400),
+                    child: SlideAnimation(
+                      horizontalOffset: 50,
+                      child: FadeInAnimation(
+                        child: ServicesItem(organization: org),
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
           );
         }

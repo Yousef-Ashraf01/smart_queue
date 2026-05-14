@@ -11,6 +11,7 @@ class CustomTextField extends StatelessWidget {
   final TextInputType keyboardType;
   final void Function(String)? onChanged;
   final String? Function(String?)? validator;
+  final bool isDisabled;
 
   const CustomTextField({
     super.key,
@@ -23,6 +24,7 @@ class CustomTextField extends StatelessWidget {
     this.keyboardType = TextInputType.text,
     this.onChanged,
     this.validator,
+    this.isDisabled = false,
   });
 
   @override
@@ -48,15 +50,22 @@ class CustomTextField extends StatelessWidget {
           readOnly: isReadOnly,
           onTap: onTap,
           keyboardType: keyboardType,
-          cursorColor: AppColors.greenStart,
-          style: const TextStyle(color: Colors.black, fontSize: 15),
+          cursorColor: isDisabled ? Colors.grey : AppColors.greenStart,
+          style: TextStyle(
+            color: isDisabled ? Colors.grey : Colors.black,
+            fontSize: 15,
+          ),
           onChanged: onChanged,
           validator: validator,
           decoration: InputDecoration(
             hintText: hintText,
-            hintStyle: const TextStyle(color: Color(0xFFC7C7CC)),
+            hintStyle: TextStyle(
+              color:
+                  isDisabled ? Colors.grey.shade400 : const Color(0xFFC7C7CC),
+            ),
             filled: true,
-            fillColor: Colors.white,
+            fillColor: isDisabled ? Colors.grey.shade200 : Colors.white,
+
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
               vertical: 18,

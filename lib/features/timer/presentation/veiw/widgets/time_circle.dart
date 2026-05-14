@@ -14,7 +14,6 @@ class TimeCircle extends StatelessWidget {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          /// 🟢 Green solid border (real border)
           Container(
             width: 284,
             height: 284,
@@ -22,12 +21,11 @@ class TimeCircle extends StatelessWidget {
               shape: BoxShape.circle,
               border: Border.all(
                 color: Color.fromARGB(255, 255, 255, 255),
-                width: 4, // سمك البوردر
+                width: 4,
               ),
             ),
           ),
 
-          /// (اختياري) Progress فوق البوردر
           SizedBox(
             width: 284,
             height: 298,
@@ -39,7 +37,6 @@ class TimeCircle extends StatelessWidget {
             ),
           ),
 
-          /// ⚪ Inner white circle
           Container(
             width: 250,
             height: 250,
@@ -58,7 +55,7 @@ class TimeCircle extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  "Remaining time for you",
+                  "Remaining time",
                   style: TextStyle(fontSize: 13, color: Color(0xFFABA9AF)),
                 ),
                 SizedBox(height: 8),

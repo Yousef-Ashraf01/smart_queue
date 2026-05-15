@@ -34,7 +34,6 @@ class AppFlushbar {
         iconColor = Colors.orange;
         break;
       case MessageType.info:
-      default:
         icon = Icons.info;
         backgroundColor = Colors.blue[100]!;
         iconColor = Colors.blue;

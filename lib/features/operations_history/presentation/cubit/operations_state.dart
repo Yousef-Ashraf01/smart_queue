@@ -8,7 +8,7 @@ final class OperationsInitial extends OperationsState {}
 class OperationsLoading extends OperationsState {}
 
 class OperationsLoaded extends OperationsState {
-  final List<AppointmentModel> operations;
+  final List<AppointmentResponseModel> operations;
   final bool hasMore;
   final bool isLoadingMore;
 

@@ -13,3 +13,17 @@ class BookingError extends BookingState {
   final String message;
   BookingError(this.message);
 }
+
+class SlotsInitial extends BookingState {}
+
+class SlotsLoading extends BookingState {}
+
+class SlotsLoaded extends BookingState {
+  final List slots;
+  SlotsLoaded(this.slots);
+}
+
+class SlotsError extends BookingState {
+  final String message;
+  SlotsError(this.message);
+}

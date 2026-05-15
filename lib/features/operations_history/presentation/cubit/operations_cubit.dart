@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
-import 'package:smart_queue/features/branch_booking/data/models/appointment_model.dart';
+import 'package:smart_queue/features/branch_booking/data/models/appointment_response_model.dart';
 import 'package:smart_queue/features/branch_booking/data/repositories/booking_repository.dart';
 
 part 'operations_state.dart';
@@ -13,7 +13,7 @@ class OperationsCubit extends Cubit<OperationsState> {
   int currentPage = 1;
   bool hasMore = true;
   String? nextUrl;
-  List<AppointmentModel> allOperations = [];
+  List<AppointmentResponseModel> allOperations = [];
 
   Future<void> fetchOperations() async {
     emit(OperationsLoading());
@@ -64,5 +64,11 @@ class OperationsCubit extends Cubit<OperationsState> {
         );
       },
     );
+  }
+
+  void removeAppointment(int id) {
+    allOperations.removeWhere((item) => item.id == id);
+
+    emit(OperationsLoaded(operations: allOperations, hasMore: nextUrl != null));
   }
 }

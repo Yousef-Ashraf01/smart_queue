@@ -8,12 +8,6 @@ class HomeAppBarShimmer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        // Shimmer.fromColors(
-        //   baseColor: Colors.grey.shade300,
-        //   highlightColor: Colors.grey.shade100,
-        //   child: const CircleAvatar(radius: 20, backgroundColor: Colors.white),
-        // ),
-        // const SizedBox(width: 20),
         Shimmer.fromColors(
           baseColor: Colors.grey.shade300,
           highlightColor: Colors.grey.shade100,

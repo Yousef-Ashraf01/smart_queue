@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:smart_queue/core/constants/app_assets.dart';
@@ -248,65 +249,102 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
   }
 
   Widget _profileContent(ProfileModel profile) {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Center(
-            child: ProfileAvatarSection(
-              name: profile.username,
-              email: profile.email,
-            ),
-          ),
-          const SizedBox(height: 25),
-          CustomTextField(
-            label: "Full name",
-            controller: nameController,
-            hint: 'Enter your full name',
-          ),
-          const SizedBox(height: 16),
-          CustomTextField(
-            label: "Email",
-            hint: "Enter your email",
-            controller: emailController,
-            keyboardType: TextInputType.emailAddress,
-          ),
-          const SizedBox(height: 16),
-          CustomTextField(
-            readOnly: true,
-            label: "National ID",
-            hint: "Enter your ID",
-            controller: idController,
-            keyboardType: TextInputType.number,
-          ),
-          const SizedBox(height: 16),
-          const FieldLabel(text: "Phone number"),
-          PhoneInputField(
-            controller: phoneController,
-            initialCountryCode: countryCode,
-            onChanged: (phone, code) {
-              countryCode = code;
-            },
-          ),
-          const SizedBox(height: 16),
-          const FieldLabel(text: "Birth date"),
-          DateFieldsGroup(
-            dayController: dayController,
-            monthController: monthController,
-            yearController: yearController,
-            onTap: _selectDate,
-          ),
-          const SizedBox(height: 40),
-          AppButton(
-            text: "Log out",
-            iconPath: AppAssets.iconloginout,
-            backgroundColor: Colors.red,
-            onPressed: () {
-              LogoutDialog.show(context);
-            },
-          ),
-          const SizedBox(height: 20),
-        ],
+    final items = [
+      Center(
+        child: ProfileAvatarSection(
+          name: profile.username,
+          email: profile.email,
+        ),
+      ),
+      const SizedBox(height: 25),
+
+      CustomTextField(
+        label: "Full name",
+        controller: nameController,
+        hint: 'Enter your full name',
+      ),
+
+      const SizedBox(height: 16),
+
+      CustomTextField(
+        label: "Email",
+        hint: "Enter your email",
+        controller: emailController,
+        keyboardType: TextInputType.emailAddress,
+      ),
+
+      const SizedBox(height: 16),
+
+      CustomTextField(
+        readOnly: true,
+        label: "National ID",
+        hint: "Enter your ID",
+        controller: idController,
+        keyboardType: TextInputType.number,
+        isDisabled: true,
+      ),
+
+      const SizedBox(height: 16),
+
+      const FieldLabel(text: "Phone number"),
+
+      PhoneInputField(
+        controller: phoneController,
+        initialCountryCode: countryCode,
+        onChanged: (phone, code) {
+          countryCode = code;
+        },
+      ),
+
+      const SizedBox(height: 16),
+
+      const FieldLabel(text: "Birth date"),
+
+      AbsorbPointer(
+        child: DateFieldsGroup(
+          dayController: dayController,
+          monthController: monthController,
+          yearController: yearController,
+          onTap: _selectDate,
+        ),
+      ),
+      const SizedBox(height: 40),
+
+      AppButton(
+        text: "Log out",
+        iconPath: AppAssets.iconloginout,
+        backgroundColor: Colors.red,
+        onPressed: () {
+          LogoutDialog.show(context);
+        },
+      ),
+
+      const SizedBox(height: 20),
+    ];
+
+    return AnimationLimiter(
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: List.generate(items.length, (index) {
+            return AnimationConfiguration.staggeredList(
+              position: index,
+              duration: const Duration(milliseconds: 250),
+              child:
+                  index == 0
+                      ? FadeInAnimation(
+                        child: ScaleAnimation(
+                          duration: const Duration(milliseconds: 400),
+                          child: items[index],
+                        ),
+                      )
+                      : SlideAnimation(
+                        verticalOffset: 20,
+                        child: FadeInAnimation(child: items[index]),
+                      ),
+            );
+          }),
+        ),
       ),
     );
   }

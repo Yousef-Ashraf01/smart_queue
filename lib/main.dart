@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_queue/core/di/service_locator.dart';
 import 'package:smart_queue/core/routing/app_router.dart';
 import 'package:smart_queue/features/auth/presentaion/cubit/auth_cubit.dart';
+import 'package:smart_queue/features/branch_booking/presentation/cubit/active_booking_cubit.dart';
 import 'package:smart_queue/features/personal_info/presentation/cubit/personal_info_cubit.dart';
 
 late final AuthCubit authCubit;
@@ -22,6 +23,7 @@ void main() async {
       providers: [
         BlocProvider.value(value: authCubit),
         BlocProvider.value(value: personalInfoCubit..getProfile()),
+        BlocProvider(create: (_) => ActiveBookingCubit()),
       ],
       child: const SmartQueueApp(),
     ),
@@ -33,11 +35,24 @@ class SmartQueueApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // GoTransition.defaultCurve = Curves.linearToEaseOut;
+    // // GoTransition.defaultCurve = Curves.fastOutSlowIn;
+    // GoTransition.defaultDuration = const Duration(milliseconds: 350);
+
     final authCubit = context.read<AuthCubit>();
     return MaterialApp.router(
+      theme: ThemeData(
+        // pageTransitionsTheme: const PageTransitionsTheme(
+        //   builders: {
+        //     TargetPlatform.android: GoTransitions.fadeUpwards,
+        //     TargetPlatform.iOS: GoTransitions.cupertino,
+        //     TargetPlatform.macOS: GoTransitions.cupertino,
+        //   },
+        // ),
+      ),
       routerConfig: AppRouter.createRouter(authCubit),
       debugShowCheckedModeBanner: false,
-      theme: ThemeData.light(),
+      //theme: ThemeData.light(),
     );
   }
 }

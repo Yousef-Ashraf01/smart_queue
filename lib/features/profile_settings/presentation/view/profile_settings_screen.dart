@@ -22,13 +22,18 @@ class ProfileSettingsScreen extends StatelessWidget {
       title: 'Personal information',
       routeName: 'personal_info',
     ),
+    SettingOption(
+      title: 'My Appointments',
+      iconPath: AppAssets.iconBookmark,
+      routeName: 'my_appointments',
+    ),
   ];
 
   static const List<SettingOption> _settingOptions = [
     SettingOption(
       iconPath: AppAssets.iconSetting,
       title: 'App settings',
-      routeName: '',
+      routeName: 'app_settings',
     ),
     SettingOption(
       iconPath: AppAssets.iconMessageQuestion,
@@ -49,71 +54,86 @@ class ProfileSettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Container(
-          width: double.infinity,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Color(0xffEEFEFF), Color(0xffD6F9F7)],
-            ),
+    return Scaffold(
+      body: Container(
+        width: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xffEEFEFF), Color(0xffD6F9F7)],
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(30, 50, 30, 20),
+        child: SafeArea(
           child: Column(
             children: [
-              Align(
-                alignment: AlignmentDirectional.centerEnd,
-                child: NotificationWidget(),
-              ),
-              Text('Profile Settings', style: AppStyle.appBarTitle),
-              SizedBox(height: 20),
-              Expanded(
-                child: ListView(
-                  padding: EdgeInsets.zero,
-                  physics: const BouncingScrollPhysics(),
+              SizedBox(height: 25),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 30),
+                child: Column(
                   children: [
-                    BlocBuilder<PersonalInfoCubit, PersonalInfoState>(
-                      builder: (context, state) {
-                        if (state is PersonalInfoLoaded) {
-                          return ProfileAvatarSection(
-                            name: state.profile.username,
-                            email: state.profile.email,
-                          );
-                        }
-
-                        if (state is PersonalInfoLoading) {
-                          return const ProfileAvatarShimmer();
-                        }
-
-                        return const SizedBox();
-                      },
+                    Align(
+                      alignment: AlignmentDirectional.centerEnd,
+                      child: NotificationWidget(),
                     ),
-                    const SizedBox(height: 35),
-                    const SectionHeader(title: 'Accounts'),
-                    const SizedBox(height: 12),
-                    SettingsListContainer(options: _accountOptions),
-                    const SizedBox(height: 30),
-                    const SectionHeader(title: 'Settings'),
-                    const SizedBox(height: 12),
-                    SettingsListContainer(options: _settingOptions),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 10),
+                    Text('Profile Settings', style: AppStyle.appBarTitle),
                   ],
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // 🔹 Scrollable Content
+              Expanded(
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  padding: const EdgeInsets.fromLTRB(30, 0, 30, 20),
+                  child: Column(
+                    children: [
+                      BlocBuilder<PersonalInfoCubit, PersonalInfoState>(
+                        builder: (context, state) {
+                          if (state is PersonalInfoLoaded) {
+                            return ProfileAvatarSection(
+                              name: state.profile.username,
+                              email: state.profile.email,
+                            );
+                          }
+
+                          if (state is PersonalInfoLoading) {
+                            return const ProfileAvatarShimmer();
+                          }
+
+                          return const SizedBox();
+                        },
+                      ),
+
+                      const SizedBox(height: 35),
+                      const SectionHeader(title: 'Accounts'),
+                      const SizedBox(height: 12),
+                      SettingsListContainer(options: _accountOptions),
+
+                      const SizedBox(height: 30),
+                      const SectionHeader(title: 'Settings'),
+                      const SizedBox(height: 12),
+                      SettingsListContainer(options: _settingOptions),
+
+                      const SizedBox(height: 20),
+                    ],
+                  ),
                 ),
               ),
             ],
           ),
         ),
-      ],
+      ),
     );
   }
 }
 
 class SectionHeader extends StatelessWidget {
   final String title;
+
   const SectionHeader({super.key, required this.title});
 
   @override
@@ -127,6 +147,7 @@ class SectionHeader extends StatelessWidget {
 
 class SettingsListContainer extends StatelessWidget {
   final List<SettingOption> options;
+
   const SettingsListContainer({super.key, required this.options});
 
   @override
@@ -145,9 +166,19 @@ class SettingsListContainer extends StatelessWidget {
                 onTap: () {
                   if (item.title == 'Personal information') {
                     context.push(AppRoutes.personalInfo);
+                  } else if (item.title == 'App settings') {
+                    context.push(AppRoutes.appSettings);
+                  } else if (item.title == 'Help and support center') {
+                    context.push(AppRoutes.helpSupport);
+                  } else if (item.title == 'About us') {
+                    context.push(AppRoutes.aboutUs);
+                  } else if (item.title == 'Terms and Policy') {
+                    context.push(AppRoutes.termsAndPolicy);
+                  } else if (item.title == 'My Appointments') {
+                    context.push(AppRoutes.myAppointments);
                   }
                 },
-                leading: SvgPicture.asset(item.iconPath, width: 24),
+                leading: SvgPicture.asset(item.iconPath, width: 22),
                 title: Text(
                   item.title,
                   style: const TextStyle(fontWeight: FontWeight.w500),

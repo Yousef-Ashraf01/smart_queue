@@ -140,6 +140,7 @@ class _LoginPageState extends State<LoginPage> {
                     BlocBuilder<AuthCubit, AuthState>(
                       builder: (context, state) {
                         return _gradientButton("Login", () {
+                          FocusScope.of(context).unfocus();
                           if (_formKey.currentState!.validate()) {
                             context.read<AuthCubit>().login(
                               nationalIdController.text,

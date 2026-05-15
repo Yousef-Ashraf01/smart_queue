@@ -34,8 +34,6 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   Future<void> checkAuthStatus() async {
-    // emit(AuthLoading());
-
     final access = await repository.remote.storage.getAccessToken();
 
     if (access != null) {

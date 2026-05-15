@@ -26,18 +26,6 @@ class CustomAppBar extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // IconButton(
-              //   icon: SvgPicture.asset(AppAssets.iconArrowLeft, width: 30),
-              //   onPressed: () {
-              //     if (onBackPress != null) {
-              //       onBackPress!();
-              //     } else if (Navigator.canPop(context)) {
-              //       Navigator.pop(context);
-              //     } else {
-              //       debugPrint("لا يوجد صفحة سابقة للرجوع إليها");
-              //     }
-              //   },
-              // ),
               Stack(
                 clipBehavior: Clip.none,
                 children: [

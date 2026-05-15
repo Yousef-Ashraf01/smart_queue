@@ -4,12 +4,12 @@ class ApiEndpoints {
   // static const String login = '/auth/jwt/create/';
   static const String login = '/app/login/';
   static const String refreshToken = '/auth/jwt/refresh/';
+  static const String changePassword = '/auth/users/set_password/';
 
   // Profile
   static const String getProfileData = '/app/profiles/';
 
   // Booking
-  static const String appointmentRequests = '/api/appointment-requests/';
   static const String appointments = '/api/appointments/';
 
   // Services
@@ -17,4 +17,14 @@ class ApiEndpoints {
 
   // Organizations
   static const String organizations = '/api/organizations/';
+
+  // Branches
+  static String branches(int organizationId) =>
+      '/api/organizations/$organizationId/branches/';
+  static String serviceCounters(int branchId) =>
+      '/api/branches/$branchId/service-counters/';
+
+  // Slots
+  static String availableSlots(int counterId) =>
+      '/api/service-counters/$counterId/available_slots/';
 }

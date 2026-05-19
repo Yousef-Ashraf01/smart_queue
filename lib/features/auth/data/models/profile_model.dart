@@ -1,10 +1,10 @@
-import 'client_model.dart';
+import 'package:smart_queue/features/auth/data/models/register_request_model.dart';
 
 class ProfileModel {
   final int? id;
   final String username;
   final String email;
-  final ClientModel client;
+  final ClientRequestModel client;
 
   ProfileModel({
     this.id,
@@ -18,7 +18,7 @@ class ProfileModel {
       id: json['id'] ?? 0,
       username: json['username'],
       email: json['email'],
-      client: ClientModel.fromJson(json['client']),
+      client: ClientRequestModel.fromJson(json['client']),
     );
   }
 }

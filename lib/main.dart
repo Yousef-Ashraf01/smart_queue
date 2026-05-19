@@ -41,15 +41,15 @@ class SmartQueueApp extends StatelessWidget {
 
     final authCubit = context.read<AuthCubit>();
     return MaterialApp.router(
-      theme: ThemeData(
-        // pageTransitionsTheme: const PageTransitionsTheme(
-        //   builders: {
-        //     TargetPlatform.android: GoTransitions.fadeUpwards,
-        //     TargetPlatform.iOS: GoTransitions.cupertino,
-        //     TargetPlatform.macOS: GoTransitions.cupertino,
-        //   },
-        // ),
-      ),
+      // theme: ThemeData(
+      //   pageTransitionsTheme: const PageTransitionsTheme(
+      //     builders: {
+      //       TargetPlatform.android: GoTransitions.fadeUpwards,
+      //       TargetPlatform.iOS: GoTransitions.cupertino,
+      //       TargetPlatform.macOS: GoTransitions.cupertino,
+      //     },
+      //   ),
+      // ),
       routerConfig: AppRouter.createRouter(authCubit),
       debugShowCheckedModeBanner: false,
       //theme: ThemeData.light(),

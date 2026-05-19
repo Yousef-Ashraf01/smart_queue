@@ -18,6 +18,9 @@ class ApiEndpoints {
   // Organizations
   static const String organizations = '/api/organizations/';
 
+  // Extract Id
+  static const String extractId = '/app/extract-id/';
+
   // Branches
   static String branches(int organizationId) =>
       '/api/organizations/$organizationId/branches/';

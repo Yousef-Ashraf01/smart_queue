@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
 
 class CustomTextField extends StatelessWidget {
@@ -12,6 +13,7 @@ class CustomTextField extends StatelessWidget {
   final void Function(String)? onChanged;
   final String? Function(String?)? validator;
   final bool isDisabled;
+  final List<TextInputFormatter>? inputFormatters;
 
   const CustomTextField({
     super.key,
@@ -25,6 +27,7 @@ class CustomTextField extends StatelessWidget {
     this.onChanged,
     this.validator,
     this.isDisabled = false,
+    this.inputFormatters,
   });
 
   @override
@@ -45,6 +48,7 @@ class CustomTextField extends StatelessWidget {
             ),
           ),
         TextFormField(
+          inputFormatters: inputFormatters ?? [],
           controller: controller,
           initialValue: controller == null ? initialValue : null,
           readOnly: isReadOnly,

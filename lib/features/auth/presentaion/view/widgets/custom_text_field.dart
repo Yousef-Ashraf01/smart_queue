@@ -44,6 +44,11 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
   @override
   Widget build(BuildContext context) {
+    // ✅ لو readOnly → شكل مختلف خالص
+    if (widget.readOnly) {
+      return _buildReadOnlyField();
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -67,7 +72,6 @@ class _CustomTextFieldState extends State<CustomTextField> {
             hintText: widget.hint,
             hintStyle: TextStyle(color: Colors.grey.shade400),
             prefixIcon: widget.icon != null ? Icon(widget.icon) : null,
-
             suffixIcon:
                 widget.isPassword
                     ? IconButton(
@@ -77,9 +81,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
                       onPressed:
                           widget.isDisabled
                               ? null
-                              : () {
-                                setState(() => _obscure = !_obscure);
-                              },
+                              : () => setState(() => _obscure = !_obscure),
                     )
                     : null,
             filled: true,
@@ -90,6 +92,104 @@ class _CustomTextFieldState extends State<CustomTextField> {
             ),
           ),
         ),
+        SizedBox(height: widget.height ?? 18),
+      ],
+    );
+  }
+
+  // ✅ شكل الـ read-only field - بيبان كـ info card مش text field
+  Widget _buildReadOnlyField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // ─── Label + "From ID" badge ────────────────────────────
+        Row(
+          children: [
+            Text(
+              widget.label,
+              style: const TextStyle(fontWeight: FontWeight.w500),
+            ),
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              decoration: BoxDecoration(
+                color: const Color.fromARGB(
+                  255,
+                  118,
+                  226,
+                  136,
+                ).withOpacity(0.2),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: const Color.fromARGB(255, 11, 58, 30).withOpacity(0.3),
+                  width: 0.8,
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.verified_rounded,
+                    size: 11,
+                    color: const Color.fromARGB(255, 11, 58, 30),
+                  ),
+                  const SizedBox(width: 3),
+                  Text(
+                    'From ID',
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                      color: const Color.fromARGB(255, 11, 58, 30),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+
+        // ─── Info card ───────────────────────────────────────────
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: BoxDecoration(
+            color: const Color.fromARGB(255, 118, 226, 136).withOpacity(0.08),
+            borderRadius: BorderRadius.circular(30),
+            border: Border.all(
+              color: const Color.fromARGB(255, 11, 58, 30).withOpacity(0.15),
+              width: 1,
+            ),
+          ),
+          child: Row(
+            children: [
+              // أيقونة
+              if (widget.icon != null)
+                Icon(
+                  widget.icon,
+                  size: 20,
+                  color: const Color.fromARGB(255, 11, 58, 30).withOpacity(0.6),
+                ),
+              if (widget.icon != null) const SizedBox(width: 12),
+
+              // القيمة
+              Expanded(
+                child: Text(
+                  widget.controller.text.isEmpty ? '—' : widget.controller.text,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                    color: Color.fromARGB(255, 11, 58, 30),
+                  ),
+                ),
+              ),
+
+              // lock icon في الآخر
+              Icon(Icons.lock_rounded, size: 15, color: Colors.grey.shade400),
+            ],
+          ),
+        ),
+
         SizedBox(height: widget.height ?? 18),
       ],
     );

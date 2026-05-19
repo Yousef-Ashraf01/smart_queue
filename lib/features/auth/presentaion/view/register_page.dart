@@ -1,19 +1,20 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
 import 'package:smart_queue/core/widgets/app_flushbar.dart';
 import 'package:smart_queue/features/auth/data/models/register_request_model.dart';
 import 'package:smart_queue/features/auth/presentaion/cubit/auth_cubit.dart';
-import 'package:smart_queue/features/auth/presentaion/view/widgets/custom_text_field.dart';
-import 'package:smart_queue/features/personal_info/presentation/view/widgets/date_fields_group.dart';
-import 'package:smart_queue/features/personal_info/presentation/view/widgets/phone_input_field.dart';
+import 'package:smart_queue/features/auth/presentaion/view/widgets/id_info_card.dart';
+import 'package:smart_queue/features/auth/presentaion/view/widgets/register_user_section.dart';
+import 'package:smart_queue/features/scan_id_card/data/models/id_extract_model.dart';
 
 class RegisterPage extends StatefulWidget {
-  const RegisterPage({super.key});
+  final IdExtractModel? idData;
+
+  const RegisterPage({super.key, this.idData});
 
   @override
   State<RegisterPage> createState() => _RegisterPageState();
@@ -21,41 +22,205 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   String selectedCountryCode = "20";
+  XFile? _pickedImage;
   final _formKey = GlobalKey<FormState>();
 
+  final userNameController = TextEditingController();
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final phoneController = TextEditingController();
   final passwordController = TextEditingController();
   final nationalIdController = TextEditingController();
+  final addressController = TextEditingController();
   final dayController = TextEditingController();
   final monthController = TextEditingController();
   final yearController = TextEditingController();
 
+  final userNameFocus = FocusNode();
   final nameFocus = FocusNode();
   final emailFocus = FocusNode();
   final nationalIdFocus = FocusNode();
   final phoneFocus = FocusNode();
   final passwordFocus = FocusNode();
 
+  IdExtractModel? _cachedIdData;
+
+  @override
+  void initState() {
+    super.initState();
+    _cachedIdData = widget.idData;
+    if (widget.idData != null) {
+      nationalIdController.text = widget.idData!.nationalId;
+      nameController.text = widget.idData!.nameArabic;
+      addressController.text = widget.idData!.address;
+      _fillBirthDateFromNationalId(widget.idData!.nationalId);
+    }
+  }
+
   @override
   void dispose() {
+    userNameController.dispose();
     nameController.dispose();
     emailController.dispose();
     phoneController.dispose();
-    nationalIdController.dispose();
     passwordController.dispose();
-
+    nationalIdController.dispose();
+    addressController.dispose();
+    dayController.dispose();
+    monthController.dispose();
+    yearController.dispose();
+    userNameFocus.dispose();
     nameFocus.dispose();
     emailFocus.dispose();
     nationalIdFocus.dispose();
     phoneFocus.dispose();
     passwordFocus.dispose();
-    dayController.dispose();
-    monthController.dispose();
-    yearController.dispose();
-
     super.dispose();
+  }
+
+  void _handleRegister() {
+    FocusScope.of(context).unfocus();
+    if (!_formKey.currentState!.validate()) {
+      _handleFocusOnError();
+      return;
+    }
+
+    final birthError = validateBirthDate(
+      dayController.text,
+      monthController.text,
+      yearController.text,
+    );
+    if (birthError != null) {
+      AppFlushbar.show(context, message: birthError, type: MessageType.error);
+      return;
+    }
+
+    final birthDate = DateTime(
+      int.parse(yearController.text),
+      int.parse(monthController.text),
+      int.parse(dayController.text),
+    );
+
+    context.read<AuthCubit>().register(
+      RegisterRequestModel(
+        username: userNameController.text,
+        email: emailController.text,
+        password: passwordController.text,
+        client: ClientRequestModel(
+          nationalId: nationalIdController.text,
+          phone: '+$selectedCountryCode${phoneController.text}',
+          birthDate: DateFormat('yyyy-MM-dd').format(birthDate),
+          address: Address(
+            address: addressController.text,
+            city: _extractPart(addressController.text, 0, "Unknown"),
+            country: _extractPart(addressController.text, 1, "Egypt"),
+          ),
+          imageFile: _pickedImage,
+        ),
+      ),
+    );
+  }
+
+  void _handleFocusOnError() {
+    if (_cachedIdData == null) {
+      if (nameController.text.isEmpty || nameController.text.length < 3) {
+        FocusScope.of(context).requestFocus(nameFocus);
+        return;
+      }
+      if (!RegExp(r'^\d{14}$').hasMatch(nationalIdController.text)) {
+        FocusScope.of(context).requestFocus(nationalIdFocus);
+        return;
+      }
+    }
+    if (!RegExp(
+      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+    ).hasMatch(emailController.text)) {
+      FocusScope.of(context).requestFocus(emailFocus);
+    } else if (!RegExp(r'^\d{11}$').hasMatch(phoneController.text)) {
+      FocusScope.of(context).requestFocus(phoneFocus);
+    } else {
+      FocusScope.of(context).requestFocus(passwordFocus);
+    }
+  }
+
+  String _extractPart(String address, int index, String fallback) {
+    final parts = address.split(',');
+    return parts.length > index ? parts[index].trim() : fallback;
+  }
+
+  void _fillBirthDateFromNationalId(String nationalId) {
+    if (nationalId.length != 14) return;
+    final s = int.tryParse(nationalId[0]) ?? 0;
+    final yy = int.tryParse(nationalId.substring(1, 3)) ?? 0;
+    final mm = int.tryParse(nationalId.substring(3, 5)) ?? 0;
+    final dd = int.tryParse(nationalId.substring(5, 7)) ?? 0;
+    final century = (s == 3 || s == 4) ? 2000 : 1900;
+    setState(() {
+      dayController.text = dd.toString().padLeft(2, '0');
+      monthController.text = mm.toString().padLeft(2, '0');
+      yearController.text = (century + yy).toString();
+    });
+  }
+
+  Future<void> _selectDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime(2000),
+      firstDate: DateTime(1950),
+      lastDate: DateTime.now(),
+      builder:
+          (context, child) => Theme(
+            data: Theme.of(context).copyWith(
+              colorScheme: const ColorScheme.light(
+                primary: Color(0xFF00BFA6),
+                onPrimary: Colors.white,
+                onSurface: Colors.black87,
+              ),
+              textButtonTheme: TextButtonThemeData(
+                style: TextButton.styleFrom(
+                  foregroundColor: const Color(0xFF00BFA6),
+                  textStyle: const TextStyle(fontWeight: FontWeight.w600),
+                ),
+              ),
+              dialogTheme: DialogTheme(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(24),
+                ),
+              ),
+            ),
+            child: child!,
+          ),
+    );
+    if (picked != null) {
+      setState(() {
+        dayController.text = picked.day.toString().padLeft(2, '0');
+        monthController.text = picked.month.toString().padLeft(2, '0');
+        yearController.text = picked.year.toString();
+      });
+    }
+  }
+
+  String? validateBirthDate(String day, String month, String year) {
+    if (day.isEmpty || month.isEmpty || year.isEmpty)
+      return "Birth date is required";
+    final d = int.tryParse(day);
+    final m = int.tryParse(month);
+    final y = int.tryParse(year);
+    if (d == null || m == null || y == null) return "Invalid birth date";
+    if (m < 1 || m > 12) return "Invalid month";
+    if (d < 1 || d > 31) return "Invalid day";
+    if (DateTime(y, m, d).isAfter(DateTime.now()))
+      return "Birth date cannot be in the future";
+    return null;
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    final picked = await ImagePicker().pickImage(
+      source: source,
+      imageQuality: 70,
+      maxWidth: 800,
+    );
+    if (picked != null) setState(() => _pickedImage = picked);
   }
 
   @override
@@ -111,232 +276,46 @@ class _RegisterPageState extends State<RegisterPage> {
                       "Make your visit smoother with early booking",
                       style: TextStyle(color: Colors.grey),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 24),
 
-                    CustomTextField(
-                      label: "Name",
-                      hint: "Enter your name",
-                      controller: nameController,
-                      icon: Icons.person,
-                      focusNode: nameFocus,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "Name is required";
-                        }
+                    if (_cachedIdData != null) ...[
+                      IdInfoCard(
+                        name: nameController.text,
+                        nationalId: nationalIdController.text,
+                        address: addressController.text,
+                        birthDate:
+                            '${dayController.text}/${monthController.text}/${yearController.text}',
+                      ),
+                      const SizedBox(height: 24),
+                    ],
 
-                        if (value.length < 3) {
-                          return "Name must be at least 3 characters";
-                        }
-
-                        if (value.length > 15) {
-                          return "Name must be 15 characters max";
-                        }
-
-                        return null;
-                      },
-                    ),
-
-                    CustomTextField(
-                      label: "Email",
-                      hint: "Enter your email",
-                      controller: emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      icon: Icons.email,
-                      focusNode: emailFocus,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "Email is required";
-                        }
-                        if (!RegExp(
-                          r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                        ).hasMatch(value)) {
-                          return "Enter a valid email";
-                        }
-                        return null;
-                      },
-                    ),
-
-                    CustomTextField(
-                      label: "National ID",
-                      hint: "Enter your 14-digit national ID",
-                      controller: nationalIdController,
-                      keyboardType: TextInputType.number,
-                      icon: Icons.badge,
-                      focusNode: nationalIdFocus,
-                      onChanged: (value) {
-                        if (value.length == 14) {
+                    RegisterUserSection(
+                      hasIdData: _cachedIdData != null,
+                      pickedImage: _pickedImage,
+                      userNameController: userNameController,
+                      emailController: emailController,
+                      passwordController: passwordController,
+                      nameController: nameController,
+                      nationalIdController: nationalIdController,
+                      addressController: addressController,
+                      dayController: dayController,
+                      monthController: monthController,
+                      yearController: yearController,
+                      phoneController: phoneController,
+                      userNameFocus: userNameFocus,
+                      emailFocus: emailFocus,
+                      passwordFocus: passwordFocus,
+                      nameFocus: nameFocus,
+                      nationalIdFocus: nationalIdFocus,
+                      onPickImage: _pickImage,
+                      onPhoneChanged:
+                          (phone, code) => selectedCountryCode = code,
+                      onNationalIdChanged: (value) {
+                        if (value.length == 14)
                           _fillBirthDateFromNationalId(value);
-                        }
                       },
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                        LengthLimitingTextInputFormatter(14),
-                      ],
-
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "National ID is required";
-                        }
-
-                        if (!RegExp(r'^\d{14}$').hasMatch(value)) {
-                          return "National ID must be exactly 14 digits";
-                        }
-
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 10),
-                    Align(alignment: AlignmentDirectional.centerStart,
-                        child: Text("Birth Date",
-                            style: TextStyle(fontWeight: FontWeight.w500,))),
-                    const SizedBox(height: 8),
-                    AbsorbPointer(
-                      child: DateFieldsGroup(
-                        dayController: dayController,
-                        monthController: monthController,
-                        yearController: yearController,
-                        onTap: _selectDate,
-                      ),
-                    ),
-                    const SizedBox(height: 16,),
-                    Align(alignment: AlignmentDirectional.centerStart,
-                        child: Text("Phone number",
-                            style: TextStyle(fontWeight: FontWeight.w500,))),
-                    SizedBox(height: 8,),
-                    PhoneInputField(
-                      controller: phoneController,
-                      onChanged: (phone, code) {
-                        selectedCountryCode = code;
-                      },
-                    ), const SizedBox(height: 16,),
-                    CustomTextField(
-                      label: "Password",
-                      hint: "Enter your password",
-                      controller: passwordController,
-                      isPassword: true,
-                      icon: Icons.lock,
-                      focusNode: passwordFocus,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "Password is required";
-                        }
-                        if (value.length < 8) {
-                          return "Password must be at least 8 characters";
-                        }
-                        if (!RegExp(
-                          r'^(?=.*[A-Za-z])(?=.*\d)',
-                        ).hasMatch(value)) {
-                          return "Password must contain letters & numbers";
-                        }
-                        return null;
-                      },
-                    ),
-
-                    const SizedBox(height: 10),
-
-                    BlocBuilder<AuthCubit, AuthState>(
-                      builder: (context, state) {
-                        return _gradientButton("Continue", () {
-                          FocusScope.of(context).unfocus();
-
-                          if (_formKey.currentState!.validate()) {
-                            final fullPhone = '+$selectedCountryCode${phoneController
-                                .text}';
-                            final birthError = validateBirthDate(
-                              dayController.text,
-                              monthController.text,
-                              yearController.text,
-                            );
-
-                            if (birthError != null) {
-                              AppFlushbar.show(context, message: birthError,
-                                  type: MessageType.error);
-                              return;
-                            }
-                            final birthDate = DateTime(
-                              int.parse(yearController.text),
-                              int.parse(monthController.text),
-                              int.parse(dayController.text),
-                            );
-
-                            final formattedDate = DateFormat(
-                              'yyyy-MM-dd',
-                            ).format(birthDate);
-                            final request = RegisterRequestModel(
-                              username: nameController.text,
-                              email: emailController.text,
-                              password: passwordController.text,
-                              client: ClientRequestModel(
-                                  nationalId: nationalIdController.text,
-                                  phone: fullPhone,
-                                  birthDate: formattedDate
-                              ),
-                            );
-                            context.read<AuthCubit>().register(request);
-                          } else {
-                            if (nameController.text.isEmpty ||
-                                nameController.text.length < 3) {
-                              FocusScope.of(context).requestFocus(nameFocus);
-                            } else if (emailController.text.isEmpty ||
-                                !RegExp(
-                                  r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                                ).hasMatch(emailController.text)) {
-                              FocusScope.of(context).requestFocus(emailFocus);
-                            } else if (nationalIdController.text.isEmpty ||
-                                !RegExp(
-                                  r'^\d{14}$',
-                                ).hasMatch(nationalIdController.text)) {
-                              FocusScope.of(
-                                context,
-                              ).requestFocus(nationalIdFocus);
-                            } else if (phoneController.text.isEmpty ||
-                                !RegExp(
-                                  r'^\d{11}$',
-                                ).hasMatch(phoneController.text)) {
-                              FocusScope.of(context).requestFocus(phoneFocus);
-                            } else if (passwordController.text.isEmpty ||
-                                passwordController.text.length < 8 ||
-                                !RegExp(
-                                  r'^(?=.*[A-Za-z])(?=.*\d)',
-                                ).hasMatch(passwordController.text)) {
-                              FocusScope.of(
-                                context,
-                              ).requestFocus(passwordFocus);
-                            }
-                          }
-                        }, isLoading: state.isLoading);
-                      },
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    Center(
-                      child: RichText(
-                        text: TextSpan(
-                          style: Theme
-                              .of(context)
-                              .textTheme
-                              .bodyMedium,
-                          children: [
-                            TextSpan(
-                              text: 'Already have an account? ',
-                              style: TextStyle(color: Colors.grey),
-                            ),
-                            TextSpan(
-                              text: 'Login',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.w600,
-                              ),
-                              recognizer:
-                              TapGestureRecognizer()
-                                ..onTap = () {
-                                  context.pop(context);
-                                },
-                            ),
-                          ],
-                        ),
-                      ),
+                      onDateTap: _cachedIdData != null ? null : _selectDate,
+                      onRegister: _handleRegister,
                     ),
                   ],
                 ),
@@ -347,134 +326,4 @@ class _RegisterPageState extends State<RegisterPage> {
       ),
     );
   }
-
-  Widget _gradientButton(String text,
-      VoidCallback onTap, {
-        bool isLoading = false,
-      }) {
-    return SizedBox(
-      width: double.infinity,
-      height: 52,
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(30),
-          gradient: const LinearGradient(
-            colors: [
-              Color.fromARGB(255, 118, 226, 136),
-              Color.fromARGB(255, 11, 58, 30),
-            ],
-          ),
-        ),
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.transparent,
-            shadowColor: Colors.transparent,
-          ),
-          onPressed: isLoading ? null : onTap,
-          child:
-          isLoading
-              ? const SizedBox(
-            width: 24,
-            height: 24,
-            child: CircularProgressIndicator(
-              color: Colors.white,
-              strokeWidth: 3,
-            ),
-          )
-              : Text(
-            text,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _fillBirthDateFromNationalId(String nationalId) {
-    if (nationalId.length != 14) return;
-
-    final s = int.tryParse(nationalId[0]) ?? 0;
-    final yy = int.tryParse(nationalId.substring(1, 3)) ?? 0;
-    final mm = int.tryParse(nationalId.substring(3, 5)) ?? 0;
-    final dd = int.tryParse(nationalId.substring(5, 7)) ?? 0;
-
-    int century = 1900;
-    if (s == 3 || s == 4) century = 2000;
-
-    final year = century + yy;
-
-    setState(() {
-      dayController.text = dd.toString().padLeft(2, '0');
-      monthController.text = mm.toString().padLeft(2, '0');
-      yearController.text = year.toString();
-    });
-  }
-
-  Future<void> _selectDate() async {
-    DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime(2000),
-      firstDate: DateTime(1950),
-      lastDate: DateTime.now(),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: Color(0xFF00BFA6),
-              onPrimary: Colors.white,
-              onSurface: Colors.black87,
-            ),
-            textButtonTheme: TextButtonThemeData(
-              style: TextButton.styleFrom(
-                foregroundColor: const Color(0xFF00BFA6),
-                textStyle: const TextStyle(fontWeight: FontWeight.w600),
-              ),
-            ),
-            dialogTheme: DialogTheme(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(24),
-              ),
-            ),
-          ),
-          child: child!,
-        );
-      },
-    );
-
-    if (picked != null) {
-      setState(() {
-        dayController.text = picked.day.toString().padLeft(2, '0');
-        monthController.text = picked.month.toString().padLeft(2, '0');
-        yearController.text = picked.year.toString();
-      });
-    }
-  }
-
-  String? validateBirthDate(String day, String month, String year,) {
-    if (day.isEmpty || month.isEmpty || year.isEmpty) {
-      return "Birth date is required";
-    }
-
-    final d = int.tryParse(day);
-    final m = int.tryParse(month);
-    final y = int.tryParse(year);
-
-    if (d == null || m == null || y == null) {
-      return "Invalid birth date";
-    }
-
-    if (m < 1 || m > 12) return "Invalid month";
-    if (d < 1 || d > 31) return "Invalid day";
-
-    final now = DateTime.now();
-    final birthDate = DateTime(y, m, d);
-    if (birthDate.isAfter(now)) return "Birth date cannot be in the future";
-
-    return null;
-  }
 }
-

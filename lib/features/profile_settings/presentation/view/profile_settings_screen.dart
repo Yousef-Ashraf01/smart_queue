@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:smart_queue/core/constants/app_assets.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
@@ -10,10 +11,10 @@ import 'package:smart_queue/core/widgets/notification_widget.dart';
 import 'package:smart_queue/features/personal_info/presentation/cubit/personal_info_cubit.dart';
 import 'package:smart_queue/features/personal_info/presentation/cubit/personal_info_state.dart';
 import 'package:smart_queue/features/profile_settings/data/models/setting_option.dart';
-import 'package:smart_queue/features/profile_settings/presentation/view/widgets/profile_avatar_section.dart';
+import 'package:smart_queue/features/profile_settings/presentation/view/widgets/profile_avatar_section_read_only.dart';
 import 'package:smart_queue/features/profile_settings/presentation/view/widgets/profile_avatar_shimmer.dart';
 
-class ProfileSettingsScreen extends StatelessWidget {
+class ProfileSettingsScreen extends StatefulWidget {
   const ProfileSettingsScreen({super.key});
 
   static const List<SettingOption> _accountOptions = [
@@ -51,6 +52,13 @@ class ProfileSettingsScreen extends StatelessWidget {
       routeName: '',
     ),
   ];
+
+  @override
+  State<ProfileSettingsScreen> createState() => _ProfileSettingsScreenState();
+}
+
+class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
+  XFile? _pickedImage;
 
   @override
   Widget build(BuildContext context) {
@@ -94,9 +102,11 @@ class ProfileSettingsScreen extends StatelessWidget {
                       BlocBuilder<PersonalInfoCubit, PersonalInfoState>(
                         builder: (context, state) {
                           if (state is PersonalInfoLoaded) {
-                            return ProfileAvatarSection(
+                            return ProfileAvatarSectionReadOnly(
                               name: state.profile.username,
                               email: state.profile.email,
+                              imageUrl: state.profile.client.imageUrl,
+                              pickedImage: _pickedImage,
                             );
                           }
 
@@ -111,12 +121,16 @@ class ProfileSettingsScreen extends StatelessWidget {
                       const SizedBox(height: 35),
                       const SectionHeader(title: 'Accounts'),
                       const SizedBox(height: 12),
-                      SettingsListContainer(options: _accountOptions),
+                      SettingsListContainer(
+                        options: ProfileSettingsScreen._accountOptions,
+                      ),
 
                       const SizedBox(height: 30),
                       const SectionHeader(title: 'Settings'),
                       const SizedBox(height: 12),
-                      SettingsListContainer(options: _settingOptions),
+                      SettingsListContainer(
+                        options: ProfileSettingsScreen._settingOptions,
+                      ),
 
                       const SizedBox(height: 20),
                     ],

@@ -6,7 +6,7 @@ class DateFieldsGroup extends StatelessWidget {
   final TextEditingController dayController;
   final TextEditingController monthController;
   final TextEditingController yearController;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   const DateFieldsGroup({
     super.key,

@@ -1,6 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:smart_queue/core/constants/app_assets.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
@@ -18,45 +20,80 @@ class HomeAppBar extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Row(
-          children: [
-            GestureDetector(
-              onTap: () {
-                context.push(AppRoutes.personalInfo);
-              },
-              child: CircleAvatar(
-                backgroundColor: AppColors.blackColor,
-                child: Image.asset(AppAssets.imageProfile, fit: BoxFit.cover),
-              ),
-            ),
-            const SizedBox(width: 20),
+        BlocBuilder<PersonalInfoCubit, PersonalInfoState>(
+          builder: (context, state) {
+            if (state is PersonalInfoLoading) {
+              return const HomeAppBarShimmer();
+            }
 
-            BlocBuilder<PersonalInfoCubit, PersonalInfoState>(
-              builder: (context, state) {
-                if (state is PersonalInfoLoading) {
-                  return const HomeAppBarShimmer();
-                }
+            String? imageUrl;
+            String name = '';
 
-                if (state is PersonalInfoLoaded) {
-                  final name = state.profile.username ?? '';
+            if (state is PersonalInfoLoaded) {
+              imageUrl = state.profile.client.imageUrl;
+              name = state.profile.username;
+            }
 
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("Hi, $name", style: AppStyle.bold16black),
-                      Text("Welcome back!", style: AppStyle.normal16black),
-                    ],
-                  );
-                }
+            return Row(
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    context.push(AppRoutes.personalInfo);
+                  },
+                  child: CircleAvatar(
+                    radius: 24,
+                    backgroundColor: AppColors.blackColor,
+                    child: ClipOval(
+                      child:
+                          imageUrl != null && imageUrl.isNotEmpty
+                              ? CachedNetworkImage(
+                                imageUrl: imageUrl,
+                                width: 48,
+                                height: 48,
+                                fit: BoxFit.cover,
+                                placeholder:
+                                    (context, url) => Shimmer.fromColors(
+                                      baseColor: Colors.grey.shade300,
+                                      highlightColor: Colors.grey.shade100,
+                                      child: Container(
+                                        width: 48,
+                                        height: 48,
+                                        decoration: const BoxDecoration(
+                                          color: Colors.white,
+                                          shape: BoxShape.circle,
+                                        ),
+                                      ),
+                                    ),
+                                errorWidget:
+                                    (context, url, error) => Image.asset(
+                                      AppAssets.imageProfile,
+                                      fit: BoxFit.cover,
+                                      width: 48,
+                                      height: 48,
+                                    ),
+                              )
+                              : Image.asset(
+                                AppAssets.imageProfile,
+                                fit: BoxFit.cover,
+                                width: 48,
+                                height: 48,
+                              ),
+                    ),
+                  ),
+                ),
 
-                if (state is PersonalInfoError) {
-                  return const Text("Hi");
-                }
+                const SizedBox(width: 20),
 
-                return const SizedBox();
-              },
-            ),
-          ],
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("Hi, $name", style: AppStyle.bold16black),
+                    Text("Welcome back!", style: AppStyle.normal16black),
+                  ],
+                ),
+              ],
+            );
+          },
         ),
         const NotificationWidget(),
       ],

@@ -8,7 +8,7 @@ class AppointmentResponseModel {
   final bool wantReminder;
   final String additionalInfo;
   final bool paid;
-  final double amountToPay;
+  final double? amountToPay;
   final CounterModel counter;
 
   AppointmentResponseModel({
@@ -32,7 +32,7 @@ class AppointmentResponseModel {
       wantReminder: json['want_reminder'],
       additionalInfo: json['additional_info'] ?? "",
       paid: json['paid'],
-      amountToPay: (json['amount_to_pay'] as num).toDouble(),
+      amountToPay: (json['amount_to_pay']) ?? 0,
       counter: CounterModel.fromJson(json['counter']),
     );
   }

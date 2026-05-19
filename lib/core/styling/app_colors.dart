@@ -12,6 +12,15 @@ class AppColors {
     Color(0xFFE0E9FC),
   ];
 
+  static const bgTop = Color(0xFFEEFEFF);
+  static const bgBottom = Color(0xFFD6F9F7);
+
+  static const teal = Color.fromARGB(255, 11, 58, 30);
+  static const tealLight = Color.fromARGB(255, 118, 226, 136);
+  static const tealSubtle = Color.fromARGB(200, 118, 226, 136);
+  static const tealMuted = Color.fromARGB(255, 60, 120, 80);
+  static const cameraBg = Color(0xFF0D1F23);
+
   static const Color greenStart = Color(0xFF4CD964);
   static const Color greenEnd = Color(0xFF2ECC71);
 

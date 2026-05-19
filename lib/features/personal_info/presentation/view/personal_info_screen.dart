@@ -2,23 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:smart_queue/core/constants/app_assets.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
 import 'package:smart_queue/core/styling/app_styles.dart';
 import 'package:smart_queue/core/widgets/app_flushbar.dart';
 import 'package:smart_queue/core/widgets/app_top_bar.dart';
-import 'package:smart_queue/features/auth/data/models/client_model.dart';
 import 'package:smart_queue/features/auth/data/models/profile_model.dart';
 import 'package:smart_queue/features/auth/presentaion/cubit/auth_cubit.dart';
-import 'package:smart_queue/features/auth/presentaion/view/widgets/custom_text_field.dart';
-import 'package:smart_queue/features/forget_password/presentation/view/create_new_password_screen.dart';
 import 'package:smart_queue/features/personal_info/presentation/cubit/personal_info_cubit.dart';
 import 'package:smart_queue/features/personal_info/presentation/cubit/personal_info_state.dart';
+import 'package:smart_queue/features/personal_info/presentation/view/widgets/account_info_section.dart';
+import 'package:smart_queue/features/personal_info/presentation/view/widgets/address_section.dart';
 import 'package:smart_queue/features/personal_info/presentation/view/widgets/app_button.dart';
-import 'package:smart_queue/features/personal_info/presentation/view/widgets/date_fields_group.dart';
+import 'package:smart_queue/features/personal_info/presentation/view/widgets/personal_info_section.dart';
 import 'package:smart_queue/features/personal_info/presentation/view/widgets/personal_info_shimmer.dart';
-import 'package:smart_queue/features/personal_info/presentation/view/widgets/phone_input_field.dart';
+import 'package:smart_queue/features/personal_info/presentation/view/widgets/save_changes_button.dart';
 import 'package:smart_queue/features/profile_settings/presentation/view/widgets/logout_dialog.dart';
 import 'package:smart_queue/features/profile_settings/presentation/view/widgets/profile_avatar_section.dart';
 
@@ -43,6 +42,17 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
 
   ProfileModel? lastProfile;
 
+  XFile? _pickedImage;
+
+  Future<void> _pickImage(ImageSource source) async {
+    final picked = await ImagePicker().pickImage(
+      source: source,
+      imageQuality: 70,
+      maxWidth: 800,
+    );
+    if (picked != null) setState(() => _pickedImage = picked);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -60,46 +70,6 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
     monthController.dispose();
     yearController.dispose();
     super.dispose();
-  }
-
-  Future<void> _selectDate() async {
-    DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime(2000),
-      firstDate: DateTime(1950),
-      lastDate: DateTime.now(),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: Color(0xFF00BFA6),
-              onPrimary: Colors.white,
-              onSurface: Colors.black87,
-            ),
-            textButtonTheme: TextButtonThemeData(
-              style: TextButton.styleFrom(
-                foregroundColor: const Color(0xFF00BFA6),
-                textStyle: const TextStyle(fontWeight: FontWeight.w600),
-              ),
-            ),
-            dialogTheme: DialogTheme(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(24),
-              ),
-            ),
-          ),
-          child: child!,
-        );
-      },
-    );
-
-    if (picked != null) {
-      setState(() {
-        dayController.text = DateFormat('dd').format(picked);
-        monthController.text = DateFormat('MM').format(picked);
-        yearController.text = DateFormat('yyyy').format(picked);
-      });
-    }
   }
 
   void _fillControllers(ProfileModel profile) {
@@ -191,51 +161,16 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
             );
           },
         ),
-        bottomNavigationBar: BlocBuilder<PersonalInfoCubit, PersonalInfoState>(
-          builder: (context, state) {
-            final isLoading = state is PersonalInfoUpdating;
-            return Padding(
-              padding: const EdgeInsets.fromLTRB(30, 10, 30, 25),
-              child: AppButton(
-                text: "Save Changes",
-                isLoading: isLoading,
-                backgroundColor: const Color(0xFF00BFA6),
-                onPressed:
-                    isLoading
-                        ? null
-                        : () {
-                          final cubit = context.read<PersonalInfoCubit>();
-                          final currentState = cubit.state;
-                          if (currentState is! PersonalInfoLoaded) return;
-
-                          final birthDate = DateTime(
-                            int.parse(yearController.text),
-                            int.parse(monthController.text),
-                            int.parse(dayController.text),
-                          );
-
-                          final formattedDate = DateFormat(
-                            'yyyy-MM-dd',
-                          ).format(birthDate);
-
-                          final updatedProfile = ProfileModel(
-                            id: currentState.profile.id,
-                            username: nameController.text,
-                            email: emailController.text,
-                            client: ClientModel(
-                              nationalId: idController.text,
-                              birthDate: formattedDate,
-                              profession: "string",
-                              gender: "F",
-                              phone: "+$countryCode${phoneController.text}",
-                            ),
-                          );
-
-                          cubit.updateProfile(updatedProfile);
-                        },
-              ),
-            );
-          },
+        bottomNavigationBar: SaveChangesButton(
+          nameController: nameController,
+          emailController: emailController,
+          idController: idController,
+          phoneController: phoneController,
+          dayController: dayController,
+          monthController: monthController,
+          yearController: yearController,
+          countryCode: countryCode,
+          pickedImage: _pickedImage,
         ),
       ),
     );
@@ -254,71 +189,41 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
         child: ProfileAvatarSection(
           name: profile.username,
           email: profile.email,
+          imageUrl: profile.client.imageUrl,
+          onCameraTap: _pickImage,
+          pickedImage: _pickedImage,
         ),
       ),
       const SizedBox(height: 25),
 
-      CustomTextField(
-        label: "Full name",
-        controller: nameController,
-        hint: 'Enter your full name',
+      AccountInfoSection(
+        nameController: nameController,
+        emailController: emailController,
+        phoneController: phoneController,
+        countryCode: countryCode,
+        onPhoneChanged: (phone, code) => countryCode = code,
       ),
+      const SizedBox(height: 24),
 
+      PersonalInfoSection(
+        nationalId: idController.text,
+        day: dayController.text,
+        month: monthController.text,
+        year: yearController.text,
+      ),
       const SizedBox(height: 16),
 
-      CustomTextField(
-        label: "Email",
-        hint: "Enter your email",
-        controller: emailController,
-        keyboardType: TextInputType.emailAddress,
-      ),
+      if (profile.client.address != null)
+        AddressSection(address: profile.client.address!),
 
-      const SizedBox(height: 16),
-
-      CustomTextField(
-        readOnly: true,
-        label: "National ID",
-        hint: "Enter your ID",
-        controller: idController,
-        keyboardType: TextInputType.number,
-        isDisabled: true,
-      ),
-
-      const SizedBox(height: 16),
-
-      const FieldLabel(text: "Phone number"),
-
-      PhoneInputField(
-        controller: phoneController,
-        initialCountryCode: countryCode,
-        onChanged: (phone, code) {
-          countryCode = code;
-        },
-      ),
-
-      const SizedBox(height: 16),
-
-      const FieldLabel(text: "Birth date"),
-
-      AbsorbPointer(
-        child: DateFieldsGroup(
-          dayController: dayController,
-          monthController: monthController,
-          yearController: yearController,
-          onTap: _selectDate,
-        ),
-      ),
       const SizedBox(height: 40),
 
       AppButton(
         text: "Log out",
         iconPath: AppAssets.iconloginout,
         backgroundColor: Colors.red,
-        onPressed: () {
-          LogoutDialog.show(context);
-        },
+        onPressed: () => LogoutDialog.show(context),
       ),
-
       const SizedBox(height: 20),
     ];
 

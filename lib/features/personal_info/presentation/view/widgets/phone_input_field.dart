@@ -1,5 +1,6 @@
 import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:smart_queue/features/personal_info/presentation/view/widgets/custom_text_field.dart';
 
 class PhoneInputField extends StatefulWidget {
@@ -77,6 +78,11 @@ class _PhoneInputFieldState extends State<PhoneInputField> {
         const SizedBox(width: 10),
         Expanded(
           child: CustomTextField(
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+              LengthLimitingTextInputFormatter(10),
+            ],
+
             hintText: "Phone number",
             controller: widget.controller,
             keyboardType: TextInputType.phone,

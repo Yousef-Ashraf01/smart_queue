@@ -28,10 +28,13 @@ import 'package:smart_queue/features/operations_history/presentation/view/update
 import 'package:smart_queue/features/personal_info/presentation/view/personal_info_screen.dart';
 import 'package:smart_queue/features/profile_settings/presentation/view/my_appointments_screen.dart';
 import 'package:smart_queue/features/profile_settings/presentation/view/profile_settings_screen.dart';
+import 'package:smart_queue/features/scan_id_card/data/models/id_extract_model.dart';
+import 'package:smart_queue/features/scan_id_card/presentation/cubit/id_cubit.dart';
 import 'package:smart_queue/features/scan_id_card/presentation/view/scan_id_card_screen.dart';
 import 'package:smart_queue/features/timer/presentation/veiw/timer_screen.dart';
 import 'package:smart_queue/features/verification/presentation/view/verification_screen.dart';
 import 'package:smart_queue/features/verification_code/presentation/view/verification_code_screen.dart';
+import 'package:smart_queue/features/welcome/presentation/view/welcome_screen.dart';
 
 import '../di/service_locator.dart';
 
@@ -41,11 +44,13 @@ class AppRouter {
 
     return GoRouter(
       refreshListenable: authNotifier,
-      initialLocation: AppRoutes.login,
+      initialLocation: AppRoutes.welcome,
 
       redirect: (context, state) {
         final isLoggedIn = authNotifier.isLoggedIn;
         final isGoingToLogin =
+            state.matchedLocation == AppRoutes.welcome ||
+            state.matchedLocation == AppRoutes.scanIdCard ||
             state.matchedLocation == AppRoutes.login ||
             state.matchedLocation == AppRoutes.register ||
             state.matchedLocation == AppRoutes.createNewPassword ||
@@ -53,7 +58,7 @@ class AppRouter {
             state.matchedLocation == AppRoutes.forgetPassword;
 
         if (!isLoggedIn && !isGoingToLogin) {
-          return AppRoutes.login;
+          return AppRoutes.welcome;
         }
 
         if (isLoggedIn && isGoingToLogin) {
@@ -65,6 +70,11 @@ class AppRouter {
 
       routes: [
         GoRoute(
+          path: AppRoutes.welcome,
+          name: 'welcome',
+          builder: (context, state) => const WelcomeScreen(),
+        ),
+        GoRoute(
           path: AppRoutes.login,
           name: 'login',
           builder: (context, state) => const LoginPage(),
@@ -72,7 +82,9 @@ class AppRouter {
         GoRoute(
           path: AppRoutes.register,
           name: 'register',
-          builder: (context, state) => const RegisterPage(),
+          builder:
+              (context, state) =>
+                  RegisterPage(idData: state.extra as IdExtractModel?),
         ),
         GoRoute(
           path: AppRoutes.forgetPassword,
@@ -154,7 +166,11 @@ class AppRouter {
         GoRoute(
           path: AppRoutes.scanIdCard,
           name: 'scanIdCard',
-          builder: (context, state) => const ScanIdCardScreen(),
+          builder:
+              (context, state) => BlocProvider(
+                create: (context) => sl<IdCubit>(),
+                child: ScanIdCardScreen(),
+              ),
         ),
         GoRoute(
           path: AppRoutes.appSettings,

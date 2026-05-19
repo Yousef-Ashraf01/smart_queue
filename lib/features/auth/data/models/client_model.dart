@@ -36,6 +36,7 @@ class ClientModel {
       "profession": profession,
       "gender": gender,
       "phone": phone,
+      "address": {"address": address ?? "", "city": "", "country": ""},
     };
   }
 }

@@ -35,26 +35,120 @@ class PersonalInfoShimmer extends StatelessWidget {
   Widget _customField() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [_label(), _textFieldBox(), const SizedBox(height: 18)],
+      children: [_label(), _textFieldBox(), const SizedBox(height: 16)],
     );
   }
 
-  Widget _dateFields() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _sectionLabel() {
+    return Row(
       children: [
-        _textLine(width: 80, height: 14),
-        const SizedBox(height: 8),
-        Row(
+        Container(
+          width: 4,
+          height: 18,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Container(
+          width: 100,
+          height: 14,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(4),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _readOnlyCard() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      child: Row(
+        children: [
+          Container(
+            width: 20,
+            height: 20,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(child: _textLine(height: 14)),
+          const SizedBox(width: 12),
+          Container(width: 16, height: 16, color: Colors.white),
+        ],
+      ),
+    );
+  }
+
+  Widget _addressCard() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        child: Row(
           children: [
-            Expanded(child: _textFieldBox()),
-            const SizedBox(width: 10),
-            Expanded(child: _textFieldBox()),
-            const SizedBox(width: 10),
-            Expanded(child: _textFieldBox()),
+            Container(width: 20, height: 20, color: Colors.white),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _textLine(width: 60, height: 12),
+                  const SizedBox(height: 4),
+                  _textLine(height: 14),
+                ],
+              ),
+            ),
           ],
         ),
-        const SizedBox(height: 18),
+      ),
+    );
+  }
+
+  Widget _avatarSection() {
+    return Column(
+      children: [
+        Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Container(
+              width: 110,
+              height: 110,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white,
+              ),
+            ),
+            Positioned(
+              bottom: 0,
+              right: 0,
+              child: Container(
+                width: 34,
+                height: 34,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        _textLine(width: 140, height: 16),
+        const SizedBox(height: 6),
+        _textLine(width: 180, height: 14),
       ],
     );
   }
@@ -70,39 +164,6 @@ class PersonalInfoShimmer extends StatelessWidget {
     );
   }
 
-  Widget _avatarSection() {
-    return Column(
-      children: [
-        Stack(
-          alignment: Alignment.bottomRight,
-          children: [
-            Container(
-              width: 110,
-              height: 110,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.white, width: 4),
-                color: Colors.white,
-              ),
-            ),
-            // Container(
-            //   width: 32,
-            //   height: 32,
-            //   decoration: const BoxDecoration(
-            //     shape: BoxShape.circle,
-            //     color: Colors.white,
-            //   ),
-            // ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        _textLine(width: 140, height: 16),
-        const SizedBox(height: 6),
-        _textLine(width: 180, height: 14),
-      ],
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Shimmer.fromColors(
@@ -115,19 +176,34 @@ class PersonalInfoShimmer extends StatelessWidget {
             const SizedBox(height: 20),
 
             Center(child: _avatarSection()),
-
             const SizedBox(height: 25),
 
+            _sectionLabel(),
+            const SizedBox(height: 12),
             _customField(),
             _customField(),
-            _customField(),
-            _customField(),
+            _label(),
+            _textFieldBox(),
+            const SizedBox(height: 24),
 
-            _dateFields(),
+            _sectionLabel(),
+            const SizedBox(height: 12),
+            _textLine(width: 90, height: 13),
+            const SizedBox(height: 8),
+            _readOnlyCard(),
+            const SizedBox(height: 12),
+            _textLine(width: 80, height: 13),
+            const SizedBox(height: 8),
+            _readOnlyCard(),
+            const SizedBox(height: 16),
 
+            _sectionLabel(),
+            const SizedBox(height: 12),
+            _addressCard(),
             const SizedBox(height: 40),
 
             _button(),
+            const SizedBox(height: 20),
           ],
         ),
       ),

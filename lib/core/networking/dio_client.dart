@@ -16,6 +16,9 @@ class DioClient {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
     };
+    dio.options.connectTimeout = const Duration(seconds: 30);
+    dio.options.receiveTimeout = const Duration(seconds: 30);
+    dio.options.sendTimeout = const Duration(seconds: 30);
 
     dio.interceptors.add(
       PrettyDioLogger(

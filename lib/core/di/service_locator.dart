@@ -27,6 +27,9 @@ import 'package:smart_queue/features/operations_history/presentation/cubit/opera
 import 'package:smart_queue/features/personal_info/data/datasources/personal_info_remote_data_source.dart';
 import 'package:smart_queue/features/personal_info/data/repositories/personal_info_repository.dart';
 import 'package:smart_queue/features/personal_info/presentation/cubit/personal_info_cubit.dart';
+import 'package:smart_queue/features/scan_id_card/data/datasources/id_remote_data_sources.dart';
+import 'package:smart_queue/features/scan_id_card/data/repositories/id_repository.dart';
+import 'package:smart_queue/features/scan_id_card/presentation/cubit/id_cubit.dart';
 
 final sl = GetIt.instance;
 
@@ -127,4 +130,14 @@ Future<void> setupServiceLocator() async {
   );
 
   sl.registerLazySingleton<BookmarkService>(() => BookmarkService());
+
+  sl.registerLazySingleton<IdRemoteDataSource>(
+    () => IdRemoteDataSource(sl<DioClient>().dio),
+  );
+
+  sl.registerLazySingleton<IdRepository>(
+    () => IdRepository(sl<IdRemoteDataSource>()),
+  );
+
+  sl.registerFactory<IdCubit>(() => IdCubit(sl<IdRepository>()));
 }

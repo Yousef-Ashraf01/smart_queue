@@ -1,11 +1,22 @@
 import 'dart:io';
 
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:smart_queue/core/constants/app_assets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:image/image.dart' as img;
+import 'package:permission_handler/permission_handler.dart';
+import 'package:smart_queue/core/routing/app_routes.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
-import 'package:smart_queue/core/styling/app_styles.dart';
+import 'package:smart_queue/features/scan_id_card/presentation/cubit/id_cubit.dart';
+import 'package:smart_queue/features/scan_id_card/presentation/view/widgets/camera_section.dart';
+import 'package:smart_queue/features/scan_id_card/presentation/view/widgets/capture_button.dart';
+import 'package:smart_queue/features/scan_id_card/presentation/view/widgets/error_bottom_sheet.dart';
+import 'package:smart_queue/features/scan_id_card/presentation/view/widgets/header.dart';
+import 'package:smart_queue/features/scan_id_card/presentation/view/widgets/reading_overlay.dart';
+import 'package:smart_queue/features/scan_id_card/presentation/view/widgets/subtitle.dart';
+import 'package:smart_queue/features/scan_id_card/presentation/view/widgets/tips_row.dart';
+import 'package:smart_queue/features/scan_id_card/presentation/view/widgets/verify_button.dart';
 
 class ScanIdCardScreen extends StatefulWidget {
   const ScanIdCardScreen({super.key});
@@ -14,225 +25,236 @@ class ScanIdCardScreen extends StatefulWidget {
   State<ScanIdCardScreen> createState() => _ScanIdCardScreenState();
 }
 
-class _ScanIdCardScreenState extends State<ScanIdCardScreen> {
-  File? _idImage;
-  final ImagePicker _picker = ImagePicker();
-  bool _isUploading = false;
+class _ScanIdCardScreenState extends State<ScanIdCardScreen>
+    with TickerProviderStateMixin {
+  CameraController? _controller;
+  bool _isCameraReady = false;
+  File? _capturedImage;
+  final GlobalKey _frameKey = GlobalKey();
+  final GlobalKey _cameraKey = GlobalKey();
 
-  Future<void> _pickFromCamera() async {
-    final XFile? pickedFile = await _picker.pickImage(
-      source: ImageSource.camera,
-      imageQuality: 80,
+  late AnimationController _scanAnim;
+  late AnimationController _captureAnim;
+  late AnimationController _fadeAnim;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _scanAnim = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2200),
+    )..repeat(reverse: true);
+
+    _captureAnim = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 120),
     );
-    if (pickedFile != null) {
-      setState(() => _idImage = File(pickedFile.path));
-    }
+
+    _fadeAnim = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    )..forward();
+
+    _initCamera();
   }
 
-  Future<void> _pickFromGallery() async {
-    final XFile? pickedFile = await _picker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 80,
-    );
-    if (pickedFile != null) {
-      setState(() => _idImage = File(pickedFile.path));
-    }
-  }
+  Future<void> _initCamera() async {
+    await Permission.camera.request();
 
-  Future<void> _submit() async {
-    if (_idImage == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Please select your ID")));
-      return;
-    }
-    setState(() => _isUploading = true);
+    final cameras = await availableCameras();
+    final controller = CameraController(
+      cameras.first,
+      ResolutionPreset.high,
+      enableAudio: false,
+    );
+
     try {
-      await Future.delayed(const Duration(seconds: 2));
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("ID uploaded successfully!")),
-      );
+      await controller.initialize();
+
+      if (!mounted) {
+        await controller.dispose();
+        return;
+      }
+
+      setState(() {
+        _controller = controller;
+        _isCameraReady = true;
+      });
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Upload failed: $e")));
-    } finally {
-      setState(() => _isUploading = false);
+      await controller.dispose();
     }
+  }
+
+  Future<void> _takePicture() async {
+    final controller = _controller;
+    if (controller == null || !controller.value.isInitialized) return;
+
+    try {
+      await _captureAnim.forward();
+      await _captureAnim.reverse();
+
+      final file = await controller.takePicture();
+      await controller.pausePreview();
+
+      if (!mounted) return;
+
+      final cropped = await _cropToFrame(File(file.path));
+
+      setState(() => _capturedImage = cropped);
+    } catch (e) {
+      debugPrint('Camera error: $e');
+    }
+  }
+
+  Future<File> _cropToFrame(File imageFile) async {
+    final RenderBox? frameBox =
+        _frameKey.currentContext?.findRenderObject() as RenderBox?;
+    final RenderBox? cameraBox =
+        _cameraKey.currentContext?.findRenderObject() as RenderBox?;
+
+    if (frameBox == null || cameraBox == null) return imageFile;
+
+    final frameOffset = frameBox.localToGlobal(Offset.zero);
+    final cameraOffset = cameraBox.localToGlobal(Offset.zero);
+
+    final frameRect = Rect.fromLTWH(
+      frameOffset.dx - cameraOffset.dx,
+      frameOffset.dy - cameraOffset.dy,
+      frameBox.size.width,
+      frameBox.size.height,
+    );
+
+    final cameraSize = cameraBox.size;
+
+    final imageBytes = await imageFile.readAsBytes();
+    final image = img.decodeImage(imageBytes);
+    if (image == null) return imageFile;
+
+    final scaleX = image.width / cameraSize.width;
+    final scaleY = image.height / cameraSize.height;
+
+    final cropX = (frameRect.left * scaleX).toInt();
+    final cropY = (frameRect.top * scaleY).toInt();
+    final cropW = (frameRect.width * scaleX).toInt();
+    final cropH = (frameRect.height * scaleY).toInt();
+
+    final cropped = img.copyCrop(
+      image,
+      x: cropX.clamp(0, image.width),
+      y: cropY.clamp(0, image.height),
+      width: cropW.clamp(1, image.width - cropX),
+      height: cropH.clamp(1, image.height - cropY),
+    );
+
+    final croppedFile = File(
+      '${imageFile.parent.path}/cropped_${imageFile.uri.pathSegments.last}',
+    );
+    await croppedFile.writeAsBytes(img.encodeJpg(cropped));
+    return croppedFile;
+  }
+
+  void _submit() async {
+    if (_capturedImage == null) return;
+
+    await _controller?.dispose();
+    _controller = null;
+
+    if (!mounted) return;
+
+    context.read<IdCubit>().extractId(_capturedImage!);
+  }
+
+  @override
+  void dispose() {
+    _scanAnim.dispose();
+    _captureAnim.dispose();
+    _fadeAnim.dispose();
+
+    final controller = _controller;
+    _controller = null;
+
+    controller?.dispose();
+
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xffEEFEFF), Color(0xffD6F9F7)],
-          ),
-        ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              const SizedBox(height: 20),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 30),
-                child: Row(
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      icon: SvgPicture.asset(
-                        AppAssets.iconBack,
-                        width: 20,
-                        height: 20,
-                      ),
+    return BlocListener<IdCubit, IdState>(
+      listener: (context, state) async {
+        if (state is IdSuccess) {
+          context.push(AppRoutes.register, extra: state.data);
+        } else if (state is IdError) {
+          setState(() => _capturedImage = null);
+          await _initCamera();
+          if (mounted) ErrorBottomSheet.show(context, state.message);
+        }
+      },
+      child: Scaffold(
+        body: BlocBuilder<IdCubit, IdState>(
+          builder: (context, state) {
+            final isLoading = state is IdLoading;
+            return Stack(
+              children: [
+                Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [AppColors.bgTop, AppColors.bgBottom],
                     ),
-                    SizedBox(width: 60),
-                    Text(
-                      "Scan ID Card",
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 25),
-              Text(
-                "Take a photo of the front of your ID card",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: AppColors.blackColor,
-                  fontSize: 17,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              SizedBox(height: 5),
-              Text(
-                "Place your ID card in the frame below",
-                style: AppStyle.medium14gray,
-              ),
-              Expanded(
-                child: Center(
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Container(
-                        width: 320,
-                        height: 200,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          gradient: LinearGradient(
-                            colors: [
-                              Colors.white.withOpacity(0.1),
-                              Colors.white.withOpacity(0.05),
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
-                              blurRadius: 8,
-                              spreadRadius: 2,
+                  ),
+                  child: SafeArea(
+                    child: FadeTransition(
+                      opacity: _fadeAnim,
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 8),
+                          const Header(),
+                          const SizedBox(height: 6),
+                          const Subtitle(),
+                          const SizedBox(height: 14),
+                          Expanded(
+                            child: CameraSection(
+                              isCameraReady: _isCameraReady,
+                              controller: _controller,
+                              scanAnim: _scanAnim,
+                              capturedImage: _capturedImage,
+                              frameKey: _frameKey,
+                              cameraKey: _cameraKey,
                             ),
-                          ],
-                          border: Border.all(color: Colors.black26, width: 1.5),
-                        ),
+                          ),
+                          const TipsRow(),
+                          const SizedBox(height: 16),
+                          CaptureButton(
+                            captureAnim: _captureAnim,
+                            onTap: _takePicture,
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            'Tap to capture',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: AppColors.tealMuted,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          VerifyButton(
+                            enabled: _capturedImage != null,
+                            onTap: _submit,
+                          ),
+                          const SizedBox(height: 24),
+                        ],
                       ),
-
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(20),
-                        child: SizedBox(
-                          width: 300,
-                          height: 180,
-                          child:
-                              _idImage != null
-                                  ? Image.file(_idImage!, fit: BoxFit.cover)
-                                  : Image.asset(
-                                    AppAssets.imageIdCard,
-                                    fit: BoxFit.cover,
-                                  ),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
-              ),
-
-              const SizedBox(height: 20),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _actionButton(Icons.photo_library, _pickFromGallery),
-                  _actionButton(
-                    Icons.camera_alt,
-                    _pickFromCamera,
-                    active: true,
-                  ),
-                  _actionButton(
-                    Icons.refresh,
-                    () => setState(() => _idImage = null),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 30),
-
-              // Padding(
-              //   padding: const EdgeInsets.symmetric(horizontal: 40),
-              //   child: SizedBox(
-              //     width: double.infinity,
-              //     child: ElevatedButton(
-              //       onPressed: _isUploading ? null : _submit,
-              //       style: ElevatedButton.styleFrom(
-              //         padding: const EdgeInsets.symmetric(vertical: 16),
-              //         shape: RoundedRectangleBorder(
-              //           borderRadius: BorderRadius.circular(12),
-              //         ),
-              //       ),
-              //       child:
-              //           _isUploading
-              //               ? const CircularProgressIndicator(
-              //                 color: Colors.white,
-              //               )
-              //               : const Text(
-              //                 "Verify / Submit",
-              //                 style: TextStyle(
-              //                   fontSize: 16,
-              //                   fontWeight: FontWeight.bold,
-              //                 ),
-              //               ),
-              //     ),
-              //   ),
-              // ),
-              const SizedBox(height: 30),
-            ],
-          ),
+                if (isLoading) const ReadingOverlay(),
+              ],
+            );
+          },
         ),
-      ),
-    );
-  }
-
-  Widget _actionButton(
-    IconData icon,
-    VoidCallback onTap, {
-    bool active = false,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: CircleAvatar(
-        radius: 28,
-        backgroundColor: active ? Colors.green : Colors.white,
-        foregroundColor: Colors.white,
-        child: Icon(icon, color: active ? Colors.white : Colors.black87),
       ),
     );
   }

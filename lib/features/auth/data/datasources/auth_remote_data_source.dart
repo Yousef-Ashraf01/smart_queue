@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:smart_queue/core/networking/api_endpoints.dart';
 import 'package:smart_queue/core/storage/secure_storage_service.dart';
 import 'package:smart_queue/features/auth/data/models/register_request_model.dart';
+import 'package:smart_queue/features/auth/data/models/register_request_model_extension.dart';
 
 import '../models/auth_token_model.dart';
 import '../models/profile_model.dart';
@@ -15,7 +16,8 @@ class AuthRemoteDataSource {
   Future<ProfileModel> register(RegisterRequestModel request) async {
     final response = await dio.post(
       ApiEndpoints.register,
-      data: request.toJson(),
+      data: await request.toFormData(),
+      options: Options(contentType: 'multipart/form-data'),
     );
 
     return ProfileModel.fromJson(response.data);

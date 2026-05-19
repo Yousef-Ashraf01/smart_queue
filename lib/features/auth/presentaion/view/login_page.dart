@@ -171,7 +171,7 @@ class _LoginPageState extends State<LoginPage> {
                               recognizer:
                                   TapGestureRecognizer()
                                     ..onTap = () {
-                                      context.push(AppRoutes.register);
+                                      context.push(AppRoutes.scanIdCard);
                                     },
                             ),
                           ],

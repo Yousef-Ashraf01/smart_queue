@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:smart_queue/features/branch_booking/data/models/appointment_model.dart';
+import 'package:smart_queue/features/branch_booking/data/models/appointment_response_model.dart';
 import 'package:smart_queue/features/branch_booking/data/repositories/booking_repository.dart';
 
 part 'booking_state.dart';
@@ -17,7 +18,7 @@ class BookingCubit extends Cubit<BookingState> {
 
     result.fold(
       (failure) => emit(BookingError(failure.message)),
-      (_) => emit(BookingSuccess()),
+      (appointment) => emit(BookingSuccess(appointment)),
     );
   }
 

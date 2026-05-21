@@ -23,7 +23,7 @@ void main() async {
       providers: [
         BlocProvider.value(value: authCubit),
         BlocProvider.value(value: personalInfoCubit..getProfile()),
-        BlocProvider(create: (_) => ActiveBookingCubit()),
+        BlocProvider(create: (_) => sl<ActiveBookingCubit>()),
       ],
       child: const SmartQueueApp(),
     ),

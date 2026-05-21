@@ -7,7 +7,11 @@ final class BookingInitial extends BookingState {}
 
 class BookingLoading extends BookingState {}
 
-class BookingSuccess extends BookingState {}
+class BookingSuccess extends BookingState {
+  final AppointmentResponseModel appointment;
+
+  BookingSuccess(this.appointment);
+}
 
 class BookingError extends BookingState {
   final String message;

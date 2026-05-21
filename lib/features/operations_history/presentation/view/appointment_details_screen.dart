@@ -309,6 +309,50 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
             ),
           ),
 
+          // بعد الـ Hero Card مباشرة
+          if (item.canceled || item.missed) ...[
+            const SizedBox(height: 12),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color:
+                    item.canceled
+                        ? const Color(0xffFCEBEB)
+                        : const Color(0xffFAEEDA),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    item.canceled
+                        ? Icons.cancel_outlined
+                        : Icons.access_time_filled,
+                    color:
+                        item.canceled
+                            ? const Color(0xffA32D2D)
+                            : const Color(0xff854F0B),
+                    size: 18,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    item.canceled
+                        ? "This appointment was cancelled"
+                        : "This appointment was missed",
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      color:
+                          item.canceled
+                              ? const Color(0xffA32D2D)
+                              : const Color(0xff854F0B),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+
           const SizedBox(height: 16),
 
           // ── Service Info ──────────────────────────────────────────────
@@ -366,7 +410,7 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
                     _detailRow(
                       Icons.payments_outlined,
                       "Amount",
-                      "${item.amountToPay} ${item.counter.service.currency}",
+                      "${item.counter.service.price} ${item.counter.service.currency}",
                     ),
                     _paymentBadge(item.paid),
                   ],
@@ -430,21 +474,28 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
                 child: _actionButton(
                   label: "Edit",
                   icon: Icons.edit_outlined,
-                  bgColor: const Color(0xffE1F5EE),
-                  textColor: const Color(0xff085041),
-                  onTap: () async {
-                    final updated = await context.push(
-                      AppRoutes.updateAppointment,
-                      extra: item,
-                    );
-                    if (updated != null &&
-                        updated is AppointmentResponseModel) {
-                      context.read<AppointmentDetailsCubit>().emit(
-                        AppointmentDetailsLoaded(updated),
-                      );
-                      await _updateCalendarEvent(updated);
-                    }
-                  },
+                  bgColor:
+                      _canEdit(item)
+                          ? const Color(0xffE1F5EE)
+                          : Colors.grey.shade200,
+                  textColor:
+                      _canEdit(item) ? const Color(0xff085041) : Colors.grey,
+                  onTap:
+                      _canEdit(item)
+                          ? () async {
+                            final updated = await context.push(
+                              AppRoutes.updateAppointment,
+                              extra: item,
+                            );
+                            if (updated != null &&
+                                updated is AppointmentResponseModel) {
+                              context.read<AppointmentDetailsCubit>().emit(
+                                AppointmentDetailsLoaded(updated),
+                              );
+                              await _updateCalendarEvent(updated);
+                            }
+                          }
+                          : () {},
                 ),
               ),
             ],
@@ -457,6 +508,25 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
   }
 
   // ── Helpers ────────────────────────────────────────────────────────────────────
+
+  bool _canEdit(AppointmentResponseModel item) {
+    if (item.canceled || item.missed) return false;
+
+    try {
+      final dateParts = item.date.split("-");
+      final timeParts = item.startTime.split(":");
+      final appointmentDateTime = DateTime(
+        int.parse(dateParts[0]),
+        int.parse(dateParts[1]),
+        int.parse(dateParts[2]),
+        int.parse(timeParts[0]),
+        int.parse(timeParts[1]),
+      );
+      return DateTime.now().isBefore(appointmentDateTime);
+    } catch (_) {
+      return false;
+    }
+  }
 
   Widget _heroChip(IconData icon, String text) {
     return Row(

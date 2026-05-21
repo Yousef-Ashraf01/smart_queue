@@ -32,9 +32,11 @@ class _TimerScreenState extends State<TimerScreen> {
   }
 
   Future<void> _loadAndStart() async {
-    final booking = context.read<ActiveBookingCubit>().state;
+    final state = context.read<ActiveBookingCubit>().state;
 
-    if (booking != null && booking['slotStart'] != null) {
+    if (state is ActiveBookingLoaded) {
+      final booking = state.booking;
+
       final slotStart = DateTime.parse(booking['slotStart']);
       final createdAt = DateTime.parse(booking['createdAt']);
 
@@ -59,6 +61,7 @@ class _TimerScreenState extends State<TimerScreen> {
   }
 
   void _startTimer() {
+    _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
       if (_remaining.inSeconds <= 0) {
         _timer?.cancel();
@@ -91,22 +94,29 @@ class _TimerScreenState extends State<TimerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final booking = context.watch<ActiveBookingCubit>().state;
-    return Scaffold(
-      body: Container(
-        width: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xffEEFEFF), Color(0xffD6F9F7)],
+    final state = context.watch<ActiveBookingCubit>().state;
+    return BlocListener<ActiveBookingCubit, ActiveBookingState>(
+      listener: (context, state) {
+        if (state is ActiveBookingCancelled) {
+          _timer?.cancel();
+        }
+      },
+      child: Scaffold(
+        body: Container(
+          width: double.infinity,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Color(0xffEEFEFF), Color(0xffD6F9F7)],
+            ),
           ),
-        ),
-        child: SafeArea(
-          child:
-              booking == null
-                  ? _buildEmptyState(context)
-                  : _buildTimerContent(booking),
+          child: SafeArea(
+            child:
+                state is ActiveBookingLoaded
+                    ? _buildTimerContent(state.booking)
+                    : _buildEmptyState(context),
+          ),
         ),
       ),
     );
@@ -157,12 +167,7 @@ class _TimerScreenState extends State<TimerScreen> {
 
                   GradientButton(
                     text: "Cancel",
-                    onTap: () async {
-                      context.read<ActiveBookingCubit>().clearBooking();
-
-                      final prefs = await SharedPreferences.getInstance();
-                      await prefs.clear();
-                    },
+                    onTap: () => _showCancelDialog(context, booking),
                   ),
 
                   const SizedBox(height: 20),
@@ -172,6 +177,171 @@ class _TimerScreenState extends State<TimerScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  void _showCancelDialog(BuildContext context, Map booking) {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder:
+          (_) => Dialog(
+            elevation: 0,
+            backgroundColor: Colors.transparent,
+            child: Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(24),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 64,
+                    height: 64,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFEE2E2),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.calendar_today_outlined,
+                      color: Color(0xFFE24B4A),
+                      size: 28,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    "Cancel booking?",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    "Are you sure you want to cancel your appointment? This action cannot be undone.",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey,
+                      height: 1.6,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[100],
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.work_outline,
+                              size: 15,
+                              color: Colors.grey,
+                            ),
+                            const SizedBox(width: 6),
+                            const Text(
+                              "Service",
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            const Spacer(),
+                            Text(
+                              booking['serviceName'] ?? "",
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.access_time,
+                              size: 15,
+                              color: Colors.grey,
+                            ),
+                            const SizedBox(width: 6),
+                            const Text(
+                              "Time slot",
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            const Spacer(),
+                            Text(
+                              booking['slotStartTime'] ?? "",
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () => Navigator.pop(context),
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Text(
+                            "Keep it",
+                            style: TextStyle(color: Colors.black87),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            Navigator.pop(context);
+                            await context
+                                .read<ActiveBookingCubit>()
+                                .cancelBooking(
+                                  booking['id'],
+                                  booking['counterId'],
+                                  booking['slotStartTime'] ?? "",
+                                );
+                            _timer?.cancel();
+                            final prefs = await SharedPreferences.getInstance();
+                            await prefs.clear();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFE24B4A),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Text(
+                            "Yes, cancel",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
     );
   }
 

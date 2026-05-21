@@ -1,31 +1,30 @@
 import 'package:device_calendar/device_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:smart_queue/core/routing/app_routes.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
-import 'package:smart_queue/core/styling/app_styles.dart';
 import 'package:smart_queue/core/widgets/app_flushbar.dart';
 import 'package:smart_queue/core/widgets/app_top_bar.dart';
 import 'package:smart_queue/core/widgets/dropdown_shimmer.dart';
 import 'package:smart_queue/features/branch_booking/data/models/appointment_model.dart';
+import 'package:smart_queue/features/branch_booking/data/models/appointment_response_model.dart';
 import 'package:smart_queue/features/branch_booking/data/models/service_counter_model.dart';
-import 'package:smart_queue/features/branch_booking/presentation/cubit/active_booking_cubit.dart';
 import 'package:smart_queue/features/branch_booking/presentation/cubit/booking_cubit.dart';
 import 'package:smart_queue/features/branch_booking/presentation/cubit/service_counter_cubit.dart';
 import 'package:smart_queue/features/branch_booking/presentation/view/widgets/booking_section.dart';
 import 'package:smart_queue/features/branch_booking/presentation/view/widgets/branch_booking_listener.dart';
+import 'package:smart_queue/features/branch_booking/presentation/view/widgets/branch_info_header.dart';
 import 'package:smart_queue/features/branch_booking/presentation/view/widgets/custom_picker_field.dart';
+import 'package:smart_queue/features/branch_booking/presentation/view/widgets/empty_services.dart';
 import 'package:smart_queue/features/branch_booking/presentation/view/widgets/gradient_button.dart';
 import 'package:smart_queue/features/branch_booking/presentation/view/widgets/service_bottom_sheet.dart';
+import 'package:smart_queue/features/branch_booking/presentation/view/widgets/service_dropdown.dart';
 import 'package:smart_queue/features/branch_booking/presentation/view/widgets/slots_bottom_sheet.dart';
+import 'package:smart_queue/features/branch_booking/presentation/view/widgets/success_dialog.dart';
 import 'package:smart_queue/features/map/data/models/branch_model.dart';
-import 'package:smart_queue/features/timer/presentation/veiw/timer_screen.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
-import 'package:url_launcher/url_launcher.dart';
 
 class BranchBookingScreen extends StatefulWidget {
   final BranchModel branch;
@@ -47,7 +46,7 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
   void _fetchSlotsIfReady() {
     if (selectedService != null && selectedDate != null) {
       context.read<BookingCubit>().getSlots(
-        counterId: selectedService!.serviceId,
+        counterId: selectedService!.id,
         date: DateFormat('yyyy-MM-dd').format(selectedDate!),
       );
     }
@@ -74,10 +73,16 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
         });
       },
 
-      onBookingSuccess: () {
-        _addToCalendar();
+      onBookingSuccess: (appointment) {
+        SharedPreferences.getInstance().then((prefs) {
+          prefs.setInt('appointmentId', appointment.id);
+          prefs.setInt('counterId', appointment.counter.id);
+        });
+
+        _addToCalendar(appointment);
 
         final startParts = selectedSlot!['start']!.split(':');
+
         final slotStart = DateTime(
           selectedDate!.year,
           selectedDate!.month,
@@ -87,10 +92,18 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
         );
 
         final difference = slotStart.difference(DateTime.now());
+
         final hours = difference.inHours;
         final minutes = difference.inMinutes % 60;
 
-        _showSuccessDialog(context, hours, minutes, difference, slotStart);
+        _showSuccessDialog(
+          context,
+          hours,
+          minutes,
+          difference,
+          slotStart,
+          appointment,
+        );
       },
 
       onBookingError: (message) {},
@@ -117,7 +130,7 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
                   AppTopBar(),
                   const SizedBox(height: 10),
 
-                  _BranchInfoHeader(branch: widget.branch),
+                  BranchInfoHeader(branch: widget.branch),
 
                   const SizedBox(height: 30),
 
@@ -131,7 +144,7 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
                             }
                             if (state is ServiceCounterLoaded) {
                               if (state.serviceCounter.isEmpty) {
-                                return const _EmptyServices();
+                                return const EmptyServices();
                               }
                               return GestureDetector(
                                 onTap:
@@ -147,7 +160,7 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
                                         _fetchSlotsIfReady();
                                       },
                                     ),
-                                child: _ServiceDropdown(
+                                child: ServiceDropdown(
                                   selectedService: selectedService,
                                 ),
                               );
@@ -332,7 +345,7 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
     final request = AppointmentModel(
       date: DateFormat('yyyy-MM-dd').format(selectedDate!),
       startTime: "${selectedSlot!['start']}:00",
-      counterId: selectedService!.serviceId.toString(),
+      counterId: selectedService!.id.toString(),
       wantReminder: true,
       additionalInfo: "",
       paid: false,
@@ -367,117 +380,26 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
     int minutes,
     Duration difference,
     DateTime slotStart,
+    AppointmentResponseModel appointment,
   ) {
     showDialog(
       context: context,
       barrierDismissible: false,
       builder:
-          (_) => Dialog(
-            elevation: 0,
-            backgroundColor: Colors.transparent,
-            child: Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(25),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(15),
-                    decoration: BoxDecoration(
-                      color: Colors.green.withOpacity(0.1),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.check,
-                      color: Colors.green,
-                      size: 40,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  const Text(
-                    "Booking Confirmed 🎉",
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 10),
-                  const Text(
-                    "Your appointment has been successfully booked.\nYou can view it from your bookings.",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 14, color: Colors.grey),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    hours > 0
-                        ? "⏳ Estimated wait: ${hours}h ${minutes}m"
-                        : "⏳ Estimated wait: ${minutes}m",
-                    style: TextStyle(fontSize: 14, color: Colors.grey),
-                  ),
-                  const SizedBox(height: 25),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        TimerScreen.pendingDuration = difference;
-                        SharedPreferences.getInstance().then((prefs) {
-                          prefs.setString(
-                            'slot_start_time',
-                            slotStart.toIso8601String(),
-                          );
-
-                          prefs.setString('branchName', widget.branch.name);
-                          prefs.setString(
-                            'branchAddress',
-                            widget.branch.address ?? "",
-                          );
-                          prefs.setString(
-                            'serviceName',
-                            selectedService!.serviceName,
-                          );
-                          prefs.setString(
-                            'serviceDesc',
-                            selectedService!.serviceDescription,
-                          );
-                          prefs.setString(
-                            'createdAt',
-                            DateTime.now().toIso8601String(),
-                          );
-                        });
-
-                        context.read<ActiveBookingCubit>().setBooking({
-                          "branchName": widget.branch.name,
-                          "branchAddress": widget.branch.address,
-                          "serviceName": selectedService!.serviceName,
-                          "serviceDesc": selectedService!.serviceDescription,
-                          "slotStart": slotStart.toIso8601String(),
-                          "createdAt": DateTime.now().toIso8601String(),
-                        });
-
-                        context.pop();
-                        context.go(AppRoutes.main);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: Text(
-                        "Go To Home",
-                        style: TextStyle(color: AppColors.whiteColor),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          (_) => BookingSuccessDialog(
+            hours: hours,
+            minutes: minutes,
+            difference: difference,
+            slotStart: slotStart,
+            appointment: appointment,
+            branch: widget.branch,
+            selectedService: selectedService!,
+            selectedSlot: selectedSlot!,
           ),
     );
   }
 
-  Future<void> _addToCalendar() async {
+  Future<void> _addToCalendar(AppointmentResponseModel appointment) async {
     if (selectedService == null || selectedDate == null || selectedSlot == null)
       return;
 
@@ -514,8 +436,8 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
 
     final event = Event(
       calendars.first.id,
-      title: selectedService!.serviceName,
-      description: selectedService!.serviceDescription,
+      title: appointment.counter.service.name,
+      description: appointment.counter.service.description,
       location: widget.branch.address ?? "Branch",
       start: tz.TZDateTime.from(start, tz.local),
       end: tz.TZDateTime.from(end, tz.local),
@@ -525,230 +447,5 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
     event.eventId = "${selectedService!.serviceId}-${start.toIso8601String()}";
 
     await _deviceCalendarPlugin.createOrUpdateEvent(event);
-  }
-}
-
-class _BranchInfoHeader extends StatelessWidget {
-  final BranchModel branch;
-
-  const _BranchInfoHeader({required this.branch});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(branch.name, style: AppStyle.bold24black),
-        const SizedBox(height: 10),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.location_on, size: 16, color: Colors.grey),
-            const SizedBox(width: 4),
-            Text(branch.address ?? "No address"),
-          ],
-        ),
-        const SizedBox(height: 8),
-        InkWell(
-          onTap:
-              () => launchUrl(
-                Uri.parse(
-                  "https://www.google.com/maps/search/?api=1&query=${branch.lat},${branch.lng}",
-                ),
-              ),
-          borderRadius: BorderRadius.circular(8),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              color: Colors.green.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.map, size: 18, color: Colors.green),
-                SizedBox(width: 6),
-                Text(
-                  "View on Map",
-                  style: TextStyle(
-                    color: Colors.green,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(height: 5),
-        Text(branch.phone ?? "", style: const TextStyle(color: Colors.grey)),
-      ],
-    );
-  }
-}
-
-class _EmptyServices extends StatelessWidget {
-  const _EmptyServices();
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: const Column(
-        children: [
-          Icon(Icons.inbox_outlined, size: 40, color: Colors.grey),
-          SizedBox(height: 10),
-          Text("No Services yet", style: TextStyle(color: Colors.grey)),
-        ],
-      ),
-    );
-  }
-}
-
-class _ServiceDropdown extends StatelessWidget {
-  final ServiceCounterModel? selectedService;
-
-  const _ServiceDropdown({this.selectedService});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.whiteColor),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            selectedService?.serviceName ?? "Select a service",
-            style: TextStyle(fontSize: 18, color: Colors.grey[800]),
-          ),
-          const Icon(Icons.keyboard_arrow_down_sharp),
-        ],
-      ),
-    );
-  }
-}
-
-class _ServiceBottomSheet extends StatelessWidget {
-  final List<ServiceCounterModel> items;
-  final ServiceCounterModel? selectedService;
-  final void Function(ServiceCounterModel) onSelect;
-
-  const _ServiceBottomSheet({
-    required this.items,
-    required this.selectedService,
-    required this.onSelect,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 40,
-            height: 5,
-            margin: const EdgeInsets.only(bottom: 12),
-            decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-          const Text(
-            "Select Service",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 12),
-          Flexible(
-            child: ListView.separated(
-              shrinkWrap: true,
-              itemCount: items.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 10),
-              itemBuilder: (context, index) {
-                final item = items[index];
-                final isSelected = selectedService?.serviceId == item.serviceId;
-
-                return InkWell(
-                  borderRadius: BorderRadius.circular(16),
-                  onTap: () {
-                    onSelect(item);
-                    Navigator.pop(context);
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color:
-                          isSelected
-                              ? Colors.blue.withOpacity(0.08)
-                              : Colors.grey[100],
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: isSelected ? Colors.blue : Colors.transparent,
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                item.serviceName,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                item.serviceDescription,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey[600],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              "${item.servicePrice}",
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 6),
-                            Icon(
-                              Icons.circle,
-                              size: 10,
-                              color:
-                                  item.isOperational
-                                      ? Colors.green
-                                      : Colors.red,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }

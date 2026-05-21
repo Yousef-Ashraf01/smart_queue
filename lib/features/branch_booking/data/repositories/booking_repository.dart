@@ -13,12 +13,12 @@ class BookingRepository {
 
   BookingRepository(this.remote);
 
-  Future<Either<Failure, Unit>> createAppointment(
+  Future<Either<Failure, AppointmentResponseModel>> createAppointment(
     AppointmentModel appointment,
   ) async {
     try {
-      await remote.createAppointment(appointment);
-      return const Right(unit);
+      final result = await remote.createAppointment(appointment);
+      return Right(result);
     } on DioException catch (e) {
       return Left(handleDioError(e));
     } catch (e) {
@@ -98,6 +98,21 @@ class BookingRepository {
       );
 
       return Right(result);
+    } on DioException catch (e) {
+      return Left(handleDioError(e));
+    } catch (e) {
+      return Left(UnknownFailure(e.toString()));
+    }
+  }
+
+  Future<Either<Failure, Unit>> cancelAppointment(
+    int id,
+    int counterId,
+    String startTime,
+  ) async {
+    try {
+      await remote.cancelAppointment(id, counterId, startTime);
+      return const Right(unit);
     } on DioException catch (e) {
       return Left(handleDioError(e));
     } catch (e) {

@@ -3,12 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_queue/core/widgets/app_flushbar.dart';
 import 'package:smart_queue/features/branch_booking/presentation/cubit/booking_cubit.dart';
 
+import '../../../data/models/appointment_response_model.dart';
+
 class BranchBookingListener extends StatelessWidget {
   final Widget child;
 
   final Function(List slots) onSlotsLoaded;
   final VoidCallback onSlotsError;
-  final VoidCallback onBookingSuccess;
+  final Function(AppointmentResponseModel appointment) onBookingSuccess;
   final Function(String message) onBookingError;
 
   const BranchBookingListener({
@@ -40,7 +42,7 @@ class BranchBookingListener extends StatelessWidget {
         }
 
         if (state is BookingSuccess) {
-          onBookingSuccess();
+          onBookingSuccess(state.appointment);
         }
 
         if (state is BookingError) {

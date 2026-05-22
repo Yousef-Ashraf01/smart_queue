@@ -10,8 +10,14 @@ class BookingRemoteDataSource {
 
   BookingRemoteDataSource(this.dio);
 
-  Future<void> createAppointment(AppointmentModel appointment) async {
-    await dio.post(ApiEndpoints.appointments, data: appointment.toJson());
+  Future<AppointmentResponseModel> createAppointment(
+    AppointmentModel appointment,
+  ) async {
+    final response = await dio.post(
+      ApiEndpoints.appointments,
+      data: appointment.toJson(),
+    );
+    return AppointmentResponseModel.fromJson(response.data);
   }
 
   Future<List<ServiceModel>> getServices() async {
@@ -62,5 +68,24 @@ class BookingRemoteDataSource {
     );
 
     return response.data['slots'];
+  }
+
+  Future<void> cancelAppointment(
+    int id,
+    int counterId,
+    String startTime,
+  ) async {
+    await dio.patch(
+      '${ApiEndpoints.appointments}$id/',
+      data: {
+        "counter_id": counterId,
+        "canceled": true,
+        "date": DateTime.now().toIso8601String().split("T")[0],
+        "start_time": startTime,
+        "want_reminder": false,
+        "additional_info": "",
+        "attached_documents": [],
+      },
+    );
   }
 }

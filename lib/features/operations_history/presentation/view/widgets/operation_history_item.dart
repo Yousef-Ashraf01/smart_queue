@@ -159,6 +159,21 @@ class OperationHistoryItem extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
+
+                const Spacer(),
+
+                if (item.canceled)
+                  _StatusBadge(
+                    label: "Cancelled",
+                    color: const Color(0xffA32D2D),
+                    bg: const Color(0xffFCEBEB),
+                  )
+                else if (item.missed)
+                  _StatusBadge(
+                    label: "Missed",
+                    color: const Color(0xff854F0B),
+                    bg: const Color(0xffFAEEDA),
+                  ),
               ],
             ),
           ],
@@ -190,6 +205,37 @@ class _InfoChip extends StatelessWidget {
         const SizedBox(width: 4),
         Text(label, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
       ],
+    );
+  }
+}
+
+class _StatusBadge extends StatelessWidget {
+  final String label;
+  final Color color;
+  final Color bg;
+
+  const _StatusBadge({
+    required this.label,
+    required this.color,
+    required this.bg,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+          color: color,
+        ),
+      ),
     );
   }
 }

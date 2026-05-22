@@ -6,7 +6,10 @@ import 'package:smart_queue/core/styling/app_styles.dart';
 import 'package:smart_queue/core/widgets/app_flushbar.dart';
 import 'package:smart_queue/features/branch_booking/data/models/appointment_response_model.dart';
 import 'package:smart_queue/features/branch_booking/data/models/service_model.dart';
+import 'package:smart_queue/features/branch_booking/data/repositories/booking_repository.dart';
 import 'package:smart_queue/features/operations_history/presentation/cubit/appointment_details_cubit.dart';
+
+import '../../../../core/di/service_locator.dart';
 
 class UpdateAppointmentScreen extends StatefulWidget {
   final AppointmentResponseModel appointment;
@@ -46,11 +49,13 @@ class _UpdateAppointmentScreenState extends State<UpdateAppointmentScreen> {
     super.dispose();
   }
 
+  bool _isCheckingDate = false;
+
   Future<void> pickDate() async {
     final picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.parse(widget.appointment.date),
-      firstDate: DateTime(2000),
+      initialDate: DateTime.tryParse(dateController.text) ?? DateTime.now(),
+      firstDate: DateTime.now(),
       lastDate: DateTime(2100),
       builder: (context, child) {
         return Theme(
@@ -70,10 +75,44 @@ class _UpdateAppointmentScreenState extends State<UpdateAppointmentScreen> {
     );
 
     if (picked != null) {
-      setState(() {
-        dateController.text = picked.toIso8601String().split("T").first;
-      });
+      final dateStr = picked.toIso8601String().split("T").first;
+      await _validateAndSetDate(dateStr);
     }
+  }
+
+  Future<void> _validateAndSetDate(String dateStr) async {
+    setState(() => _isCheckingDate = true);
+
+    final result = await sl<BookingRepository>().getAvailableSlots(
+      counterId: widget.appointment.counter.id,
+      date: dateStr,
+    );
+
+    if (!mounted) return;
+    setState(() => _isCheckingDate = false);
+
+    result.fold(
+      (failure) {
+        // 400 = past date
+        AppFlushbar.show(
+          context,
+          message: "Cannot select a past date",
+          type: MessageType.error,
+        );
+      },
+      (slots) {
+        if (slots.isEmpty) {
+          // holiday or no slots
+          AppFlushbar.show(
+            context,
+            message: "No available slots on this date",
+            type: MessageType.warning,
+          );
+        } else {
+          setState(() => dateController.text = dateStr);
+        }
+      },
+    );
   }
 
   String formatTime(String time) {
@@ -157,7 +196,7 @@ class _UpdateAppointmentScreenState extends State<UpdateAppointmentScreen> {
     }
   }
 
-  void updateAppointment() {
+  void updateAppointment() async {
     if (dateController.text == widget.appointment.date &&
         startTimeController.text == widget.appointment.startTime &&
         endTimeController.text == widget.appointment.endTime) {
@@ -167,6 +206,43 @@ class _UpdateAppointmentScreenState extends State<UpdateAppointmentScreen> {
         type: MessageType.warning,
       );
       return;
+    }
+
+    if (dateController.text != widget.appointment.date) {
+      setState(() => _isCheckingDate = true);
+
+      final result = await sl<BookingRepository>().getAvailableSlots(
+        counterId: widget.appointment.counter.id,
+        date: dateController.text,
+      );
+
+      if (!mounted) return;
+      setState(() => _isCheckingDate = false);
+
+      bool canProceed = false;
+
+      result.fold(
+        (failure) {
+          AppFlushbar.show(
+            context,
+            message: "Cannot select a past date",
+            type: MessageType.error,
+          );
+        },
+        (slots) {
+          if (slots.isEmpty) {
+            AppFlushbar.show(
+              context,
+              message: "No available slots on this date",
+              type: MessageType.warning,
+            );
+          } else {
+            canProceed = true;
+          }
+        },
+      );
+
+      if (!canProceed) return;
     }
 
     setState(() => _isUpdating = true);
@@ -211,7 +287,7 @@ class _UpdateAppointmentScreenState extends State<UpdateAppointmentScreen> {
         }
       },
       builder: (context, state) {
-        final isLoading = _isUpdating;
+        final isLoading = _isUpdating || _isCheckingDate;
 
         return Scaffold(
           body: Stack(

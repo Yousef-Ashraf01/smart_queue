@@ -13,6 +13,7 @@ import 'package:smart_queue/features/branch_booking/data/datasources/booking_rem
 import 'package:smart_queue/features/branch_booking/data/datasources/service_counter_remote_data_source.dart';
 import 'package:smart_queue/features/branch_booking/data/repositories/booking_repository.dart';
 import 'package:smart_queue/features/branch_booking/data/repositories/service_counter_repository.dart';
+import 'package:smart_queue/features/branch_booking/presentation/cubit/active_booking_cubit.dart';
 import 'package:smart_queue/features/branch_booking/presentation/cubit/booking_cubit.dart';
 import 'package:smart_queue/features/branch_booking/presentation/cubit/service_counter_cubit.dart';
 import 'package:smart_queue/features/branch_booking/presentation/cubit/services_cubit.dart';
@@ -140,4 +141,8 @@ Future<void> setupServiceLocator() async {
   );
 
   sl.registerFactory<IdCubit>(() => IdCubit(sl<IdRepository>()));
+
+  sl.registerFactory<ActiveBookingCubit>(
+    () => ActiveBookingCubit(sl<BookingRepository>()),
+  );
 }

@@ -172,53 +172,6 @@ class _OperationsHistoryScreenState extends State<OperationsHistoryScreen> {
                               ),
                             );
                           },
-                          // itemBuilder: (context, index) {
-                          //   final item = state.operations[index];
-                          //
-                          //   // return AnimationConfiguration.staggeredList(
-                          //   //   position: index,
-                          //   //   duration: const Duration(milliseconds: 400),
-                          //   //   child: SlideAnimation(
-                          //   //     verticalOffset: 30,
-                          //   //     child: FadeInAnimation(
-                          //   //       child: OperationHistoryItem(
-                          //   //         title: "Appointment #${item.id}",
-                          //   //         location: item.address,
-                          //   //         date: item.id.toString(),
-                          //   //         imageAsset: AppAssets.imagePostal,
-                          //   //         isBookmarked: _bookmarkedIds.contains(
-                          //   //           item.id,
-                          //   //         ),
-                          //   //         onBookmarkTap:
-                          //   //             () => _toggleBookmark(item.id!),
-                          //   //         onTap: () async {
-                          //   //           final result = await context.push(
-                          //   //             AppRoutes.appointmentDetails,
-                          //   //             extra: item.id,
-                          //   //           );
-                          //   //
-                          //   //           if (result == true) {
-                          //   //             context
-                          //   //                 .read<OperationsCubit>()
-                          //   //                 .removeAppointment(item.id!);
-                          //   //           }
-                          //   //
-                          //   //           final isStillBookmarked =
-                          //   //               await _bookmarkService.isBookmarked(
-                          //   //                 item.id!,
-                          //   //               );
-                          //   //           if (!isStillBookmarked &&
-                          //   //               _bookmarkedIds.contains(item.id)) {
-                          //   //             setState(
-                          //   //               () => _bookmarkedIds.remove(item.id),
-                          //   //             );
-                          //   //           }
-                          //   //         },
-                          //   //       ),
-                          //   //     ),
-                          //   //   ),
-                          //   // );
-                          // },
                         ),
                       ),
                     );

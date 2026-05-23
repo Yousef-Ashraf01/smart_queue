@@ -2,7 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:smart_queue/core/utils/booking_keys.dart';
+import 'package:smart_queue/core/widgets/app_flushbar.dart';
 import 'package:smart_queue/core/widgets/notification_widget.dart';
 import 'package:smart_queue/features/branch_booking/presentation/cubit/active_booking_cubit.dart';
 import 'package:smart_queue/features/timer/presentation/veiw/widgets/gradient_button.dart';
@@ -37,7 +40,9 @@ class _TimerScreenState extends State<TimerScreen> {
     if (state is ActiveBookingLoaded) {
       final booking = state.booking;
 
-      final slotStart = DateTime.parse(booking['slotStart']);
+      final slotStartRaw = booking[BookingKeys.slotStart];
+      final slotStart = DateTime.parse(slotStartRaw);
+
       final createdAt = DateTime.parse(booking['createdAt']);
 
       final totalDuration = slotStart.difference(createdAt);
@@ -86,10 +91,11 @@ class _TimerScreenState extends State<TimerScreen> {
     return h != '00' ? "$h:$m:$s" : "$m:$s";
   }
 
-  double get _progress {
+  double get _remainingProgress {
     final total = _totalDuration.inSeconds;
-    if (total == 0) return 0;
-    return _remaining.inSeconds / total;
+    if (total <= 0) return 0;
+
+    return (_remaining.inSeconds / total).clamp(0.0, 1.0);
   }
 
   @override
@@ -99,6 +105,14 @@ class _TimerScreenState extends State<TimerScreen> {
       listener: (context, state) {
         if (state is ActiveBookingCancelled) {
           _timer?.cancel();
+        }
+
+        if (state is ActiveBookingError) {
+          AppFlushbar.show(
+            context,
+            message: state.message,
+            type: MessageType.error,
+          );
         }
       },
       child: Scaffold(
@@ -151,7 +165,7 @@ class _TimerScreenState extends State<TimerScreen> {
                   Center(
                     child: TimeCircle(
                       time: _formattedTime,
-                      progress: _progress,
+                      progress: _remainingProgress,
                     ),
                   ),
 
@@ -181,6 +195,9 @@ class _TimerScreenState extends State<TimerScreen> {
   }
 
   void _showCancelDialog(BuildContext context, Map booking) {
+    print("BOOKING MAP: $booking");
+    print("DATE TYPE: ${booking['booking_date']?.runtimeType}");
+    print("START TYPE: ${booking['slotStartTime']?.runtimeType}");
     showDialog(
       context: context,
       barrierDismissible: true,
@@ -278,7 +295,7 @@ class _TimerScreenState extends State<TimerScreen> {
                             ),
                             const Spacer(),
                             Text(
-                              booking['slotStartTime'] ?? "",
+                              booking[BookingKeys.slotStartTime] ?? "",
                               style: const TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w500,
@@ -312,13 +329,32 @@ class _TimerScreenState extends State<TimerScreen> {
                         child: ElevatedButton(
                           onPressed: () async {
                             Navigator.pop(context);
+
+                            final slotStart = DateTime.parse(
+                              booking[BookingKeys.slotStart],
+                            );
+
+                            final date = DateFormat(
+                              'yyyy-MM-dd',
+                            ).format(slotStart);
+                            final startTime =
+                                booking[BookingKeys.slotStartTime] ?? "";
+
+                            print("ID: ${booking[BookingKeys.appointmentId]}");
+                            print(
+                              "COUNTER ID: ${booking[BookingKeys.counterId]}",
+                            );
+                            print("DATE: $date");
+                            print("START: $startTime");
+                            final endTime = booking[BookingKeys.slotEnd] ?? "";
+                            print("END: $endTime");
+
                             await context
                                 .read<ActiveBookingCubit>()
                                 .cancelBooking(
-                                  booking['id'],
-                                  booking['counterId'],
-                                  booking['slotStartTime'] ?? "",
+                                  booking[BookingKeys.appointmentId],
                                 );
+
                             _timer?.cancel();
                             final prefs = await SharedPreferences.getInstance();
                             await prefs.clear();

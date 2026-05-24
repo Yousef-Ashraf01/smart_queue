@@ -105,13 +105,9 @@ class BookingRepository {
     }
   }
 
-  Future<Either<Failure, Unit>> cancelAppointment(
-    int id,
-    int counterId,
-    String startTime,
-  ) async {
+  Future<Either<Failure, Unit>> cancelAppointment(int id) async {
     try {
-      await remote.cancelAppointment(id, counterId, startTime);
+      await remote.cancelAppointment(id);
       return const Right(unit);
     } on DioException catch (e) {
       return Left(handleDioError(e));

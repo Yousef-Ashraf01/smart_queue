@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
+import 'package:smart_queue/core/utils/booking_keys.dart';
 import 'package:smart_queue/core/widgets/app_flushbar.dart';
 import 'package:smart_queue/core/widgets/app_top_bar.dart';
 import 'package:smart_queue/core/widgets/dropdown_shimmer.dart';
@@ -41,6 +42,13 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
   Map<String, String>? selectedSlot;
   List _cachedSlots = [];
 
+  String formatTime(String time) {
+    final parts = time.split(':');
+    final hour = parts[0].padLeft(2, '0');
+    final minute = parts[1].padLeft(2, '0');
+    return "$hour:$minute:00";
+  }
+
   final DeviceCalendarPlugin _deviceCalendarPlugin = DeviceCalendarPlugin();
 
   void _fetchSlotsIfReady() {
@@ -75,8 +83,26 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
 
       onBookingSuccess: (appointment) {
         SharedPreferences.getInstance().then((prefs) {
-          prefs.setInt('appointmentId', appointment.id);
-          prefs.setInt('counterId', appointment.counter.id);
+          prefs.setString(
+            BookingKeys.bookingDate,
+            DateFormat('yyyy-MM-dd').format(selectedDate!),
+          );
+          prefs.setString(
+            BookingKeys.slotStartTime,
+            formatTime(selectedSlot!['start']!),
+          );
+          prefs.setString(
+            BookingKeys.slotEnd,
+            formatTime(selectedSlot!['end']!),
+          );
+          prefs.setString(
+            BookingKeys.slotStart,
+            appointment.startTime.toString(),
+          );
+          prefs.setInt(BookingKeys.appointmentId, appointment.id);
+          prefs.setInt(BookingKeys.counterId, appointment.counter.id);
+          prefs.setInt(BookingKeys.serviceId, selectedService!.serviceId);
+          prefs.setString(BookingKeys.slotStartOnly, selectedSlot!['start']!);
         });
 
         _addToCalendar(appointment);
@@ -344,7 +370,7 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
 
     final request = AppointmentModel(
       date: DateFormat('yyyy-MM-dd').format(selectedDate!),
-      startTime: "${selectedSlot!['start']}:00",
+      startTime: formatTime(selectedSlot!['start']!),
       counterId: selectedService!.id.toString(),
       wantReminder: true,
       additionalInfo: "",

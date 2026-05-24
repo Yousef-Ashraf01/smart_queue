@@ -70,22 +70,10 @@ class BookingRemoteDataSource {
     return response.data['slots'];
   }
 
-  Future<void> cancelAppointment(
-    int id,
-    int counterId,
-    String startTime,
-  ) async {
+  Future<void> cancelAppointment(int id) async {
     await dio.patch(
       '${ApiEndpoints.appointments}$id/',
-      data: {
-        "counter_id": counterId,
-        "canceled": true,
-        "date": DateTime.now().toIso8601String().split("T")[0],
-        "start_time": startTime,
-        "want_reminder": false,
-        "additional_info": "",
-        "attached_documents": [],
-      },
+      data: {"canceled": true},
     );
   }
 }

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
+import 'package:smart_queue/core/utils/booking_keys.dart';
 import 'package:smart_queue/features/branch_booking/data/models/appointment_response_model.dart';
 import 'package:smart_queue/features/branch_booking/data/models/service_counter_model.dart';
 import 'package:smart_queue/features/branch_booking/presentation/cubit/active_booking_cubit.dart';
@@ -100,27 +101,44 @@ class BookingSuccessDialog extends StatelessWidget {
     TimerScreen.pendingDuration = difference;
 
     SharedPreferences.getInstance().then((prefs) {
-      prefs.setInt('appointmentId', appointment.id);
-      prefs.setInt('counterId', appointment.counter.id);
-      prefs.setString('slot_start_time', slotStart.toIso8601String());
-      prefs.setString('branchName', branch.name);
-      prefs.setString('branchAddress', branch.address ?? "");
-      prefs.setString('serviceName', selectedService.serviceName);
-      prefs.setString('serviceDesc', selectedService.serviceDescription);
-      prefs.setString('createdAt', DateTime.now().toIso8601String());
-      prefs.setString('slot_start_only', "${selectedSlot['start']}:00");
+      prefs.setInt(BookingKeys.appointmentId, appointment.id);
+      prefs.setInt(BookingKeys.counterId, appointment.counter.id);
+      prefs.setString(
+        BookingKeys.slotStart,
+        slotStart.toIso8601String(),
+      ); // ✅ "slot_start"
+      prefs.setString(
+        BookingKeys.slotStartOnly,
+        "${selectedSlot['start']}",
+      ); // ✅ "slot_start_only"
+      prefs.setString(
+        BookingKeys.slotEnd,
+        "${selectedSlot['end']}",
+      ); // ✅ "slot_end"
+      prefs.setString(BookingKeys.branchName, branch.name);
+      prefs.setString(BookingKeys.branchAddress, branch.address ?? "");
+      prefs.setString(BookingKeys.serviceName, selectedService.serviceName);
+      prefs.setString(
+        BookingKeys.serviceDesc,
+        selectedService.serviceDescription,
+      );
+      prefs.setString(BookingKeys.createdAt, DateTime.now().toIso8601String());
+      prefs.setInt(BookingKeys.serviceId, selectedService.serviceId);
     });
 
     context.read<ActiveBookingCubit>().setBooking({
-      "id": appointment.id,
-      "counterId": appointment.counter.id,
-      "branchName": branch.name,
-      "branchAddress": branch.address,
-      "serviceName": appointment.counter.service.name,
-      "serviceDesc": appointment.counter.service.description,
-      "slotStart": slotStart.toIso8601String(),
-      "createdAt": DateTime.now().toIso8601String(),
-      "slotStartTime": "${selectedSlot['start']}:00",
+      BookingKeys.appointmentId: appointment.id, // ✅ "id"
+      BookingKeys.counterId: appointment.counter.id, // ✅ "counterId"
+      BookingKeys.branchName: branch.name,
+      BookingKeys.branchAddress: branch.address,
+      BookingKeys.serviceName: appointment.counter.service.name,
+      BookingKeys.serviceDesc: appointment.counter.service.description,
+      BookingKeys.slotStart: slotStart.toIso8601String(), // ✅ أضفه
+      BookingKeys.slotStartTime:
+          "${selectedSlot['start']}:00", // = "08:20:00" ✅
+      BookingKeys.slotEnd: "${selectedSlot['end']}:00", // = "08:30:00" ✅
+      BookingKeys.createdAt: DateTime.now().toIso8601String(),
+      BookingKeys.serviceId: selectedService.serviceId,
     });
 
     context.pop();

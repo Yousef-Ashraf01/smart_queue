@@ -5,9 +5,9 @@ abstract class ActiveBookingState {}
 class ActiveBookingInitial extends ActiveBookingState {}
 
 class ActiveBookingLoaded extends ActiveBookingState {
-  final Map<String, dynamic> booking;
+  final List<Map<String, dynamic>> bookings;
 
-  ActiveBookingLoaded(this.booking);
+  ActiveBookingLoaded(this.bookings);
 }
 
 class ActiveBookingCancelling extends ActiveBookingState {}

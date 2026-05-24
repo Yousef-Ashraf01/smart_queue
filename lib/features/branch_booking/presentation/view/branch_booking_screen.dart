@@ -2,7 +2,6 @@ import 'package:device_calendar/device_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
 import 'package:smart_queue/core/utils/booking_keys.dart';
 import 'package:smart_queue/core/widgets/app_flushbar.dart';
@@ -11,6 +10,7 @@ import 'package:smart_queue/core/widgets/dropdown_shimmer.dart';
 import 'package:smart_queue/features/branch_booking/data/models/appointment_model.dart';
 import 'package:smart_queue/features/branch_booking/data/models/appointment_response_model.dart';
 import 'package:smart_queue/features/branch_booking/data/models/service_counter_model.dart';
+import 'package:smart_queue/features/branch_booking/presentation/cubit/active_booking_cubit.dart';
 import 'package:smart_queue/features/branch_booking/presentation/cubit/booking_cubit.dart';
 import 'package:smart_queue/features/branch_booking/presentation/cubit/service_counter_cubit.dart';
 import 'package:smart_queue/features/branch_booking/presentation/view/widgets/booking_section.dart';
@@ -82,29 +82,6 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
       },
 
       onBookingSuccess: (appointment) {
-        SharedPreferences.getInstance().then((prefs) {
-          prefs.setString(
-            BookingKeys.bookingDate,
-            DateFormat('yyyy-MM-dd').format(selectedDate!),
-          );
-          prefs.setString(
-            BookingKeys.slotStartTime,
-            formatTime(selectedSlot!['start']!),
-          );
-          prefs.setString(
-            BookingKeys.slotEnd,
-            formatTime(selectedSlot!['end']!),
-          );
-          prefs.setString(
-            BookingKeys.slotStart,
-            appointment.startTime.toString(),
-          );
-          prefs.setInt(BookingKeys.appointmentId, appointment.id);
-          prefs.setInt(BookingKeys.counterId, appointment.counter.id);
-          prefs.setInt(BookingKeys.serviceId, selectedService!.serviceId);
-          prefs.setString(BookingKeys.slotStartOnly, selectedSlot!['start']!);
-        });
-
         _addToCalendar(appointment);
 
         final startParts = selectedSlot!['start']!.split(':');
@@ -118,9 +95,34 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
         );
 
         final difference = slotStart.difference(DateTime.now());
-
         final hours = difference.inHours;
         final minutes = difference.inMinutes % 60;
+
+        // Resolve organization name from branch organizationId
+        final orgName = (widget.branch.organizationId == 1)
+            ? 'Egyptian Post'
+            : (widget.branch.organizationId == 2
+                ? 'Traffic Department'
+                : widget.branch.name);
+
+        // Build the booking map and add it to the active bookings list
+        final bookingData = <String, dynamic>{
+          'id': appointment.id,
+          'counterId': appointment.counter.id,
+          BookingKeys.branchName: widget.branch.name,
+          BookingKeys.branchAddress: widget.branch.address ?? "",
+          BookingKeys.serviceName: appointment.counter.service.name,
+          BookingKeys.serviceDesc: appointment.counter.service.description,
+          BookingKeys.slotStart: slotStart.toIso8601String(),
+          BookingKeys.slotStartTime: '${selectedSlot!["start"]}:00',
+          BookingKeys.slotEnd: '${selectedSlot!["end"]}:00',
+          BookingKeys.bookingDate: DateFormat('yyyy-MM-dd').format(selectedDate!),
+          'createdAt': DateTime.now().toIso8601String(),
+          'serviceId': selectedService!.serviceId,
+          'orgName': orgName,
+        };
+
+        context.read<ActiveBookingCubit>().addBooking(bookingData);
 
         _showSuccessDialog(
           context,

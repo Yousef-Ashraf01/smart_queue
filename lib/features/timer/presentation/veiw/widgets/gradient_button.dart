@@ -3,8 +3,14 @@ import 'package:flutter/material.dart';
 class GradientButton extends StatefulWidget {
   final String text;
   final VoidCallback onTap;
+  final bool enabled;
 
-  const GradientButton({super.key, required this.text, required this.onTap});
+  const GradientButton({
+    super.key,
+    required this.text,
+    required this.onTap,
+    this.enabled = true,
+  });
 
   @override
   State<GradientButton> createState() => _GradientButtonState();
@@ -16,18 +22,21 @@ class _GradientButtonState extends State<GradientButton> {
   @override
   Widget build(BuildContext context) {
     return AnimatedScale(
-      scale: _isPressed ? 0.97 : 1.0,
+      scale: widget.enabled && _isPressed ? 0.97 : 1.0,
       duration: const Duration(milliseconds: 120),
       child: Material(
         borderRadius: BorderRadius.circular(28),
+        color: Colors.transparent,
         child: InkWell(
-          onTap: widget.onTap,
+          onTap: widget.enabled ? widget.onTap : null,
           onHighlightChanged: (value) {
-            setState(() => _isPressed = value);
+            if (widget.enabled) {
+              setState(() => _isPressed = value);
+            }
           },
           borderRadius: BorderRadius.circular(28),
-          splashColor: Colors.white.withValues(alpha: 0.2),
-          highlightColor: Colors.white.withValues(alpha: 0.08),
+          splashColor: widget.enabled ? Colors.white.withValues(alpha: 0.2) : Colors.transparent,
+          highlightColor: widget.enabled ? Colors.white.withValues(alpha: 0.08) : Colors.transparent,
           child: Ink(
             height: 60,
             width: double.infinity,
@@ -36,10 +45,11 @@ class _GradientButtonState extends State<GradientButton> {
               gradient: LinearGradient(
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
-                colors:
-                    _isPressed
-                        ? [Color(0xFF702E2E), Color(0xFFFF3C3C)]
-                        : [Color(0xFFFF3C3C), Color(0xFF702E2E)],
+                colors: !widget.enabled
+                    ? [Colors.grey[400]!, Colors.grey[500]!]
+                    : _isPressed
+                        ? [const Color(0xFF702E2E), const Color(0xFFFF3C3C)]
+                        : [const Color(0xFFFF3C3C), const Color(0xFF702E2E)],
               ),
             ),
             child: Center(
@@ -50,15 +60,15 @@ class _GradientButtonState extends State<GradientButton> {
                     width: 18,
                     height: 18,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: widget.enabled ? Colors.white : Colors.white70,
                       borderRadius: BorderRadius.circular(6),
                     ),
                   ),
                   const SizedBox(width: 10),
                   Text(
                     widget.text,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: widget.enabled ? Colors.white : Colors.white.withOpacity(0.8),
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
                     ),

@@ -13,4 +13,5 @@ class BookingKeys {
   static const createdAt = 'createdAt';
   static const cancelledIds = 'cancelled_service_ids';
   static const serviceId = 'serviceId';
+  static const cancelledServiceIds = 'actually_cancelled_service_ids';
 }

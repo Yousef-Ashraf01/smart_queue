@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:smart_queue/features/branch_booking/presentation/cubit/active_booking_cubit.dart';
 import 'package:smart_queue/features/home/presentation/view/home_screen.dart';
 import 'package:smart_queue/features/operations_history/presentation/view/operations_history_screen.dart';
 import 'package:smart_queue/features/profile_settings/presentation/view/profile_settings_screen.dart';
@@ -26,27 +23,9 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
-  void _loadBooking() async {
-    final prefs = await SharedPreferences.getInstance();
-
-    final slotStart = prefs.getString('slot_start_time');
-
-    if (slotStart != null) {
-      context.read<ActiveBookingCubit>().setBooking({
-        "branchName": prefs.getString('branchName'),
-        "branchAddress": prefs.getString('branchAddress'),
-        "serviceName": prefs.getString('serviceName'),
-        "serviceDesc": prefs.getString('serviceDesc'),
-        "slotStart": slotStart,
-        "createdAt": prefs.getString('createdAt'),
-      });
-    }
-  }
-
   @override
   void initState() {
     super.initState();
-    _loadBooking();
   }
 
   final screens = [

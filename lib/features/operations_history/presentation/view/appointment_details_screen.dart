@@ -1,6 +1,7 @@
 import 'package:device_calendar/device_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
@@ -8,6 +9,7 @@ import 'package:smart_queue/core/widgets/app_flushbar.dart';
 import 'package:smart_queue/features/branch_booking/data/models/appointment_response_model.dart';
 import 'package:smart_queue/features/branch_booking/data/models/service_model.dart';
 import 'package:smart_queue/features/operations_history/presentation/cubit/appointment_details_cubit.dart';
+import 'package:smart_queue/features/operations_history/presentation/cubit/feedback_cubit.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 class AppointmentDetailsScreen extends StatefulWidget {
@@ -25,6 +27,7 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
   void initState() {
     super.initState();
     context.read<AppointmentDetailsCubit>().fetchById(widget.id);
+    context.read<FeedbackCubit>().loadFeedback(widget.id);
   }
 
   @override
@@ -455,6 +458,11 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
             ),
           ),
 
+          const SizedBox(height: 10),
+
+          // ── Feedback ──────────────────────────────────────────────────
+          _buildFeedbackSection(item),
+
           const SizedBox(height: 24),
 
           // ── Actions ───────────────────────────────────────────────────
@@ -562,6 +570,183 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
       ),
       child: child,
     );
+  }
+
+  Widget _buildFeedbackSection(AppointmentResponseModel item) {
+    final now = DateTime.now();
+    final bool isPast = _isInPast(item);
+    final bool isActive = !item.canceled && !item.missed;
+
+    if (!isPast && isActive) {
+      return _sectionCard(
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: const Color(0xffFFF8E1),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Icon(
+                Icons.pending_actions_outlined,
+                color: Colors.orange,
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 12),
+            const Text(
+              "Appointment is Pending",
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.orange,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (isPast && isActive) {
+      return BlocConsumer<FeedbackCubit, FeedbackState>(
+        listener: (context, state) {
+          if (state is FeedbackError) {
+            AppFlushbar.show(
+              context,
+              message: state.message,
+              type: MessageType.error,
+            );
+          }
+          if (state is FeedbackSubmitted) {
+            AppFlushbar.show(
+              context,
+              message: "Feedback submitted successfully!",
+              type: MessageType.success,
+            );
+
+            context.read<FeedbackCubit>().loadFeedback(item.id);
+          }
+        },
+        builder: (context, state) {
+          if (state is FeedbackLoaded && state.feedbacks.isNotEmpty) {
+            return _feedbackDisplay(state.feedbacks.first.feedback);
+          }
+
+          return _feedbackForm(item.id, state);
+        },
+      );
+    }
+
+    return const SizedBox();
+  }
+
+  Widget _feedbackDisplay(String feedbackText) {
+    return _sectionCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _sectionLabel("Your Feedback"),
+          const SizedBox(height: 10),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: const Color(0xffE1F5EE),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(
+                  Icons.rate_review_outlined,
+                  color: Color(0xff0F6E56),
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Completed",
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Color(0xff0F6E56),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      feedbackText,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _feedbackForm(int appointmentId, FeedbackState state) {
+    return _sectionCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: const Color(0xffE1F5EE),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(
+                  Icons.check_circle_outline,
+                  color: Color(0xff0F6E56),
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              const Text(
+                "Appointment Completed",
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Color(0xff0F6E56),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+          _FeedbackFormWidget(
+            appointmentId: appointmentId,
+            isSubmitting: state is FeedbackSubmitting,
+          ),
+        ],
+      ),
+    );
+  }
+
+  bool _isInPast(AppointmentResponseModel item) {
+    try {
+      final dateParts = item.date.split("-");
+      final timeParts = item.endTime.split(":");
+      final endDateTime = DateTime(
+        int.parse(dateParts[0]),
+        int.parse(dateParts[1]),
+        int.parse(dateParts[2]),
+        int.parse(timeParts[0]),
+        int.parse(timeParts[1]),
+      );
+      return DateTime.now().isAfter(endDateTime);
+    } catch (_) {
+      return false;
+    }
   }
 
   Widget _sectionLabel(String text) {
@@ -940,5 +1125,103 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
     );
 
     return endDate.difference(startDate);
+  }
+}
+
+class _FeedbackFormWidget extends StatefulWidget {
+  final int appointmentId;
+  final bool isSubmitting;
+
+  const _FeedbackFormWidget({
+    required this.appointmentId,
+    required this.isSubmitting,
+  });
+
+  @override
+  State<_FeedbackFormWidget> createState() => _FeedbackFormWidgetState();
+}
+
+class _FeedbackFormWidgetState extends State<_FeedbackFormWidget> {
+  double _rating = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 14),
+        _sectionLabel("Rate your experience"),
+        const SizedBox(height: 12),
+        Center(
+          child: RatingBar.builder(
+            initialRating: _rating,
+            minRating: 1,
+            direction: Axis.horizontal,
+            allowHalfRating: false,
+            itemCount: 5,
+            itemSize: 36,
+            unratedColor: Colors.grey.shade200,
+            itemBuilder:
+                (context, _) =>
+                    const Icon(Icons.star_rounded, color: Color(0xff0F6E56)),
+            onRatingUpdate: (rating) {
+              setState(() => _rating = rating);
+            },
+          ),
+        ),
+        const SizedBox(height: 12),
+        GestureDetector(
+          onTap:
+              widget.isSubmitting || _rating == 0
+                  ? null
+                  : () {
+                    context.read<FeedbackCubit>().submitFeedback(
+                      appointmentId: widget.appointmentId,
+                      feedback: _rating.toInt().toString(),
+                    );
+                  },
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 14),
+            decoration: BoxDecoration(
+              color:
+                  _rating == 0 ? Colors.grey.shade300 : const Color(0xff0F6E56),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Center(
+              child:
+                  widget.isSubmitting
+                      ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                      : const Text(
+                        "Submit Feedback",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _sectionLabel(String text) {
+    return Text(
+      text,
+      style: const TextStyle(
+        fontSize: 13,
+        color: Colors.grey,
+        fontWeight: FontWeight.w500,
+      ),
+    );
   }
 }

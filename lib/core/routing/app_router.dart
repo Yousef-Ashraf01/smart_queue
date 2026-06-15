@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
@@ -22,6 +23,7 @@ import 'package:smart_queue/features/main/main_screen.dart';
 import 'package:smart_queue/features/map/data/models/branch_model.dart';
 import 'package:smart_queue/features/map/presentation/view/map_screen.dart';
 import 'package:smart_queue/features/operations_history/presentation/cubit/appointment_details_cubit.dart';
+import 'package:smart_queue/features/operations_history/presentation/cubit/feedback_cubit.dart';
 import 'package:smart_queue/features/operations_history/presentation/cubit/operations_cubit.dart';
 import 'package:smart_queue/features/operations_history/presentation/view/appointment_details_screen.dart';
 import 'package:smart_queue/features/operations_history/presentation/view/update_appointment_screen.dart';
@@ -39,10 +41,13 @@ import 'package:smart_queue/features/welcome/presentation/view/welcome_screen.da
 import '../di/service_locator.dart';
 
 class AppRouter {
+  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
   static GoRouter createRouter(AuthCubit authCubit) {
     final authNotifier = AuthNotifier(authCubit);
 
     return GoRouter(
+      navigatorKey: navigatorKey,
       refreshListenable: authNotifier,
       initialLocation: AppRoutes.welcome,
 
@@ -156,8 +161,11 @@ class AppRouter {
           builder: (context, state) {
             final id = state.extra as int;
 
-            return BlocProvider(
-              create: (_) => sl<AppointmentDetailsCubit>(),
+            return MultiBlocProvider(
+              providers: [
+                BlocProvider(create: (_) => sl<AppointmentDetailsCubit>()),
+                BlocProvider(create: (_) => sl<FeedbackCubit>()),
+              ],
               child: AppointmentDetailsScreen(id: id),
             );
           },

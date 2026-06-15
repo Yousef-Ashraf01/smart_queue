@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
 import 'package:smart_queue/features/welcome/presentation/view/widgets/hello_illustration.dart';
 import 'package:smart_queue/features/welcome/presentation/view/widgets/login_button.dart';
@@ -111,10 +112,10 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        const Text(
-                          'Manage your queue\nsmarter and faster',
+                        Text(
+                          'welcome_title'.tr(),
                           textAlign: TextAlign.center,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.w800,
                             color: Color(0xFF0D2D35),
@@ -123,10 +124,10 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                           ),
                         ),
                         const SizedBox(height: 10),
-                        const Text(
-                          'Register using your National ID and\naccess services easily.',
+                        Text(
+                          'welcome_desc'.tr(),
                           textAlign: TextAlign.center,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 14,
                             color: Colors.grey,
                             height: 1.5,

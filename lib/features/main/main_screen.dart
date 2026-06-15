@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:smart_queue/features/branch_booking/presentation/cubit/active_booking_cubit.dart';
 import 'package:smart_queue/features/home/presentation/view/home_screen.dart';
 import 'package:smart_queue/features/operations_history/presentation/view/operations_history_screen.dart';
 import 'package:smart_queue/features/profile_settings/presentation/view/profile_settings_screen.dart';
@@ -44,7 +46,13 @@ class _MainScreenState extends State<MainScreen> {
       extendBody: true,
       body:
           currentIndex == 1
-              ? TimerScreen(initialDuration: TimerScreen.pendingDuration)
+              ? BlocBuilder<ActiveBookingCubit, ActiveBookingState>(
+                builder: (context, state) {
+                  return TimerScreen(
+                    initialDuration: TimerScreen.pendingDuration,
+                  );
+                },
+              )
               : [
                 HomeScreen(),
                 const OperationsHistoryScreen(),

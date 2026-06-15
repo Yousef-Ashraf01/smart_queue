@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class LoginButton extends StatelessWidget {
   final VoidCallback onTap;
@@ -21,9 +22,9 @@ class LoginButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(30),
           ),
         ),
-        child: const Text(
-          'Login',
-          style: TextStyle(
+        child: Text(
+          'login'.tr(),
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
             color: Color.fromARGB(255, 11, 58, 30),

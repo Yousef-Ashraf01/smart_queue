@@ -29,12 +29,7 @@ class _TimerScreenState extends State<TimerScreen> {
   Timer? _ticker;
   final PageController _pageController = PageController();
   int _currentPage = 0;
-  // Per-booking countdown state: keyed by appointment id
-  final Map<int, Duration> _remainingMap = {};
-  final Map<int, Duration> _totalDurationMap = {};
-  Timer? _ticker;
-  final PageController _pageController = PageController();
-  int _currentPage = 0;
+  List<Map<String, dynamic>> _lastBookings = [];
 
   @override
   void initState() {
@@ -73,6 +68,9 @@ class _TimerScreenState extends State<TimerScreen> {
 
     try {
       final slotStartRaw = booking[BookingKeys.slotStart] as String?;
+      if (slotStartRaw != null) {
+        final slotStart = DateTime.tryParse(slotStartRaw);
+      }
       final createdAtRaw = booking['createdAt'] as String?;
       if (slotStartRaw == null || createdAtRaw == null) return;
 
@@ -258,6 +256,9 @@ class _TimerScreenState extends State<TimerScreen> {
       },
       child: BlocBuilder<ActiveBookingCubit, ActiveBookingState>(
         builder: (context, state) {
+          if (state is ActiveBookingLoaded && state.bookings.isNotEmpty) {
+            _lastBookings = state.bookings;
+          }
           return Scaffold(
             body: Container(
               width: double.infinity,
@@ -270,7 +271,16 @@ class _TimerScreenState extends State<TimerScreen> {
               ),
               child: SafeArea(
                 child:
-                    state is ActiveBookingLoaded && state.bookings.isNotEmpty
+                    state is ActiveBookingLoading
+                        ? const Center(
+                          child: CircularProgressIndicator(
+                            color: Color(0xff1A9E7A),
+                          ),
+                        )
+                        : state is ActiveBookingCancelling
+                        ? _buildMultiBookingView(_lastBookings)
+                        : state is ActiveBookingLoaded &&
+                            state.bookings.isNotEmpty
                         ? _buildMultiBookingView(state.bookings)
                         : _buildEmptyState(context),
               ),

@@ -6,6 +6,7 @@ import 'package:smart_queue/features/operations_history/presentation/view/operat
 import 'package:smart_queue/features/profile_settings/presentation/view/profile_settings_screen.dart';
 import 'package:smart_queue/features/timer/presentation/veiw/timer_screen.dart';
 
+
 import 'widgets/center_fab.dart';
 import 'widgets/custom_bottom_bar.dart';
 
@@ -29,6 +30,7 @@ class _MainScreenState extends State<MainScreen> {
   void initState() {
     super.initState();
   }
+
 
   final screens = [
     HomeScreen(),

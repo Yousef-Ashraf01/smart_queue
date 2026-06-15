@@ -98,35 +98,6 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
         final hours = difference.inHours;
         final minutes = difference.inMinutes % 60;
 
-        // Resolve organization name from branch organizationId
-        final orgName =
-            (widget.branch.organizationId == 1)
-                ? 'Egyptian Post'
-                : (widget.branch.organizationId == 2
-                    ? 'Traffic Department'
-                    : widget.branch.name);
-
-        // Build the booking map and add it to the active bookings list
-        final bookingData = <String, dynamic>{
-          'id': appointment.id,
-          'counterId': appointment.counter.id,
-          BookingKeys.branchName: widget.branch.name,
-          BookingKeys.branchAddress: widget.branch.address ?? "",
-          BookingKeys.serviceName: appointment.counter.service.name,
-          BookingKeys.serviceDesc: appointment.counter.service.description,
-          BookingKeys.slotStart: slotStart.toIso8601String(),
-          BookingKeys.slotStartTime: '${selectedSlot!["start"]}:00',
-          BookingKeys.slotEnd: '${selectedSlot!["end"]}:00',
-          BookingKeys.bookingDate: DateFormat(
-            'yyyy-MM-dd',
-          ).format(selectedDate!),
-          'createdAt': DateTime.now().toIso8601String(),
-          'serviceId': selectedService!.serviceId,
-          'orgName': orgName,
-        };
-
-        context.read<ActiveBookingCubit>().addBooking(bookingData);
-
         _showSuccessDialog(
           context,
           hours,

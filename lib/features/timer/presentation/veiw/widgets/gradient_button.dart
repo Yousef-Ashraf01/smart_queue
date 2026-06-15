@@ -35,14 +35,8 @@ class _GradientButtonState extends State<GradientButton> {
             }
           },
           borderRadius: BorderRadius.circular(28),
-          splashColor:
-              widget.enabled
-                  ? Colors.white.withValues(alpha: 0.2)
-                  : Colors.transparent,
-          highlightColor:
-              widget.enabled
-                  ? Colors.white.withValues(alpha: 0.08)
-                  : Colors.transparent,
+          splashColor: widget.enabled ? Colors.white.withValues(alpha: 0.2) : Colors.transparent,
+          highlightColor: widget.enabled ? Colors.white.withValues(alpha: 0.08) : Colors.transparent,
           child: Ink(
             height: 60,
             width: double.infinity,
@@ -51,10 +45,9 @@ class _GradientButtonState extends State<GradientButton> {
               gradient: LinearGradient(
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
-                colors:
-                    !widget.enabled
-                        ? [Colors.grey[400]!, Colors.grey[500]!]
-                        : _isPressed
+                colors: !widget.enabled
+                    ? [Colors.grey[400]!, Colors.grey[500]!]
+                    : _isPressed
                         ? [const Color(0xFF702E2E), const Color(0xFFFF3C3C)]
                         : [const Color(0xFFFF3C3C), const Color(0xFF702E2E)],
               ),
@@ -75,10 +68,7 @@ class _GradientButtonState extends State<GradientButton> {
                   Text(
                     widget.text,
                     style: TextStyle(
-                      color:
-                          widget.enabled
-                              ? Colors.white
-                              : Colors.white.withOpacity(0.8),
+                      color: widget.enabled ? Colors.white : Colors.white.withOpacity(0.8),
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
                     ),

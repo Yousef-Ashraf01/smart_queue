@@ -7,6 +7,7 @@ import 'package:smart_queue/features/branch_booking/data/models/service_counter_
 import 'package:smart_queue/features/map/data/models/branch_model.dart';
 import 'package:smart_queue/features/timer/presentation/veiw/timer_screen.dart';
 
+
 class BookingSuccessDialog extends StatelessWidget {
   final int hours;
   final int minutes;

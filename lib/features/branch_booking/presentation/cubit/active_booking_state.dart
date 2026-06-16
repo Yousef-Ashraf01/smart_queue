@@ -10,6 +10,8 @@ class ActiveBookingLoaded extends ActiveBookingState {
   ActiveBookingLoaded(this.bookings);
 }
 
+class ActiveBookingLoading extends ActiveBookingState {}
+
 class ActiveBookingCancelling extends ActiveBookingState {}
 
 class ActiveBookingCancelled extends ActiveBookingState {}

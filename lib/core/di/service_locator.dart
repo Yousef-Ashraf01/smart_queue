@@ -23,7 +23,10 @@ import 'package:smart_queue/features/home/presentation/cubit/organization_cubit.
 import 'package:smart_queue/features/map/data/datasources/branch_remote_data_source.dart';
 import 'package:smart_queue/features/map/data/repositories/branch_repository.dart';
 import 'package:smart_queue/features/map/presentation/cubit/branch_cubit.dart';
+import 'package:smart_queue/features/operations_history/data/datasources/feedback_remote_data_source.dart';
+import 'package:smart_queue/features/operations_history/data/repositories/feedback_repository.dart';
 import 'package:smart_queue/features/operations_history/presentation/cubit/appointment_details_cubit.dart';
+import 'package:smart_queue/features/operations_history/presentation/cubit/feedback_cubit.dart';
 import 'package:smart_queue/features/operations_history/presentation/cubit/operations_cubit.dart';
 import 'package:smart_queue/features/personal_info/data/datasources/personal_info_remote_data_source.dart';
 import 'package:smart_queue/features/personal_info/data/repositories/personal_info_repository.dart';
@@ -127,7 +130,19 @@ Future<void> setupServiceLocator() async {
     () => ChangePasswordCubit(sl<ChangePasswordRepository>()),
   );
   sl.registerFactory<AppointmentDetailsCubit>(
-    () => AppointmentDetailsCubit(sl<BookingRepository>()),
+    () => AppointmentDetailsCubit(sl<BookingRepository>(), sl<FeedbackCubit>()),
+  );
+
+  sl.registerLazySingleton<FeedbackRemoteDataSource>(
+    () => FeedbackRemoteDataSource(sl<DioClient>().dio),
+  );
+
+  sl.registerLazySingleton<FeedbackRepository>(
+    () => FeedbackRepository(sl<FeedbackRemoteDataSource>()),
+  );
+
+  sl.registerFactory<FeedbackCubit>(
+    () => FeedbackCubit(sl<FeedbackRepository>()),
   );
 
   sl.registerLazySingleton<BookmarkService>(() => BookmarkService());
@@ -142,7 +157,7 @@ Future<void> setupServiceLocator() async {
 
   sl.registerFactory<IdCubit>(() => IdCubit(sl<IdRepository>()));
 
-  sl.registerFactory<ActiveBookingCubit>(
+  sl.registerLazySingleton<ActiveBookingCubit>(
     () => ActiveBookingCubit(sl<BookingRepository>()),
   );
 }

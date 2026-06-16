@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:smart_queue/core/services/notification_service.dart';
 import 'package:smart_queue/core/utils/booking_keys.dart';
 import 'package:smart_queue/features/branch_booking/data/repositories/booking_repository.dart';
 
@@ -15,6 +16,7 @@ class ActiveBookingCubit extends Cubit<ActiveBookingState> {
   }
 
   Future<void> loadFromPrefs() async {
+    emit(ActiveBookingLoading());
     final prefs = await SharedPreferences.getInstance();
     final List<String> list = prefs.getStringList('active_bookings_list') ?? [];
 
@@ -45,7 +47,14 @@ class ActiveBookingCubit extends Cubit<ActiveBookingState> {
           "branchAddress": prefs.getString(BookingKeys.branchAddress) ?? "",
           "serviceName": prefs.getString(BookingKeys.serviceName) ?? "",
           "serviceDesc": prefs.getString(BookingKeys.serviceDesc) ?? "",
-          BookingKeys.slotStart: prefs.getString(BookingKeys.slotStart) ?? "",
+          BookingKeys.slotStart: () {
+            final date = prefs.getString(BookingKeys.bookingDate) ?? "";
+            final time = prefs.getString(BookingKeys.slotStartOnly) ?? "";
+            if (date.isNotEmpty && time.isNotEmpty) {
+              return "${date}T${time}";
+            }
+            return "";
+          }(),
           BookingKeys.slotEnd: prefs.getString(BookingKeys.slotEnd) ?? "",
           "createdAt": prefs.getString(BookingKeys.createdAt) ?? "",
           BookingKeys.slotStartTime:
@@ -91,13 +100,24 @@ class ActiveBookingCubit extends Cubit<ActiveBookingState> {
         final Map<String, dynamic> booking =
             jsonDecode(item) as Map<String, dynamic>;
 
-        // ── Skip expired bookings (slot time already passed) ──
         final slotStartRaw = booking[BookingKeys.slotStart] as String?;
         if (slotStartRaw != null) {
           final slotStart = DateTime.tryParse(slotStartRaw);
           if (slotStart != null && slotStart.isBefore(DateTime.now())) {
-            // Expired — don't add, don't persist
             continue;
+          }
+
+          // Re-schedule / synchronize reminders with the OS on load
+          final bookingId = booking['id'] as int?;
+          final orgName = booking['orgName'] as String? ?? 'Egyptian Post';
+          final serviceName = booking['serviceName'] as String? ?? '';
+          if (bookingId != null && slotStart != null) {
+            NotificationService.scheduleBookingReminders(
+              bookingId: bookingId,
+              orgName: orgName,
+              serviceName: serviceName,
+              slotStart: slotStart,
+            );
           }
         }
 
@@ -136,7 +156,7 @@ class ActiveBookingCubit extends Cubit<ActiveBookingState> {
     final bookingWithCancel = Map<String, dynamic>.from(booking);
     bookingWithCancel['canCancel'] = canCancel;
 
-    // Check if it already exists in the list by id to prevent duplicates
+    // شيل لو موجود عشان تمنع duplicates
     list.removeWhere((item) {
       try {
         final b = jsonDecode(item) as Map;
@@ -148,6 +168,23 @@ class ActiveBookingCubit extends Cubit<ActiveBookingState> {
 
     list.add(jsonEncode(bookingWithCancel));
     await prefs.setStringList('active_bookings_list', list);
+
+    // Schedule local notification reminders
+    final slotStartRaw = booking[BookingKeys.slotStart] as String?;
+    final bookingId = booking['id'] as int?;
+    final orgName = booking['orgName'] as String? ?? 'Egyptian Post';
+    final serviceName = booking['serviceName'] as String? ?? '';
+    if (slotStartRaw != null && bookingId != null) {
+      try {
+        final slotStart = DateTime.parse(slotStartRaw);
+        NotificationService.scheduleBookingReminders(
+          bookingId: bookingId,
+          orgName: orgName,
+          serviceName: serviceName,
+          slotStart: slotStart,
+        );
+      } catch (_) {}
+    }
 
     // Update state
     final List<Map<String, dynamic>> currentBookings = [];
@@ -166,6 +203,9 @@ class ActiveBookingCubit extends Cubit<ActiveBookingState> {
   }
 
   Future<void> removeBooking(int id) async {
+    // Cancel any scheduled local notification reminders
+    await NotificationService.cancelBookingReminders(id);
+
     final prefs = await SharedPreferences.getInstance();
     final List<String> list = prefs.getStringList('active_bookings_list') ?? [];
 
@@ -242,6 +282,8 @@ class ActiveBookingCubit extends Cubit<ActiveBookingState> {
     result.fold((failure) => emit(ActiveBookingError(failure.message)), (
       _,
     ) async {
+      await NotificationService.cancelBookingReminders(id);
+
       cancelledIds.add(appointmentId);
       await prefs.setStringList(BookingKeys.cancelledIds, cancelledIds);
 
@@ -253,7 +295,6 @@ class ActiveBookingCubit extends Cubit<ActiveBookingState> {
         );
       }
 
-      // Remove from preferences list
       final List<String> list =
           prefs.getStringList('active_bookings_list') ?? [];
       list.removeWhere((item) {
@@ -266,16 +307,17 @@ class ActiveBookingCubit extends Cubit<ActiveBookingState> {
       });
       await prefs.setStringList('active_bookings_list', list);
 
-      // Update state
       final updatedBookings =
           currentBookings.where((b) => b['id'] != id).toList();
+
+      // ← اعمل emit للـ Cancelled بعد ما تحدد هتعمل ايه
       if (updatedBookings.isEmpty) {
+        emit(ActiveBookingCancelled());
         emit(ActiveBookingInitial());
       } else {
+        emit(ActiveBookingCancelled());
         emit(ActiveBookingLoaded(updatedBookings));
       }
-
-      emit(ActiveBookingCancelled());
     });
   }
 }

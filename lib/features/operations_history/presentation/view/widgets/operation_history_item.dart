@@ -127,7 +127,7 @@ class OperationHistoryItem extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
-                    "${item.amountToPay} EGP",
+                    "${item.counter.service.price} EGP",
                     style: const TextStyle(
                       color: Color(0xff3CC572),
                       fontWeight: FontWeight.w700,

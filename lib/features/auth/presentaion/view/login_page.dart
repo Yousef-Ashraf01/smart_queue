@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
 import 'package:smart_queue/core/widgets/app_flushbar.dart';
@@ -57,25 +58,45 @@ class _LoginPageState extends State<LoginPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    SizedBox(height: 10),
+                    Align(
+                      alignment: AlignmentDirectional.centerEnd,
+                      child: TextButton.icon(
+                        onPressed: () {
+                          if (context.locale.languageCode == 'ar') {
+                            context.setLocale(const Locale('en'));
+                          } else {
+                            context.setLocale(const Locale('ar'));
+                          }
+                        },
+                        icon: const Icon(Icons.language, size: 20, color: Color.fromARGB(255, 11, 58, 30)),
+                        label: Text(
+                          context.locale.languageCode == 'ar' ? 'English' : 'العربية',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Color.fromARGB(255, 11, 58, 30),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
                     Text(
-                      "Welcome Back",
-                      style: TextStyle(
+                      "welcome_back".tr(),
+                      style: const TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 6),
+                    const SizedBox(height: 6),
                     Text(
-                      "Make your visit smoother with early booking",
-                      style: TextStyle(color: Colors.grey),
+                      "login_subtitle".tr(),
+                      style: const TextStyle(color: Colors.grey),
                     ),
-                    SizedBox(height: 40),
+                    const SizedBox(height: 40),
 
                     // Username
                     CustomTextField(
-                      label: "National ID",
-                      hint: "Enter your national id",
+                      label: "national_id_label".tr(),
+                      hint: "national_id_hint".tr(),
                       controller: nationalIdController,
                       keyboardType: TextInputType.number,
                       icon: Icons.badge,
@@ -86,11 +107,11 @@ class _LoginPageState extends State<LoginPage> {
 
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return "National ID is required";
+                          return "national_id_required".tr();
                         }
 
                         if (!RegExp(r'^\d{14}$').hasMatch(value)) {
-                          return "National ID must be exactly 14 digits";
+                          return "national_id_invalid".tr();
                         }
 
                         return null;
@@ -98,23 +119,23 @@ class _LoginPageState extends State<LoginPage> {
                     ),
 
                     CustomTextField(
-                      label: "Password",
-                      hint: "Enter your password",
+                      label: "password_label".tr(),
+                      hint: "password_hint".tr(),
                       controller: passwordController,
                       isPassword: true,
                       icon: Icons.lock,
                       height: 0,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return "Password is required";
+                          return "password_required".tr();
                         }
                         if (value.length < 8) {
-                          return "Password must be at least 8 characters";
+                          return "password_length_error".tr();
                         }
                         if (!RegExp(
                           r'^(?=.*[A-Za-z])(?=.*\d)',
                         ).hasMatch(value)) {
-                          return "Password must contain letters & numbers";
+                          return "password_format_error".tr();
                         }
                         return null;
                       },
@@ -125,9 +146,9 @@ class _LoginPageState extends State<LoginPage> {
                         onPressed: () {
                           context.push(AppRoutes.forgetPassword);
                         },
-                        child: const Text(
-                          "Forgot Password?",
-                          style: TextStyle(
+                        child: Text(
+                          "forgot_password".tr(),
+                          style: const TextStyle(
                             color: AppColors.blackColor,
                             fontWeight: FontWeight.w500,
                           ),
@@ -135,11 +156,11 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
 
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
 
                     BlocBuilder<AuthCubit, AuthState>(
                       builder: (context, state) {
-                        return _gradientButton("Login", () {
+                        return _gradientButton("login".tr(), () {
                           FocusScope.of(context).unfocus();
                           if (_formKey.currentState!.validate()) {
                             context.read<AuthCubit>().login(
@@ -151,7 +172,7 @@ class _LoginPageState extends State<LoginPage> {
                       },
                     ),
 
-                    SizedBox(height: 25),
+                    const SizedBox(height: 25),
 
                     Center(
                       child: RichText(
@@ -159,12 +180,12 @@ class _LoginPageState extends State<LoginPage> {
                           style: Theme.of(context).textTheme.bodyMedium,
                           children: [
                             TextSpan(
-                              text: 'Don\'t have an account? ',
+                              text: 'no_account'.tr(),
                               style: TextStyle(color: AppColors.greyColor),
                             ),
                             TextSpan(
-                              text: 'Register',
-                              style: TextStyle(
+                              text: 'register'.tr(),
+                              style: const TextStyle(
                                 color: AppColors.blackColor,
                                 fontWeight: FontWeight.w600,
                               ),

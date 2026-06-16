@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class RegisterButton extends StatelessWidget {
   final VoidCallback onTap;
@@ -18,9 +19,9 @@ class RegisterButton extends StatelessWidget {
         child: ElevatedButton.icon(
           onPressed: onTap,
           icon: const Icon(Icons.badge_outlined, color: Colors.white, size: 20),
-          label: const Text(
-            'Register',
-            style: TextStyle(
+          label: Text(
+            'register'.tr(),
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w700,
               color: Colors.white,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:smart_queue/core/constants/app_assets.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
@@ -45,7 +46,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                 const SizedBox(height: 10),
 
                 Center(
-                  child: Text("App Settings", style: AppStyle.appBarTitle),
+                  child: Text("app_settings".tr(), style: AppStyle.appBarTitle),
                 ),
 
                 const SizedBox(height: 30),
@@ -54,13 +55,13 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                   child: ListView(
                     physics: const BouncingScrollPhysics(),
                     children: [
-                      _buildSectionTitle("Preferences"),
+                      _buildSectionTitle("preferences".tr()),
 
                       const SizedBox(height: 12),
 
                       _buildCard([
                         _buildSwitchTile(
-                          title: "Dark Mode",
+                          title: "dark_mode".tr(),
                           icon: Icons.dark_mode_outlined,
                           value: isDarkMode,
                           onChanged: (val) {
@@ -69,7 +70,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                         ),
                         _divider(),
                         _buildSwitchTile(
-                          title: "Notifications",
+                          title: "notifications".tr(),
                           icon: Icons.notifications_none,
                           value: notificationsEnabled,
                           onChanged: (val) {
@@ -78,7 +79,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                         ),
                         _divider(),
                         _buildSwitchTile(
-                          title: "Location Access",
+                          title: "location_access".tr(),
                           icon: Icons.location_on_outlined,
                           value: locationEnabled,
                           onChanged: (val) {
@@ -89,15 +90,16 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
 
                       const SizedBox(height: 25),
 
-                      _buildSectionTitle("App"),
+                      _buildSectionTitle("app_section".tr()),
 
                       const SizedBox(height: 12),
 
                       _buildCard([
                         _buildSimpleTile(
-                          title: "Language",
+                          title: "language".tr(),
                           icon: Icons.language,
-                          value: "English",
+                          value: context.locale.languageCode == 'ar' ? 'العربية' : 'English',
+                          onTap: _showLanguageDialog,
                         ),
                         _divider(),
 
@@ -106,9 +108,9 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                             Icons.lock_outline,
                             color: Colors.grey,
                           ),
-                          title: const Text(
-                            "Change Password",
-                            style: TextStyle(fontWeight: FontWeight.w500),
+                          title: Text(
+                            "change_password".tr(),
+                            style: const TextStyle(fontWeight: FontWeight.w500),
                           ),
                           trailing: const Icon(
                             Icons.arrow_forward_ios,
@@ -120,7 +122,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                         ),
                         _divider(),
                         _buildSimpleTile(
-                          title: "App Version",
+                          title: "app_version".tr(),
                           icon: Icons.info_outline,
                           value: "1.0.0",
                         ),
@@ -133,6 +135,60 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  void _showLanguageDialog() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'select_language'.tr(),
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF0D2D35),
+                ),
+              ),
+              const SizedBox(height: 16),
+              ListTile(
+                title: const Text('English', style: TextStyle(fontWeight: FontWeight.w500)),
+                trailing: context.locale.languageCode == 'en'
+                    ? const Icon(Icons.check_circle, color: Colors.green)
+                    : null,
+                onTap: () {
+                  context.setLocale(const Locale('en'));
+                  Navigator.pop(context);
+                },
+              ),
+              const Divider(color: AppColors.dividerColor),
+              ListTile(
+                title: const Text('العربية', style: TextStyle(fontWeight: FontWeight.w500)),
+                trailing: context.locale.languageCode == 'ar'
+                    ? const Icon(Icons.check_circle, color: Colors.green)
+                    : null,
+                onTap: () {
+                  context.setLocale(const Locale('ar'));
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -183,11 +239,22 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
     required String title,
     required IconData icon,
     required String value,
+    VoidCallback? onTap,
   }) {
     return ListTile(
       leading: Icon(icon, color: Colors.grey),
       title: Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
-      trailing: Text(value, style: const TextStyle(color: Colors.grey)),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(value, style: const TextStyle(color: Colors.grey)),
+          if (onTap != null) ...[
+            const SizedBox(width: 6),
+            const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
+          ],
+        ],
+      ),
+      onTap: onTap,
     );
   }
 }

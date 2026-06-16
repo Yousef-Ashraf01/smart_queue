@@ -1,6 +1,7 @@
 class ApiEndpoints {
   // Auth
   static const String register = '/app/profiles/';
+
   // static const String login = '/auth/jwt/create/';
   static const String login = '/app/login/';
   static const String refreshToken = '/auth/jwt/refresh/';
@@ -24,10 +25,18 @@ class ApiEndpoints {
   // Branches
   static String branches(int organizationId) =>
       '/api/organizations/$organizationId/branches/';
+
   static String serviceCounters(int branchId) =>
       '/api/branches/$branchId/service-counters/';
 
   // Slots
   static String availableSlots(int counterId) =>
       '/api/service-counters/$counterId/available_slots/';
+
+  // Feedbacks
+  static String feedback(int appointmentId) =>
+      '${ApiEndpoints.appointments}$appointmentId/feedback/';
+
+  static String feedbackList(int appointmentId) =>
+      '${ApiEndpoints.appointments}$appointmentId/feedback/';
 }

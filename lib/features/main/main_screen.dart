@@ -35,16 +35,15 @@ class _MainScreenState extends State<MainScreen> {
       extendBody: true,
       body:
           currentIndex == 1
-              ? TimerScreen(
-                  initialDuration: TimerScreen.pendingDuration,
-                )
+              ? TimerScreen(initialDuration: TimerScreen.pendingDuration)
               : [
-                  HomeScreen(
-                    onNavigateToQueue: () => onTabChanged(1),
-                  ),
-                  const OperationsHistoryScreen(),
-                  ProfileSettingsScreen(),
-                ][currentIndex == 0 ? 0 : currentIndex - 1],
+                HomeScreen(
+                  onNavigateToQueue: () => onTabChanged(1),
+                  onNavigateToAppointments: () => onTabChanged(2),
+                ),
+                const OperationsHistoryScreen(),
+                ProfileSettingsScreen(),
+              ][currentIndex == 0 ? 0 : currentIndex - 1],
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: const CenterFab(),
       bottomNavigationBar: CustomBottomBar(

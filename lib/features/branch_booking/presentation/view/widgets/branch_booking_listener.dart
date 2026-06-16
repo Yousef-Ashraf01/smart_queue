@@ -46,10 +46,12 @@ class BranchBookingListener extends StatelessWidget {
         }
 
         if (state is BookingError) {
-          final message =
-              state.message.contains("pending appointment")
-                  ? "You already have a booking for this service!"
-                  : state.message;
+          String message = state.message;
+          if (message.contains("pending appointment")) {
+            message = "You already have a booking for this service!";
+          } else if (message.contains("another appointment scheduled")) {
+            message = "You have another appointment scheduled during this time frame.";
+          }
 
           onBookingError(message);
 

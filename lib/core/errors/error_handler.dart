@@ -14,8 +14,9 @@ Failure handleDioError(DioException e) {
       List<String> errors = [];
 
       data.forEach((key, value) {
+        final prefix = (key == 'non_field_errors' || key == 'detail' || key == 'message' || key == 'error') ? '' : "$key: ";
         if (value is List) {
-          errors.addAll(value.map((v) => "$key: $v"));
+          errors.addAll(value.map((v) => "$prefix$v"));
         } else if (value is Map) {
           value.forEach((k, v) {
             if (v is List) {
@@ -25,7 +26,7 @@ Failure handleDioError(DioException e) {
             }
           });
         } else {
-          errors.add("$key: $value");
+          errors.add("$prefix$value");
         }
       });
 

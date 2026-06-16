@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_queue/core/services/notification_service.dart';
@@ -243,6 +245,32 @@ class ActiveBookingCubit extends Cubit<ActiveBookingState> {
     if (cancelledIds.contains(appointmentId)) {
       emit(
         ActiveBookingError("You already cancelled this appointment before."),
+      );
+      return;
+    }
+
+    Map<String, dynamic>? targetBooking;
+    final List<Map<String, dynamic>> currentBookings = [];
+    final state = this.state;
+    if (state is ActiveBookingLoaded) {
+      currentBookings.addAll(state.bookings);
+      for (final b in currentBookings) {
+        if (b['id'] == id) {
+          targetBooking = b;
+          break;
+        }
+      }
+    }
+    final serviceId = targetBooking?['serviceId'] as int?;
+
+    final cancelledServiceIds =
+        prefs.getStringList(BookingKeys.cancelledServiceIds) ?? [];
+    if (serviceId != null &&
+        cancelledServiceIds.contains(serviceId.toString())) {
+      emit(
+        ActiveBookingError(
+          "You cannot cancel this service booking again. You are only allowed to cancel a service once.",
+        ),
       );
       return;
     }

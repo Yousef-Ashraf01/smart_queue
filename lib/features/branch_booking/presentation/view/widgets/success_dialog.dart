@@ -15,6 +15,7 @@ class BookingSuccessDialog extends StatelessWidget {
   final BranchModel branch;
   final ServiceCounterModel selectedService;
   final Map<String, String> selectedSlot;
+  final VoidCallback? onViewBookings;
 
   const BookingSuccessDialog({
     super.key,
@@ -26,6 +27,7 @@ class BookingSuccessDialog extends StatelessWidget {
     required this.branch,
     required this.selectedService,
     required this.selectedSlot,
+    this.onViewBookings,
   });
 
   @override
@@ -170,7 +172,7 @@ class BookingSuccessDialog extends StatelessWidget {
               child: OutlinedButton(
                 onPressed: () {
                   context.pop();
-                  context.go(AppRoutes.myAppointments);
+                  context.go(AppRoutes.main);
                 },
                 style: OutlinedButton.styleFrom(
                   foregroundColor: Colors.grey.shade600,
@@ -181,7 +183,7 @@ class BookingSuccessDialog extends StatelessWidget {
                   ),
                 ),
                 child: const Text(
-                  'View my bookings',
+                  'Maybe later',
                   style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
                 ),
               ),

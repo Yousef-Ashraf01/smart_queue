@@ -1,7 +1,9 @@
 import 'package:device_calendar/device_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:smart_queue/core/routing/app_routes.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
 import 'package:smart_queue/core/utils/booking_keys.dart';
 import 'package:smart_queue/core/widgets/app_flushbar.dart';
@@ -98,7 +100,6 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
         final hours = difference.inHours;
         final minutes = difference.inMinutes % 60;
 
-        // Resolve organization name from branch organizationId
         final orgName =
             (widget.branch.organizationId == 1)
                 ? 'Egyptian Post'
@@ -106,7 +107,6 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
                     ? 'Traffic Department'
                     : widget.branch.name);
 
-        // Build the booking map and add it to the active bookings list
         final bookingData = <String, dynamic>{
           'id': appointment.id,
           'counterId': appointment.counter.id,
@@ -426,6 +426,9 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
             branch: widget.branch,
             selectedService: selectedService!,
             selectedSlot: selectedSlot!,
+            onViewBookings: () {
+              context.go(AppRoutes.main, extra: {'tab': 2});
+            },
           ),
     );
   }

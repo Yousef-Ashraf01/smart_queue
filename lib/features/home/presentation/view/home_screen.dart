@@ -11,8 +11,13 @@ import '../../../../core/di/service_locator.dart';
 
 class HomeScreen extends StatelessWidget {
   final VoidCallback? onNavigateToQueue;
+  final VoidCallback? onNavigateToAppointments;
 
-  const HomeScreen({super.key, this.onNavigateToQueue});
+  const HomeScreen({
+    super.key,
+    this.onNavigateToQueue,
+    this.onNavigateToAppointments,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -37,9 +42,7 @@ class HomeScreen extends StatelessWidget {
               children: [
                 HomeAppBar(),
                 const SizedBox(height: 23),
-                ActiveBookingSummary(
-                  onTap: () => onNavigateToQueue?.call(),
-                ),
+                ActiveBookingSummary(onTap: () => onNavigateToQueue?.call()),
                 const SizedBox(height: 23),
                 Text("Government agencies", style: AppStyle.bold16black),
                 const SizedBox(height: 16),

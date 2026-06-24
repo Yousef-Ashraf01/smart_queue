@@ -27,7 +27,7 @@ class AppAssets {
   static const String iconChevronRight = 'assets/svg/Chevron-Right.svg';
   static const String iconCountryFlag = 'assets/svg/Country_Flag.svg';
   static const String iconloginout = 'assets/svg/login.svg';
-
   static const String userAvatar = 'assets/images/user_avatar.png';
   static const String aiRobot = 'assets/images/rebot.png';
+  static const String appIcon = 'assets/images/app_icon.png';
 }

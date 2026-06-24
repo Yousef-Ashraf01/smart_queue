@@ -1,4 +1,7 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:smart_queue/core/styling/app_colors.dart';
+import 'package:smart_queue/core/styling/app_styles.dart';
 
 class IdInfoCard extends StatelessWidget {
   final String name;
@@ -22,12 +25,12 @@ class IdInfoCard extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: const Color.fromARGB(255, 118, 226, 136).withOpacity(0.5),
+          color: AppColors.tealLight.withOpacity(0.5),
           width: 1.2,
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color.fromARGB(255, 11, 58, 30).withOpacity(0.07),
+            color: AppColors.teal.withOpacity(0.07),
             blurRadius: 16,
             offset: const Offset(0, 6),
           ),
@@ -41,13 +44,13 @@ class IdInfoCard extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
-                _buildInfoRow(Icons.person_rounded, 'Full Name', name),
+                _buildInfoRow(Icons.person_outline_rounded, 'full_name_label'.tr(), name),
                 const _InfoDivider(),
-                _buildInfoRow(Icons.badge_rounded, 'National ID', nationalId),
+                _buildInfoRow(Icons.badge_outlined, 'national_id_label'.tr(), nationalId),
                 const _InfoDivider(),
-                _buildInfoRow(Icons.location_on_rounded, 'Address', address),
+                _buildInfoRow(Icons.location_on_outlined, 'address_label'.tr(), address),
                 const _InfoDivider(),
-                _buildInfoRow(Icons.cake_rounded, 'Birth Date', birthDate),
+                _buildInfoRow(Icons.cake_outlined, 'birth_date_label'.tr(), birthDate),
               ],
             ),
           ),
@@ -62,8 +65,8 @@ class IdInfoCard extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            const Color.fromARGB(255, 118, 226, 136).withOpacity(0.3),
-            const Color.fromARGB(255, 118, 226, 136).withOpacity(0.1),
+            AppColors.tealLight.withOpacity(0.3),
+            AppColors.tealLight.withOpacity(0.1),
           ],
         ),
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
@@ -73,7 +76,7 @@ class IdInfoCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 11, 58, 30),
+              color: AppColors.teal,
               borderRadius: BorderRadius.circular(8),
             ),
             child: const Icon(
@@ -83,16 +86,17 @@ class IdInfoCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 10),
-          const Text(
-            'Verified from National ID',
-            style: TextStyle(
+          Text(
+            'verified_from_id'.tr(),
+            style: const TextStyle(
+              fontFamily: AppStyle.fontFamily,
               fontWeight: FontWeight.w700,
               fontSize: 14,
-              color: Color.fromARGB(255, 11, 58, 30),
+              color: AppColors.teal,
             ),
           ),
           const Spacer(),
-          const Icon(Icons.lock_rounded, size: 14, color: Colors.grey),
+          const Icon(Icons.lock_outline_rounded, size: 14, color: AppColors.greyText),
         ],
       ),
     );
@@ -107,26 +111,33 @@ class IdInfoCard extends StatelessWidget {
           Icon(
             icon,
             size: 18,
-            color: const Color.fromARGB(255, 11, 58, 30).withOpacity(0.6),
+            color: AppColors.teal.withOpacity(0.6),
           ),
           const SizedBox(width: 10),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: const TextStyle(fontSize: 11, color: Colors.grey),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                value.isEmpty ? '—' : value,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: Color.fromARGB(255, 11, 58, 30),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: const TextStyle(
+                    fontFamily: AppStyle.fontFamily,
+                    fontSize: 11, 
+                    color: AppColors.greyText,
+                  ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 2),
+                Text(
+                  value.isEmpty ? '—' : value,
+                  style: const TextStyle(
+                    fontFamily: AppStyle.fontFamily,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.teal,
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),

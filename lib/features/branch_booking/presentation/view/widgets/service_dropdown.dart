@@ -9,23 +9,104 @@ class ServiceDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isSelected = selectedService != null;
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.whiteColor),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            selectedService?.serviceName ?? "Select a service",
-            style: TextStyle(fontSize: 18, color: Colors.grey[800]),
+        color: isSelected ? AppColors.teal.withOpacity(0.03) : Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: isSelected ? AppColors.teal.withOpacity(0.3) : Colors.grey.shade200,
+          width: 1.2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.02),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
           ),
-          const Icon(Icons.keyboard_arrow_down_sharp),
         ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
+        child: Row(
+          children: [
+            // Icon Container
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? AppColors.teal.withOpacity(0.1)
+                    : AppColors.tealLight.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(
+                isSelected ? Icons.check_circle_rounded : Icons.design_services_rounded,
+                color: AppColors.teal,
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 14),
+            // Text Content
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    selectedService?.serviceName ?? "Select a service",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                      color: isSelected ? AppColors.teal : Colors.grey.shade500,
+                      fontFamily: 'Inter Tight',
+                    ),
+                  ),
+                  if (isSelected &&
+                      selectedService?.serviceDescription != null &&
+                      selectedService!.serviceDescription.isNotEmpty) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      selectedService!.serviceDescription,
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.grey.shade600,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ]
+                ],
+              ),
+            ),
+            // Trailing Price badge
+            if (isSelected && selectedService?.servicePrice != null) ...[
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: AppColors.teal.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  "${selectedService!.servicePrice} EGP",
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.teal,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+            ],
+            Icon(
+              Icons.keyboard_arrow_down_rounded,
+              color: Colors.grey.shade400,
+              size: 20,
+            ),
+          ],
+        ),
       ),
     );
   }
 }
+

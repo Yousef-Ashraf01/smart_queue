@@ -1,5 +1,8 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:smart_queue/core/styling/app_colors.dart';
+import 'package:smart_queue/core/styling/app_styles.dart';
 
 class ImageSourceSheet {
   static Future<void> show(
@@ -39,27 +42,32 @@ class _ImageSourceSheetContent extends StatelessWidget {
               borderRadius: BorderRadius.circular(2),
             ),
           ),
-          const Text(
-            'Choose Photo Source',
-            style: TextStyle(
+          Text(
+            'choose_photo_source'.tr(),
+            style: const TextStyle(
+              fontFamily: AppStyle.fontFamily,
               fontSize: 17,
               fontWeight: FontWeight.w700,
-              color: Color.fromARGB(255, 11, 58, 30),
+              color: AppColors.teal,
             ),
           ),
           const SizedBox(height: 6),
-          const Text(
-            'Select how you want to add your profile photo',
-            style: TextStyle(fontSize: 13, color: Colors.grey),
+          Text(
+            'select_photo_source_desc'.tr(),
+            style: const TextStyle(
+              fontFamily: AppStyle.fontFamily,
+              fontSize: 13, 
+              color: AppColors.greyText,
+            ),
           ),
           const SizedBox(height: 24),
           Row(
             children: [
               Expanded(
                 child: _SourceOption(
-                  icon: Icons.photo_library_rounded,
-                  label: 'Gallery',
-                  subtitle: 'Pick from photos',
+                  icon: Icons.photo_library_outlined,
+                  label: 'gallery'.tr(),
+                  subtitle: 'gallery_desc'.tr(),
                   onTap: () async {
                     Navigator.pop(context);
                     await onPickImage(ImageSource.gallery);
@@ -69,9 +77,9 @@ class _ImageSourceSheetContent extends StatelessWidget {
               const SizedBox(width: 16),
               Expanded(
                 child: _SourceOption(
-                  icon: Icons.camera_alt_rounded,
-                  label: 'Camera',
-                  subtitle: 'Take a new photo',
+                  icon: Icons.camera_alt_outlined,
+                  label: 'camera'.tr(),
+                  subtitle: 'camera_desc'.tr(),
                   onTap: () async {
                     Navigator.pop(context);
                     await onPickImage(ImageSource.camera);
@@ -92,11 +100,12 @@ class _ImageSourceSheetContent extends StatelessWidget {
                   side: BorderSide(color: Colors.grey.shade200),
                 ),
               ),
-              child: const Text(
-                'Cancel',
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontWeight: FontWeight.w500,
+              child: Text(
+                'cancel'.tr(),
+                style: const TextStyle(
+                  fontFamily: AppStyle.fontFamily,
+                  color: AppColors.greyText,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ),
@@ -127,10 +136,10 @@ class _SourceOption extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
         decoration: BoxDecoration(
-          color: const Color.fromARGB(255, 11, 58, 30).withOpacity(0.04),
+          color: AppColors.teal.withOpacity(0.04),
           borderRadius: BorderRadius.circular(18),
           border: Border.all(
-            color: const Color.fromARGB(255, 118, 226, 136).withOpacity(0.5),
+            color: AppColors.tealLight.withOpacity(0.5),
             width: 1.2,
           ),
         ),
@@ -144,8 +153,8 @@ class _SourceOption extends StatelessWidget {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    Color.fromARGB(255, 118, 226, 136),
-                    Color.fromARGB(255, 11, 58, 30),
+                    AppColors.tealLight,
+                    AppColors.teal,
                   ],
                 ),
                 borderRadius: BorderRadius.circular(14),
@@ -156,15 +165,20 @@ class _SourceOption extends StatelessWidget {
             Text(
               label,
               style: const TextStyle(
+                fontFamily: AppStyle.fontFamily,
                 fontWeight: FontWeight.w700,
                 fontSize: 15,
-                color: Color.fromARGB(255, 11, 58, 30),
+                color: AppColors.teal,
               ),
             ),
             const SizedBox(height: 2),
             Text(
               subtitle,
-              style: const TextStyle(fontSize: 11, color: Colors.grey),
+              style: const TextStyle(
+                fontFamily: AppStyle.fontFamily,
+                fontSize: 11, 
+                color: AppColors.greyText,
+              ),
             ),
           ],
         ),

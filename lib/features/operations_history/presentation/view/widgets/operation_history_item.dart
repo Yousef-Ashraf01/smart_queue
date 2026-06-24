@@ -16,225 +16,442 @@ class OperationHistoryItem extends StatelessWidget {
     this.onBookmarkTap,
   });
 
+  // Determine the appointment status
+  _AppointmentStatus get _status {
+    if (item.canceled) return _AppointmentStatus.cancelled;
+    if (item.missed) return _AppointmentStatus.missed;
+    // Check if the date is in the past
+    try {
+      final appointmentDate = DateTime.parse(item.date);
+      if (appointmentDate.isBefore(DateTime.now().subtract(const Duration(days: 1)))) {
+        return _AppointmentStatus.completed;
+      }
+    } catch (_) {}
+    return _AppointmentStatus.upcoming;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final status = _status;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 8),
-        padding: const EdgeInsets.all(16),
+        margin: const EdgeInsets.only(bottom: 14),
         decoration: BoxDecoration(
-          color: AppColors.whiteColor.withOpacity(0.6),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.06),
-              blurRadius: 20,
-              offset: const Offset(0, 6),
+              color: status.color.withOpacity(0.08),
+              blurRadius: 24,
+              offset: const Offset(0, 8),
+              spreadRadius: 0,
+            ),
+            BoxShadow(
+              color: Colors.black.withOpacity(0.03),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
             ),
           ],
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // ── Header: Service name + bookmark ──────────────────────
-            Row(
-              children: [
-                // أيقونة الخدمة
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: const Color(0xff3CC572).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(
-                    Icons.receipt_long_outlined,
-                    color: Color(0xff3CC572),
-                    size: 22,
-                  ),
-                ),
-
-                const SizedBox(width: 12),
-
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        item.counter.service.name,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        item.counter.service.description,
-                        style: TextStyle(fontSize: 12, color: Colors.grey[500]),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ),
-                ),
-
-                GestureDetector(
-                  onTap: onBookmarkTap,
-                  child: Icon(
-                    isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                    size: 24,
-                    color: isBookmarked ? const Color(0xff3CC572) : Colors.grey,
-                  ),
-                ),
-              ],
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: Container(
+            decoration: BoxDecoration(
+              color: AppColors.whiteColor.withOpacity(0.85),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: Colors.white.withOpacity(0.6),
+                width: 1,
+              ),
             ),
-
-            const SizedBox(height: 12),
-            Divider(color: Colors.grey.shade200, thickness: 1),
-            const SizedBox(height: 10),
-
-            // ── Details ───────────────────────────────────────────────
-            Row(
-              children: [
-                // Date
-                _InfoChip(
-                  icon: Icons.calendar_today_outlined,
-                  label: item.date ?? "",
-                ),
-
-                const SizedBox(width: 10),
-
-                // Time
-                _InfoChip(
-                  icon: Icons.access_time,
-                  label:
-                      _formatTime(item.startTime) +
-                      " - " +
-                      _formatTime(item.endTime),
-                ),
-
-                const Spacer(),
-
-                // Price
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 5,
-                  ),
-                  decoration: BoxDecoration(
-                    color: const Color(0xff3CC572).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    "${item.counter.service.price} EGP",
-                    style: const TextStyle(
-                      color: Color(0xff3CC572),
-                      fontWeight: FontWeight.w700,
-                      fontSize: 13,
+            child: IntrinsicHeight(
+              child: Row(
+                children: [
+                  // ── Color accent bar ─────────────────────
+                  Container(
+                    width: 4.5,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          status.color,
+                          status.color.withOpacity(0.6),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
 
-            const SizedBox(height: 10),
+                  // ── Card content ─────────────────────────
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(14, 16, 16, 16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // ── Header row ──────────────────
+                          Row(
+                            children: [
+                              // Service icon
+                              Container(
+                                width: 44,
+                                height: 44,
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                    colors: [
+                                      status.color.withOpacity(0.15),
+                                      status.color.withOpacity(0.05),
+                                    ],
+                                  ),
+                                  borderRadius: BorderRadius.circular(14),
+                                ),
+                                child: Icon(
+                                  _serviceIcon,
+                                  color: status.color,
+                                  size: 22,
+                                ),
+                              ),
 
-            // ── Paid status ───────────────────────────────────────────
-            Row(
-              children: [
-                Icon(
-                  item.paid == true
-                      ? Icons.check_circle_outline
-                      : Icons.pending_outlined,
-                  size: 15,
-                  color: item.paid == true ? Colors.green : Colors.orange,
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  item.paid == true ? "Paid" : "Unpaid",
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: item.paid == true ? Colors.green : Colors.orange,
-                    fontWeight: FontWeight.w600,
+                              const SizedBox(width: 12),
+
+                              // Service name + description
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      item.counter.service.name,
+                                      style: const TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w700,
+                                        color: Color(0xFF1A1D4E),
+                                        letterSpacing: -0.2,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    const SizedBox(height: 3),
+                                    Text(
+                                      item.counter.service.description,
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey[500],
+                                        height: 1.2,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                              const SizedBox(width: 8),
+
+                              // Status badge
+                              _StatusChip(status: status),
+                            ],
+                          ),
+
+                          const SizedBox(height: 14),
+
+                          // ── Divider ─────────────────────
+                          Container(
+                            height: 1,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  Colors.grey.shade200,
+                                  Colors.grey.shade100,
+                                  Colors.transparent,
+                                ],
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 14),
+
+                          // ── Info row ────────────────────
+                          Row(
+                            children: [
+                              // Date chip
+                              _InfoPill(
+                                icon: Icons.calendar_today_rounded,
+                                label: _formatDate(item.date),
+                                color: const Color(0xFF5B6BF5),
+                              ),
+
+                              const SizedBox(width: 8),
+
+                              // Time chip
+                              _InfoPill(
+                                icon: Icons.schedule_rounded,
+                                label:
+                                    "${_formatTime(item.startTime)} - ${_formatTime(item.endTime)}",
+                                color: const Color(0xFF8B5CF6),
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(height: 12),
+
+                          // ── Footer row ─────────────────
+                          Row(
+                            children: [
+                              // Payment status
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 5,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: item.paid == true
+                                      ? const Color(0xFF10B981).withOpacity(0.08)
+                                      : const Color(0xFFF59E0B).withOpacity(0.08),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      item.paid == true
+                                          ? Icons.check_circle_rounded
+                                          : Icons.pending_rounded,
+                                      size: 14,
+                                      color: item.paid == true
+                                          ? const Color(0xFF10B981)
+                                          : const Color(0xFFF59E0B),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      item.paid == true ? "Paid" : "Unpaid",
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                        color: item.paid == true
+                                            ? const Color(0xFF10B981)
+                                            : const Color(0xFFF59E0B),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                              const Spacer(),
+
+                              // Price tag
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      const Color(0xFF10B981).withOpacity(0.12),
+                                      const Color(0xFF34D399).withOpacity(0.08),
+                                    ],
+                                  ),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Text(
+                                  "${item.counter.service.price} ${item.counter.service.currency}",
+                                  style: const TextStyle(
+                                    color: Color(0xFF059669),
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 13,
+                                    letterSpacing: -0.2,
+                                  ),
+                                ),
+                              ),
+
+                              const SizedBox(width: 8),
+
+                              // Bookmark button
+                              GestureDetector(
+                                onTap: onBookmarkTap,
+                                child: AnimatedContainer(
+                                  duration: const Duration(milliseconds: 200),
+                                  width: 34,
+                                  height: 34,
+                                  decoration: BoxDecoration(
+                                    color: isBookmarked
+                                        ? const Color(0xFF10B981).withOpacity(0.1)
+                                        : Colors.grey.withOpacity(0.06),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Icon(
+                                    isBookmarked
+                                        ? Icons.bookmark_rounded
+                                        : Icons.bookmark_outline_rounded,
+                                    size: 20,
+                                    color: isBookmarked
+                                        ? const Color(0xFF10B981)
+                                        : Colors.grey[400],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
-
-                const Spacer(),
-
-                if (item.canceled)
-                  _StatusBadge(
-                    label: "Cancelled",
-                    color: const Color(0xffA32D2D),
-                    bg: const Color(0xffFCEBEB),
-                  )
-                else if (item.missed)
-                  _StatusBadge(
-                    label: "Missed",
-                    color: const Color(0xff854F0B),
-                    bg: const Color(0xffFAEEDA),
-                  ),
-              ],
+                ],
+              ),
             ),
-          ],
+          ),
         ),
       ),
     );
   }
 
-  // "08:00:00" → "08:00"
+  IconData get _serviceIcon {
+    final name = item.counter.service.name.toLowerCase();
+    if (name.contains('consult')) return Icons.medical_services_outlined;
+    if (name.contains('payment') || name.contains('pay')) return Icons.payment_outlined;
+    if (name.contains('transfer')) return Icons.swap_horiz_outlined;
+    if (name.contains('deposit')) return Icons.account_balance_wallet_outlined;
+    if (name.contains('withdraw')) return Icons.money_off_outlined;
+    if (name.contains('loan')) return Icons.request_page_outlined;
+    if (name.contains('card')) return Icons.credit_card_outlined;
+    if (name.contains('account')) return Icons.account_balance_outlined;
+    return Icons.receipt_long_outlined;
+  }
+
   String _formatTime(String? time) {
-    if (time == null) return "";
+    if (time == null || time.isEmpty) return "";
     final parts = time.split(':');
     if (parts.length < 2) return time;
-    return "${parts[0]}:${parts[1]}";
+    final hour = int.tryParse(parts[0]) ?? 0;
+    final minute = parts[1];
+    final period = hour >= 12 ? 'PM' : 'AM';
+    final h12 = hour == 0 ? 12 : (hour > 12 ? hour - 12 : hour);
+    return "$h12:$minute $period";
+  }
+
+  String _formatDate(String? date) {
+    if (date == null || date.isEmpty) return "";
+    try {
+      final d = DateTime.parse(date);
+      const months = [
+        '', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      ];
+      return "${d.day} ${months[d.month]} ${d.year}";
+    } catch (_) {
+      return date;
+    }
   }
 }
 
-class _InfoChip extends StatelessWidget {
-  final IconData icon;
-  final String label;
+// ── Status Enum ──────────────────────────────────────────────────────
+enum _AppointmentStatus {
+  upcoming(
+    label: "Upcoming",
+    color: Color(0xFF3B82F6),
+    icon: Icons.event_available_rounded,
+  ),
+  completed(
+    label: "Completed",
+    color: Color(0xFF10B981),
+    icon: Icons.check_circle_outline_rounded,
+  ),
+  cancelled(
+    label: "Cancelled",
+    color: Color(0xFFEF4444),
+    icon: Icons.cancel_outlined,
+  ),
+  missed(
+    label: "Missed",
+    color: Color(0xFFF59E0B),
+    icon: Icons.warning_amber_rounded,
+  );
 
-  const _InfoChip({required this.icon, required this.label});
+  final String label;
+  final Color color;
+  final IconData icon;
+
+  const _AppointmentStatus({
+    required this.label,
+    required this.color,
+    required this.icon,
+  });
+}
+
+// ── Status Chip ──────────────────────────────────────────────────────
+class _StatusChip extends StatelessWidget {
+  final _AppointmentStatus status;
+
+  const _StatusChip({required this.status});
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(icon, size: 13, color: Colors.grey[500]),
-        const SizedBox(width: 4),
-        Text(label, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
-      ],
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: status.color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: status.color.withOpacity(0.2),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(status.icon, size: 12, color: status.color),
+          const SizedBox(width: 4),
+          Text(
+            status.label,
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              color: status.color,
+              letterSpacing: 0.2,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
 
-class _StatusBadge extends StatelessWidget {
+// ── Info Pill ─────────────────────────────────────────────────────────
+class _InfoPill extends StatelessWidget {
+  final IconData icon;
   final String label;
   final Color color;
-  final Color bg;
 
-  const _StatusBadge({
+  const _InfoPill({
+    required this.icon,
     required this.label,
     required this.color,
-    required this.bg,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(20),
+        color: color.withOpacity(0.06),
+        borderRadius: BorderRadius.circular(10),
       ),
-      child: Text(
-        label,
-        style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
-          color: color,
-        ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 13, color: color.withOpacity(0.7)),
+          const SizedBox(width: 5),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 11.5,
+              fontWeight: FontWeight.w600,
+              color: color.withOpacity(0.85),
+            ),
+          ),
+        ],
       ),
     );
   }

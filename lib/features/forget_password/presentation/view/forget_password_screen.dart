@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smart_queue/core/constants/app_assets.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
+import 'package:smart_queue/core/widgets/app_flushbar.dart';
+import 'package:smart_queue/features/forget_password/presentation/cubit/forget_password_cubit.dart';
 import 'package:smart_queue/features/personal_info/presentation/view/widgets/phone_input_field.dart';
 
 class ForgetPasswordScreen extends StatefulWidget {
@@ -14,6 +17,7 @@ class ForgetPasswordScreen extends StatefulWidget {
 
 class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
   final phoneController = TextEditingController();
+  String countryCode = "20";
 
   @override
   void dispose() {
@@ -126,43 +130,111 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                                 ),
                               ),
                             ),
-                            PhoneInputField(controller: phoneController),
+                            PhoneInputField(
+                              controller: phoneController,
+                              onChanged: (phone, code) {
+                                countryCode = code;
+                              },
+                            ),
 
                             const Spacer(),
 
-                            GestureDetector(
-                              onTap: () {
-                                context.push(AppRoutes.verificationCode);
+                            BlocConsumer<
+                              ForgetPasswordCubit,
+                              ForgetPasswordState
+                            >(
+                              listener: (context, state) {
+                                if (state is ForgetPasswordRequestSuccess) {
+                                  final fullPhone =
+                                      "+$countryCode${phoneController.text.trim()}";
+                                  AppFlushbar.show(
+                                    context,
+                                    message:
+                                        "Verification code sent successfully!",
+                                    type: MessageType.success,
+                                    duration: const Duration(
+                                      milliseconds: 1500,
+                                    ),
+                                  );
+                                  Future.delayed(
+                                    const Duration(milliseconds: 1500),
+                                    () {
+                                      context.push(
+                                        AppRoutes.verificationCode,
+                                        extra: fullPhone,
+                                      );
+                                    },
+                                  );
+                                } else if (state is ForgetPasswordError) {
+                                  AppFlushbar.show(
+                                    context,
+                                    message: state.message,
+                                    type: MessageType.error,
+                                  );
+                                }
                               },
-                              child: Container(
-                                width: double.infinity,
-                                height: 56,
-                                margin: const EdgeInsets.only(
-                                  bottom: 40,
-                                  top: 20,
-                                ),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(30),
-                                  gradient: const LinearGradient(
-                                    begin: Alignment.centerLeft,
-                                    end: Alignment.centerRight,
-                                    colors: [
-                                      Color(0xFF63D98A),
-                                      Color(0xFF1B4332),
-                                    ],
-                                  ),
-                                ),
-                                child: const Center(
-                                  child: Text(
-                                    "Next",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
+                              builder: (context, state) {
+                                return GestureDetector(
+                                  onTap:
+                                      state is ForgetPasswordLoading
+                                          ? null
+                                          : () {
+                                            FocusScope.of(context).unfocus();
+                                            final phone =
+                                                phoneController.text.trim();
+                                            if (phone.isEmpty) {
+                                              AppFlushbar.show(
+                                                context,
+                                                message:
+                                                    "Please enter your phone number",
+                                                type: MessageType.error,
+                                              );
+                                              return;
+                                            }
+                                            final fullPhone =
+                                                "+$countryCode${phoneController.text.trim()}";
+                                            context
+                                                .read<ForgetPasswordCubit>()
+                                                .resetPasswordRequest(
+                                                  fullPhone,
+                                                );
+                                          },
+                                  child: Container(
+                                    width: double.infinity,
+                                    height: 56,
+                                    margin: const EdgeInsets.only(
+                                      bottom: 40,
+                                      top: 20,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(30),
+                                      gradient: const LinearGradient(
+                                        begin: Alignment.centerLeft,
+                                        end: Alignment.centerRight,
+                                        colors: [
+                                          Color(0xFF63D98A),
+                                          Color(0xFF1B4332),
+                                        ],
+                                      ),
+                                    ),
+                                    child: Center(
+                                      child:
+                                          state is ForgetPasswordLoading
+                                              ? const CircularProgressIndicator(
+                                                color: Colors.white,
+                                              )
+                                              : const Text(
+                                                "Next",
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
                                     ),
                                   ),
-                                ),
-                              ),
+                                );
+                              },
                             ),
                           ],
                         ),

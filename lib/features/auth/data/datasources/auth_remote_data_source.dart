@@ -41,4 +41,49 @@ class AuthRemoteDataSource {
   Future<void> logout() async {
     await storage.clearTokens();
   }
+
+  Future<void> resetPasswordRequest({required String phone}) async {
+    await dio.post(
+      ApiEndpoints.resetPasswordRequest,
+      data: {"phone": phone},
+    );
+  }
+
+  Future<void> registerSmsRequest({required String phone}) async {
+    await dio.post(
+      ApiEndpoints.registerSmsRequest,
+      data: {"phone": phone},
+    );
+  }
+
+  Future<String?> verifySmsCode({
+    required String phone,
+    required String code,
+    required String purpose,
+  }) async {
+    final response = await dio.post(
+      ApiEndpoints.verifySmsCode,
+      data: {
+        "phone": phone,
+        "code": code,
+        "purpose": purpose,
+      },
+    );
+    // API returns session_token for reset_password and verification_token for register
+    return (response.data['verification_token'] ??
+        response.data['session_token']) as String?;
+  }
+
+  Future<void> resetPasswordConfirm({
+    required String sessionToken,
+    required String newPassword,
+  }) async {
+    await dio.post(
+      ApiEndpoints.resetPasswordConfirm,
+      data: {
+        "session_token": sessionToken,
+        "new_password": newPassword,
+      },
+    );
+  }
 }

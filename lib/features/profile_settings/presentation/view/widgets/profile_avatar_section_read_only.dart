@@ -26,29 +26,61 @@ class ProfileAvatarSectionReadOnly extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        // Premium Double-Ring Avatar
         Container(
+          padding: const EdgeInsets.all(4),
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            border: Border.all(
-              color: const Color.fromRGBO(255, 255, 255, 0.5),
-              width: 4,
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color(0xFF10B981), // Emerald
+                Color(0xFF3B82F6), // Blue
+              ],
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF10B981).withOpacity(0.15),
+                blurRadius: 20,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(3),
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.white,
+            ),
+            child: CircleAvatar(
+              radius: 50,
+              backgroundColor: Colors.grey.shade100,
+              child: ClipOval(
+                child: _buildImage(),
+              ),
             ),
           ),
-          child: CircleAvatar(
-            radius: 55,
-            backgroundColor: Colors.grey.shade200,
-            child: ClipOval(child: _buildImage()),
-          ),
         ),
-        const SizedBox(height: 10),
-        Text(name, style: AppStyle.userName, textAlign: TextAlign.center),
+        const SizedBox(height: 16),
+
+        // Profile details cards
+        Text(
+          name,
+          style: AppStyle.userName.copyWith(
+            fontSize: 21,
+            fontWeight: FontWeight.w800,
+            letterSpacing: -0.5,
+          ),
+          textAlign: TextAlign.center,
+        ),
         const SizedBox(height: 4),
         Text(
           email,
-          style: const TextStyle(
-            color: Color(0xFF8E8E93),
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
+          style: TextStyle(
+            color: Colors.grey[500],
+            fontSize: 13.5,
+            fontWeight: FontWeight.w500,
           ),
           textAlign: TextAlign.center,
         ),
@@ -60,8 +92,8 @@ class ProfileAvatarSectionReadOnly extends StatelessWidget {
     if (pickedImage != null) {
       return Image.file(
         File(pickedImage!.path),
-        width: 110,
-        height: 110,
+        width: 100,
+        height: 100,
         fit: BoxFit.cover,
       );
     }
@@ -69,20 +101,19 @@ class ProfileAvatarSectionReadOnly extends StatelessWidget {
     if (imageUrl != null && imageUrl!.isNotEmpty) {
       return CachedNetworkImage(
         imageUrl: imageUrl!,
-        width: 110,
-        height: 110,
+        width: 100,
+        height: 100,
         fit: BoxFit.cover,
-        placeholder:
-            (context, url) => const SizedBox(
-              width: 110,
-              height: 110,
-              child: Center(
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: Color(0xFF00BFA6),
-                ),
-              ),
+        placeholder: (context, url) => const SizedBox(
+          width: 100,
+          height: 100,
+          child: Center(
+            child: CircularProgressIndicator(
+              strokeWidth: 2.5,
+              color: Color(0xFF10B981),
             ),
+          ),
+        ),
         errorWidget: (context, url, error) => _fallbackImage(),
       );
     }
@@ -93,8 +124,8 @@ class ProfileAvatarSectionReadOnly extends StatelessWidget {
   Widget _fallbackImage() {
     return Image.asset(
       localImagePath ?? AppAssets.userAvatar,
-      width: 110,
-      height: 110,
+      width: 100,
+      height: 100,
       fit: BoxFit.cover,
     );
   }

@@ -1,8 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
+import 'package:smart_queue/core/networking/api_endpoints.dart';
 import 'package:smart_queue/core/networking/dio_client.dart';
 import 'package:smart_queue/core/services/bookmark_service.dart';
 import 'package:smart_queue/core/storage/secure_storage_service.dart';
+import 'package:smart_queue/features/ai/data/datasources/chatbot_remote_data_source.dart';
+import 'package:smart_queue/features/ai/data/repositories/chatbot_repository.dart';
+import 'package:smart_queue/features/ai/presentation/cubit/chatbot_cubit.dart';
 import 'package:smart_queue/features/app_settings/change_password/data/datasources/change_password_remote_data_source.dart';
 import 'package:smart_queue/features/app_settings/change_password/data/repositories/change_password_repository.dart';
 import 'package:smart_queue/features/app_settings/change_password/presentation/cubit/change_password_cubit.dart';
@@ -17,6 +21,7 @@ import 'package:smart_queue/features/branch_booking/presentation/cubit/active_bo
 import 'package:smart_queue/features/branch_booking/presentation/cubit/booking_cubit.dart';
 import 'package:smart_queue/features/branch_booking/presentation/cubit/service_counter_cubit.dart';
 import 'package:smart_queue/features/branch_booking/presentation/cubit/services_cubit.dart';
+import 'package:smart_queue/features/forget_password/presentation/cubit/forget_password_cubit.dart';
 import 'package:smart_queue/features/home/data/datasources/organization_remote_data_source.dart';
 import 'package:smart_queue/features/home/data/repositories/organization_repository.dart';
 import 'package:smart_queue/features/home/presentation/cubit/organization_cubit.dart';
@@ -55,6 +60,9 @@ Future<void> setupServiceLocator() async {
   );
 
   sl.registerFactory<AuthCubit>(() => AuthCubit(sl<AuthRepository>()));
+  sl.registerFactory<ForgetPasswordCubit>(
+    () => ForgetPasswordCubit(sl<AuthRepository>()),
+  );
 
   sl.registerLazySingleton<PersonalInfoRemoteDataSource>(
     () => PersonalInfoRemoteDataSource(sl<DioClient>().dio),
@@ -159,5 +167,25 @@ Future<void> setupServiceLocator() async {
 
   sl.registerLazySingleton<ActiveBookingCubit>(
     () => ActiveBookingCubit(sl<BookingRepository>()),
+  );
+  sl.registerLazySingleton<ChatbotRemoteDataSource>(
+    () => ChatbotRemoteDataSource(
+      Dio(
+        BaseOptions(
+          headers: {
+            'Authorization': ApiEndpoints.aiChatbotToken,
+            'Content-Type': 'application/json',
+          },
+        ),
+      ),
+    ),
+  );
+
+  sl.registerLazySingleton<ChatbotRepository>(
+    () => ChatbotRepository(sl<ChatbotRemoteDataSource>()),
+  );
+
+  sl.registerFactory<ChatbotCubit>(
+    () => ChatbotCubit(sl<ChatbotRepository>(), sl<PersonalInfoCubit>()),
   );
 }

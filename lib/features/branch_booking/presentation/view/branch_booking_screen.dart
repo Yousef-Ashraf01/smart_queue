@@ -140,79 +140,75 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
       onBookingError: (message) {},
 
       child: Scaffold(
-        body: Stack(
-          children: [
-            Container(
-              width: double.infinity,
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [Color(0xffEEFEFF), Color(0xffD6F9F7)],
-                ),
-              ),
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [AppColors.bgTop, AppColors.bgBottom],
             ),
-
-            SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 30),
+          ),
+          child: SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              physics: const BouncingScrollPhysics(),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   AppTopBar(),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 12),
 
                   BranchInfoHeader(branch: widget.branch),
 
                   const SizedBox(height: 30),
 
                   BookingSection(
+                    stepNumber: 1,
                     title: "Service",
-                    child:
-                        BlocBuilder<ServiceCounterCubit, ServiceCounterState>(
-                          builder: (context, state) {
-                            if (state is ServiceCounterLoading) {
-                              return const DropdownShimmer();
-                            }
-                            if (state is ServiceCounterLoaded) {
-                              if (state.serviceCounter.isEmpty) {
-                                return const EmptyServices();
-                              }
-                              return GestureDetector(
-                                onTap:
-                                    () => showServiceBottomSheet(
-                                      context: context,
-                                      items: state.serviceCounter,
-                                      selectedService: selectedService,
-                                      onSelect: (item) {
-                                        setState(() {
-                                          selectedService = item;
-                                          selectedSlot = null;
-                                        });
-                                        _fetchSlotsIfReady();
-                                      },
-                                    ),
-                                child: ServiceDropdown(
-                                  selectedService: selectedService,
-                                ),
-                              );
-                            }
-                            if (state is ServiceCounterError) {
-                              return Text(state.message);
-                            }
-                            return const Text("No services");
-                          },
-                        ),
+                    child: BlocBuilder<ServiceCounterCubit, ServiceCounterState>(
+                      builder: (context, state) {
+                        if (state is ServiceCounterLoading) {
+                          return const DropdownShimmer();
+                        }
+                        if (state is ServiceCounterLoaded) {
+                          if (state.serviceCounter.isEmpty) {
+                            return const EmptyServices();
+                          }
+                          return GestureDetector(
+                            onTap: () => showServiceBottomSheet(
+                              context: context,
+                              items: state.serviceCounter,
+                              selectedService: selectedService,
+                              onSelect: (item) {
+                                setState(() {
+                                  selectedService = item;
+                                  selectedSlot = null;
+                                });
+                                _fetchSlotsIfReady();
+                              },
+                            ),
+                            child: ServiceDropdown(
+                              selectedService: selectedService,
+                            ),
+                          );
+                        }
+                        if (state is ServiceCounterError) {
+                          return Text(state.message);
+                        }
+                        return const Text("No services");
+                      },
+                    ),
                   ),
 
                   BookingSection(
+                    stepNumber: 2,
                     title: "Date",
                     child: CustomPickerField(
                       hint: "Select a date",
                       icon: Icons.calendar_today,
-                      valueText:
-                          selectedDate != null
-                              ? DateFormat('yyyy-MM-dd').format(selectedDate!)
-                              : null,
+                      valueText: selectedDate != null
+                          ? DateFormat('yyyy-MM-dd').format(selectedDate!)
+                          : null,
                       onTap: () async {
                         final picked = await showDatePicker(
                           context: context,
@@ -221,22 +217,21 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
                           lastDate: DateTime.now().add(
                             const Duration(days: 365),
                           ),
-                          builder:
-                              (context, child) => Theme(
-                                data: Theme.of(context).copyWith(
-                                  colorScheme: const ColorScheme.light(
-                                    primary: Color(0xff3CC572),
-                                    onPrimary: Colors.white,
-                                    onSurface: Colors.black87,
-                                  ),
-                                  textButtonTheme: TextButtonThemeData(
-                                    style: TextButton.styleFrom(
-                                      foregroundColor: Color(0xff3CC572),
-                                    ),
-                                  ),
-                                ),
-                                child: child!,
+                          builder: (context, child) => Theme(
+                            data: Theme.of(context).copyWith(
+                              colorScheme: const ColorScheme.light(
+                                primary: AppColors.teal,
+                                onPrimary: Colors.white,
+                                onSurface: AppColors.blackColor,
                               ),
+                              textButtonTheme: TextButtonThemeData(
+                                style: TextButton.styleFrom(
+                                  foregroundColor: AppColors.teal,
+                                ),
+                              ),
+                            ),
+                            child: child!,
+                          ),
                         );
                         if (picked != null) {
                           setState(() {
@@ -250,16 +245,17 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
                   ),
 
                   BookingSection(
+                    stepNumber: 3,
+                    isLast: true,
                     title: "Time Slot",
                     child: BlocBuilder<BookingCubit, BookingState>(
-                      buildWhen:
-                          (prev, curr) =>
-                              curr is SlotsLoaded ||
-                              curr is SlotsLoading ||
-                              curr is SlotsError ||
-                              curr is BookingLoading ||
-                              curr is BookingError ||
-                              curr is BookingSuccess,
+                      buildWhen: (prev, curr) =>
+                          curr is SlotsLoaded ||
+                          curr is SlotsLoading ||
+                          curr is SlotsError ||
+                          curr is BookingLoading ||
+                          curr is BookingError ||
+                          curr is BookingSuccess,
                       builder: (context, state) {
                         return GestureDetector(
                           onTap: () {
@@ -275,42 +271,79 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
                             );
                           },
                           child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 15,
-                              vertical: 15,
-                            ),
                             decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(color: AppColors.whiteColor),
+                              color: selectedSlot != null
+                                  ? AppColors.teal.withOpacity(0.03)
+                                  : Colors.white,
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(
+                                color: selectedSlot != null
+                                    ? AppColors.teal.withOpacity(0.3)
+                                    : Colors.grey.shade200,
+                                width: 1.2,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.02),
+                                  blurRadius: 6,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
                             ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                if (state is SlotsLoading)
-                                  const SizedBox(
-                                    width: 18,
-                                    height: 18,
-                                    child: CircularProgressIndicator(
-                                      color: Color(0xff3CC572),
-                                      strokeWidth: 2,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
+                              child: Row(
+                                children: [
+                                  // Icon Container
+                                  Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: selectedSlot != null
+                                          ? AppColors.teal.withOpacity(0.1)
+                                          : AppColors.tealLight.withOpacity(0.15),
+                                      borderRadius: BorderRadius.circular(10),
                                     ),
-                                  )
-                                else
-                                  Text(
-                                    selectedSlot != null
-                                        ? "${selectedSlot!['start']} - ${selectedSlot!['end']}"
-                                        : "Select a time slot",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color:
-                                          selectedSlot != null
-                                              ? Colors.black87
-                                              : Colors.grey[600],
+                                    child: Icon(
+                                      selectedSlot != null
+                                          ? Icons.check_circle_rounded
+                                          : Icons.access_time_rounded,
+                                      color: AppColors.teal,
+                                      size: 20,
                                     ),
                                   ),
-                                const Icon(Icons.keyboard_arrow_down_sharp),
-                              ],
+                                  const SizedBox(width: 14),
+                                  // Text Content
+                                  Expanded(
+                                    child: Text(
+                                      selectedSlot != null
+                                          ? "${selectedSlot!['start']} - ${selectedSlot!['end']}"
+                                          : "Select a time slot",
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: selectedSlot != null ? FontWeight.bold : FontWeight.w500,
+                                        color: selectedSlot != null ? AppColors.teal : Colors.grey.shade500,
+                                        fontFamily: 'Inter Tight',
+                                      ),
+                                    ),
+                                  ),
+                                  // Loading or Chevron
+                                  if (state is SlotsLoading)
+                                    const SizedBox(
+                                      width: 18,
+                                      height: 18,
+                                      child: CircularProgressIndicator(
+                                        color: AppColors.teal,
+                                        strokeWidth: 2,
+                                      ),
+                                    )
+                                  else
+                                    Icon(
+                                      Icons.keyboard_arrow_down_rounded,
+                                      color: Colors.grey.shade400,
+                                      size: 20,
+                                    ),
+                                ],
+                              ),
                             ),
                           ),
                         );
@@ -318,14 +351,14 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
                     ),
                   ),
 
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 32),
 
                   BlocBuilder<BookingCubit, BookingState>(
                     builder: (context, state) {
                       if (state is BookingLoading) {
                         return const Center(
                           child: CircularProgressIndicator(
-                            color: Color(0xff3CC572),
+                            color: AppColors.teal,
                           ),
                         );
                       }
@@ -335,7 +368,7 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
                 ],
               ),
             ),
-          ],
+          ),
         ),
       ),
     );

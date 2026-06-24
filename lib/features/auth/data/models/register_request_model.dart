@@ -5,13 +5,25 @@ class RegisterRequestModel {
   final String email;
   final String password;
   final ClientRequestModel client;
+  final String? verificationToken;
 
   RegisterRequestModel({
     required this.username,
     required this.email,
     required this.password,
     required this.client,
+    this.verificationToken,
   });
+
+  factory RegisterRequestModel.fromJson(Map<String, dynamic> json) {
+    return RegisterRequestModel(
+      username: json['username'] ?? '',
+      email: json['email'] ?? '',
+      password: json['password'] ?? '',
+      verificationToken: json['verification_token'],
+      client: ClientRequestModel.fromJson(json['client'] ?? {}),
+    );
+  }
 
   Map<String, dynamic> toJson() {
     return {
@@ -19,6 +31,7 @@ class RegisterRequestModel {
       "email": email,
       "password": password,
       "client": client.toJson(),
+      "verification_token": verificationToken,
     };
   }
 }

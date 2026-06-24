@@ -21,6 +21,8 @@ extension RegisterRequestFormData on RegisterRequestModel {
           client.imageFile!.path,
           filename: client.imageFile!.name,
         ),
+      if (verificationToken != null)
+        "verification_token": verificationToken,
     });
   }
 }

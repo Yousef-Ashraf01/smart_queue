@@ -22,6 +22,17 @@ class AuthCubit extends Cubit<AuthState> {
     );
   }
 
+  Future<void> registerSmsRequest(String phone) async {
+    emit(AuthLoading());
+
+    final result = await repository.registerSmsRequest(phone);
+
+    result.fold(
+      (failure) => emit(AuthError(failure.message)),
+      (_) => emit(RegisterOtpSentSuccess(phone)),
+    );
+  }
+
   Future<void> login(String nationalId, String password) async {
     emit(AuthLoading());
 

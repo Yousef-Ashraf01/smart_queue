@@ -35,7 +35,10 @@ class _MainScreenState extends State<MainScreen> {
       extendBody: true,
       body:
           currentIndex == 1
-              ? TimerScreen(initialDuration: TimerScreen.pendingDuration)
+              ? TimerScreen(
+                  initialDuration: TimerScreen.pendingDuration,
+                  onBookNow: () => onTabChanged(0),
+                )
               : [
                 HomeScreen(
                   onNavigateToQueue: () => onTabChanged(1),

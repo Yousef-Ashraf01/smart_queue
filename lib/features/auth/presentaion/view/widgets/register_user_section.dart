@@ -1,8 +1,12 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:smart_queue/core/routing/app_routes.dart';
+import 'package:smart_queue/core/styling/app_colors.dart';
+import 'package:smart_queue/core/styling/app_styles.dart';
 import 'package:smart_queue/features/auth/presentaion/cubit/auth_cubit.dart';
 import 'package:smart_queue/features/auth/presentaion/view/widgets/custom_text_field.dart';
 import 'package:smart_queue/features/auth/presentaion/view/widgets/gradient_button.dart';
@@ -69,16 +73,21 @@ class RegisterUserSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (hasIdData) ...[
-          const Row(
+          Row(
             children: [
-              Icon(Icons.edit_rounded, size: 16, color: Colors.grey),
-              SizedBox(width: 6),
+              const Icon(
+                Icons.edit_rounded,
+                size: 16,
+                color: AppColors.tealMuted,
+              ),
+              const SizedBox(width: 6),
               Text(
-                'Complete your profile',
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
+                'complete_profile'.tr(),
+                style: const TextStyle(
+                  fontFamily: AppStyle.fontFamily,
+                  fontWeight: FontWeight.w700,
                   fontSize: 15,
-                  color: Colors.grey,
+                  color: AppColors.tealMuted,
                 ),
               ),
             ],
@@ -93,33 +102,34 @@ class RegisterUserSection extends StatelessWidget {
         const SizedBox(height: 24),
 
         CustomTextField(
-          label: "Username",
-          hint: "Enter your username",
+          label: "username_label".tr(),
+          hint: "username_hint".tr(),
           controller: userNameController,
           icon: Icons.alternate_email_rounded,
           focusNode: userNameFocus,
           validator: (value) {
-            if (value == null || value.isEmpty) return "Username is required";
-            if (value.length < 3)
-              return "Username must be at least 3 characters";
-            if (value.length > 20) return "Username must be 20 characters max";
-            if (!RegExp(r'^[a-zA-Z0-9_]+$').hasMatch(value))
-              return "Only letters, numbers and underscore allowed";
+            if (value == null || value.isEmpty) return "username_required".tr();
+            if (value.length < 3) return "username_min_length".tr();
+            if (value.length > 20) return "username_max_length".tr();
+            if (!RegExp(r'^[a-zA-Z0-9_]+$').hasMatch(value)) {
+              return "username_invalid".tr();
+            }
             return null;
           },
         ),
 
         CustomTextField(
-          label: "Email",
-          hint: "Enter your email",
+          label: "email_label".tr(),
+          hint: "email_hint".tr(),
           controller: emailController,
           keyboardType: TextInputType.emailAddress,
-          icon: Icons.email,
+          icon: Icons.email_outlined,
           focusNode: emailFocus,
           validator: (value) {
-            if (value == null || value.isEmpty) return "Email is required";
-            if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value))
-              return "Enter a valid email";
+            if (value == null || value.isEmpty) return "email_required".tr();
+            if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+              return "email_invalid".tr();
+            }
             return null;
           },
         ),
@@ -141,18 +151,18 @@ class RegisterUserSection extends StatelessWidget {
         ),
 
         CustomTextField(
-          label: "Password",
-          hint: "Enter your password",
+          label: "password_label".tr(),
+          hint: "password_hint".tr(),
           controller: passwordController,
           isPassword: true,
-          icon: Icons.lock,
+          icon: Icons.lock_outline_rounded,
           focusNode: passwordFocus,
           validator: (value) {
-            if (value == null || value.isEmpty) return "Password is required";
-            if (value.length < 8)
-              return "Password must be at least 8 characters";
-            if (!RegExp(r'^(?=.*[A-Za-z])(?=.*\d)').hasMatch(value))
-              return "Password must contain letters & numbers";
+            if (value == null || value.isEmpty) return "password_required".tr();
+            if (value.length < 8) return "password_length_error".tr();
+            if (!RegExp(r'^(?=.*[A-Za-z])(?=.*\d)').hasMatch(value)) {
+              return "password_format_error".tr();
+            }
             return null;
           },
         ),
@@ -167,32 +177,36 @@ class RegisterUserSection extends StatelessWidget {
                   current is RegisterSuccess,
           builder:
               (context, state) => GradientButton(
-                text: "Register",
+                text: "register".tr(),
                 onTap: onRegister,
                 isLoading: state is AuthLoading,
               ),
         ),
 
-        const SizedBox(height: 20),
+        const SizedBox(height: 24),
 
         Center(
           child: RichText(
             text: TextSpan(
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: const TextStyle(
+                fontFamily: AppStyle.fontFamily,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
               children: [
-                const TextSpan(
-                  text: 'Already have an account? ',
-                  style: TextStyle(color: Colors.grey),
+                TextSpan(
+                  text: 'already_have_account'.tr(),
+                  style: const TextStyle(color: AppColors.greyText),
                 ),
                 TextSpan(
-                  text: 'Login',
+                  text: 'login'.tr(),
                   style: const TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.w600,
+                    color: AppColors.teal,
+                    fontWeight: FontWeight.w700,
                   ),
                   recognizer:
                       TapGestureRecognizer()
-                        ..onTap = () => context.pop(context),
+                        ..onTap = () => context.push(AppRoutes.login),
                 ),
               ],
             ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smart_queue/core/styling/app_colors.dart';
 
 class CustomPickerField extends StatelessWidget {
   final String hint;
@@ -16,24 +17,68 @@ class CustomPickerField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      readOnly: true,
-      controller: TextEditingController(text: valueText ?? ''),
-      decoration: InputDecoration(
-        hintText: hint,
-        prefixIcon: Icon(icon, color: Colors.black54),
-        filled: true,
-        fillColor: Colors.white,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(50),
-          borderSide: BorderSide.none,
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(50),
-          borderSide: const BorderSide(color: Color(0xff3CC572)),
+    final hasValue = valueText != null && valueText!.isNotEmpty;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.grey.shade200, width: 1.2),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.02),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(14),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
+            child: Row(
+              children: [
+                // Green-tinted icon container
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.tealLight.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(
+                    icon,
+                    color: AppColors.teal,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 14),
+                // Text content
+                Expanded(
+                  child: Text(
+                    hasValue ? valueText! : hint,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: hasValue ? FontWeight.w600 : FontWeight.w500,
+                      color: hasValue ? AppColors.blackColor : Colors.grey.shade500,
+                      fontFamily: 'Inter Tight',
+                    ),
+                  ),
+                ),
+                // Trailing Arrow indicator
+                Icon(
+                  Icons.keyboard_arrow_down_rounded,
+                  color: Colors.grey.shade400,
+                  size: 20,
+                ),
+              ],
+            ),
+          ),
         ),
       ),
-      onTap: onTap,
     );
   }
 }
+

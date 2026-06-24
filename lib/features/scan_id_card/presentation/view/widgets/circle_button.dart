@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:smart_queue/core/styling/app_colors.dart';
 
 class CircleButton extends StatelessWidget {
   final VoidCallback onTap;
@@ -11,13 +10,24 @@ class CircleButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
+      behavior: HitTestBehavior.opaque,
       child: Container(
-        width: 40,
-        height: 40,
+        width: 42,
+        height: 42,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: AppColors.white,
-          border: Border.all(color: AppColors.tealSubtle),
+          color: Colors.white.withOpacity(0.9),
+          border: Border.all(
+            color: const Color(0xFF10B981).withOpacity(0.15),
+            width: 1,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: Center(child: child),
       ),

@@ -19,8 +19,12 @@ class CustomBottomBar extends StatelessWidget {
       shape: const CircularNotchedRectangle(),
       notchMargin: 8,
       color: Colors.white,
-      child: SizedBox(
-        height: 70,
+      elevation: 12,
+      shadowColor: Colors.black.withOpacity(0.12),
+      clipBehavior: Clip.none,
+      child: Container(
+        height: 66,
+        padding: const EdgeInsets.symmetric(horizontal: 4),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
@@ -30,16 +34,16 @@ class CustomBottomBar extends StatelessWidget {
               isActive: currentIndex == 0,
               onTap: () => onTap(0),
             ),
-            NavigationItem(
-              icon: Icons.queue,
+            NavItem(
+              icon: Icons.queue_play_next_rounded,
               label: "My Queue",
               isActive: currentIndex == 1,
               onTap: () => onTap(1),
             ),
-            const SizedBox(width: 40),
+            const SizedBox(width: 46), // Optimized space for the notched FAB
             NavItem(
               icon: AppAssets.iconCalendar,
-              label: "Appointments",
+              label: "History",
               isActive: currentIndex == 2,
               onTap: () => onTap(2),
             ),
@@ -51,42 +55,6 @@ class CustomBottomBar extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class NavigationItem extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final bool isActive;
-  final VoidCallback onTap;
-
-  const NavigationItem({
-    super.key,
-    required this.icon,
-    required this.label,
-    required this.isActive,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, color: isActive ? Colors.black : Colors.grey),
-          SizedBox(height: 5),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: isActive ? 14 : 12,
-              color: isActive ? Colors.black : Colors.grey,
-            ),
-          ),
-        ],
       ),
     );
   }

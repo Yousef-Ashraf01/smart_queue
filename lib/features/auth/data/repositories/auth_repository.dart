@@ -47,4 +47,62 @@ class AuthRepository {
       return Left(UnknownFailure(e.toString()));
     }
   }
+
+  Future<Either<Failure, Unit>> resetPasswordRequest(String phone) async {
+    try {
+      await remote.resetPasswordRequest(phone: phone);
+      return const Right(unit);
+    } on DioException catch (e) {
+      return Left(handleDioError(e));
+    } catch (e) {
+      return Left(UnknownFailure(e.toString()));
+    }
+  }
+
+  Future<Either<Failure, Unit>> registerSmsRequest(String phone) async {
+    try {
+      await remote.registerSmsRequest(phone: phone);
+      return const Right(unit);
+    } on DioException catch (e) {
+      return Left(handleDioError(e));
+    } catch (e) {
+      return Left(UnknownFailure(e.toString()));
+    }
+  }
+
+  Future<Either<Failure, String?>> verifySmsCode({
+    required String phone,
+    required String code,
+    required String purpose,
+  }) async {
+    try {
+      final token = await remote.verifySmsCode(
+        phone: phone,
+        code: code,
+        purpose: purpose,
+      );
+      return Right(token);
+    } on DioException catch (e) {
+      return Left(handleDioError(e));
+    } catch (e) {
+      return Left(UnknownFailure(e.toString()));
+    }
+  }
+
+  Future<Either<Failure, Unit>> resetPasswordConfirm({
+    required String sessionToken,
+    required String newPassword,
+  }) async {
+    try {
+      await remote.resetPasswordConfirm(
+        sessionToken: sessionToken,
+        newPassword: newPassword,
+      );
+      return const Right(unit);
+    } on DioException catch (e) {
+      return Left(handleDioError(e));
+    } catch (e) {
+      return Left(UnknownFailure(e.toString()));
+    }
+  }
 }

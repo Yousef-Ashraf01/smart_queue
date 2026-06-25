@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:smart_queue/core/constants/app_assets.dart';
+import 'package:smart_queue/core/routing/app_routes.dart';
+import 'package:smart_queue/core/styling/app_colors.dart';
+import 'package:smart_queue/core/widgets/app_flushbar.dart';
+import 'package:smart_queue/features/forget_password/presentation/cubit/forget_password_cubit.dart';
 
 class CreateNewPasswordScreen extends StatefulWidget {
-  const CreateNewPasswordScreen({super.key});
+  final String sessionToken;
+
+  const CreateNewPasswordScreen({super.key, required this.sessionToken});
 
   @override
   State<CreateNewPasswordScreen> createState() =>
@@ -11,8 +19,17 @@ class CreateNewPasswordScreen extends StatefulWidget {
 }
 
 class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   bool _isPasswordHidden = true;
   bool _isConfirmPasswordHidden = true;
+
+  @override
+  void dispose() {
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,6 +76,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                 const FieldLabel(text: "New Password"),
                 _buildPasswordField(
                   hint: "Password",
+                  controller: _passwordController,
                   isHidden: _isPasswordHidden,
                   onToggle: () {
                     setState(() {
@@ -71,7 +89,8 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
 
                 const FieldLabel(text: "Confirm Password"),
                 _buildPasswordField(
-                  hint: "Password",
+                  hint: "Confirm Password",
+                  controller: _confirmPasswordController,
                   isHidden: _isConfirmPasswordHidden,
                   onToggle: () {
                     setState(() {
@@ -82,7 +101,77 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
 
                 const Spacer(),
 
-                _buildGradientButton("Send", () {}),
+                BlocConsumer<ForgetPasswordCubit, ForgetPasswordState>(
+                  listener: (context, state) {
+                    if (state is ForgetPasswordConfirmSuccess) {
+                      AppFlushbar.show(
+                        context,
+                        message:
+                            "Password reset successfully! Please log in with your new password.",
+                        type: MessageType.success,
+                        duration: const Duration(milliseconds: 1500),
+                      );
+                      Future.delayed(const Duration(milliseconds: 1500), () {
+                        context.go(AppRoutes.login);
+                      });
+                    } else if (state is ForgetPasswordError) {
+                      AppFlushbar.show(
+                        context,
+                        message: state.message,
+                        type: MessageType.error,
+                      );
+                    }
+                  },
+                  builder: (context, state) {
+                    return _buildGradientButton(
+                      "Send",
+                      state is ForgetPasswordLoading
+                          ? null
+                          : () {
+                            FocusScope.of(context).unfocus();
+                            final password = _passwordController.text;
+                            final confirmPassword =
+                                _confirmPasswordController.text;
+
+                            if (password.isEmpty || confirmPassword.isEmpty) {
+                              AppFlushbar.show(
+                                context,
+                                message: "Please enter both password fields",
+                                type: MessageType.error,
+                              );
+                              return;
+                            }
+
+                            if (password.length < 8) {
+                              AppFlushbar.show(
+                                context,
+                                message:
+                                    "Password must be at least 8 characters long",
+                                type: MessageType.error,
+                              );
+                              return;
+                            }
+
+                            if (password != confirmPassword) {
+                              AppFlushbar.show(
+                                context,
+                                message: "Passwords do not match",
+                                type: MessageType.error,
+                              );
+                              return;
+                            }
+
+                            context
+                                .read<ForgetPasswordCubit>()
+                                .resetPasswordConfirm(
+                                  sessionToken: widget.sessionToken,
+                                  newPassword: password,
+                                );
+                          },
+                      isLoading: state is ForgetPasswordLoading,
+                    );
+                  },
+                ),
                 const SizedBox(height: 15),
               ],
             ),
@@ -94,6 +183,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
 
   Widget _buildPasswordField({
     required String hint,
+    required TextEditingController controller,
     required bool isHidden,
     required VoidCallback onToggle,
   }) {
@@ -101,20 +191,21 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(30),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
-            color: const Color(0x0D000000),
+            color: Color(0x0D000000),
             blurRadius: 10,
-            offset: const Offset(0, 5),
+            offset: Offset(0, 5),
           ),
         ],
       ),
       child: TextFormField(
+        controller: controller,
         obscureText: isHidden,
+        cursorColor: AppColors.greenStart,
         decoration: InputDecoration(
           hintText: hint,
           hintStyle: const TextStyle(color: Color(0xFFC7C7CC)),
-
           prefixIcon: IntrinsicHeight(
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -125,8 +216,8 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                   color: Color(0xFFC7C7CC),
                 ),
                 const SizedBox(width: 12),
-                VerticalDivider(
-                  color: const Color(0x7FC7C7CC),
+                const VerticalDivider(
+                  color: Color(0x7FC7C7CC),
                   thickness: 1,
                   indent: 14,
                   endIndent: 14,
@@ -156,27 +247,40 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
     );
   }
 
-  Widget _buildGradientButton(String text, VoidCallback onTap) {
+  Widget _buildGradientButton(
+    String text,
+    VoidCallback? onTap, {
+    bool isLoading = false,
+  }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         width: double.infinity,
         height: 56,
+        margin: const EdgeInsets.only(bottom: 40, top: 20),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(30),
-          gradient: const LinearGradient(
-            colors: [Color(0xFF63D98A), Color(0xFF1B4332)],
+          gradient: LinearGradient(
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+            colors:
+                isLoading
+                    ? [Colors.grey, Colors.grey.shade700]
+                    : const [Color(0xFF63D98A), Color(0xFF1B4332)],
           ),
         ),
         child: Center(
-          child: Text(
-            text,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+          child:
+              isLoading
+                  ? const CircularProgressIndicator(color: Colors.white)
+                  : Text(
+                    text,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
         ),
       ),
     );

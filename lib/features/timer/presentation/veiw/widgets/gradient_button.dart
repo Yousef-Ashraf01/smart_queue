@@ -22,70 +22,72 @@ class _GradientButtonState extends State<GradientButton> {
   @override
   Widget build(BuildContext context) {
     return AnimatedScale(
-      scale: widget.enabled && _isPressed ? 0.97 : 1.0,
-      duration: const Duration(milliseconds: 120),
-      child: Material(
-        borderRadius: BorderRadius.circular(28),
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: widget.enabled ? widget.onTap : null,
-          onHighlightChanged: (value) {
-            if (widget.enabled) {
-              setState(() => _isPressed = value);
-            }
-          },
-          borderRadius: BorderRadius.circular(28),
-          splashColor:
-              widget.enabled
-                  ? Colors.white.withValues(alpha: 0.2)
-                  : Colors.transparent,
-          highlightColor:
-              widget.enabled
-                  ? Colors.white.withValues(alpha: 0.08)
-                  : Colors.transparent,
-          child: Ink(
-            height: 60,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(28),
-              gradient: LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors:
-                    !widget.enabled
-                        ? [Colors.grey[400]!, Colors.grey[500]!]
-                        : _isPressed
-                        ? [const Color(0xFF702E2E), const Color(0xFFFF3C3C)]
-                        : [const Color(0xFFFF3C3C), const Color(0xFF702E2E)],
-              ),
-            ),
-            child: Center(
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 18,
-                    height: 18,
-                    decoration: BoxDecoration(
-                      color: widget.enabled ? Colors.white : Colors.white70,
-                      borderRadius: BorderRadius.circular(6),
+      scale: widget.enabled && _isPressed ? 0.96 : 1.0,
+      duration: const Duration(milliseconds: 150),
+      curve: Curves.easeOutCubic,
+      child: GestureDetector(
+        onTapDown: (_) {
+          if (widget.enabled) setState(() => _isPressed = true);
+        },
+        onTapUp: (_) {
+          if (widget.enabled) setState(() => _isPressed = false);
+        },
+        onTapCancel: () {
+          if (widget.enabled) setState(() => _isPressed = false);
+        },
+        onTap: widget.enabled ? widget.onTap : null,
+        child: Container(
+          height: 54,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            gradient: widget.enabled
+                ? const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFFFCA5A5), // Rose light
+                      Color(0xFFEF4444), // Rose main red
+                    ],
+                  )
+                : null,
+            color: widget.enabled ? null : Colors.grey[300],
+            boxShadow: widget.enabled
+                ? [
+                    BoxShadow(
+                      color: const Color(0xFFEF4444).withOpacity(0.2),
+                      blurRadius: 16,
+                      offset: const Offset(0, 6),
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  Text(
-                    widget.text,
-                    style: TextStyle(
-                      color:
-                          widget.enabled
-                              ? Colors.white
-                              : Colors.white.withOpacity(0.8),
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
+                  ]
+                : [],
+            border: widget.enabled
+                ? Border.all(
+                    color: Colors.white.withOpacity(0.2),
+                    width: 1,
+                  )
+                : null,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.cancel_outlined,
+                color: widget.enabled ? Colors.white : Colors.grey[500],
+                size: 18,
               ),
-            ),
+              const SizedBox(width: 8),
+              Text(
+                widget.text,
+                style: TextStyle(
+                  color: widget.enabled ? Colors.white : Colors.grey[500],
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.3,
+                  fontFamily: 'Inter Tight',
+                ),
+              ),
+            ],
           ),
         ),
       ),

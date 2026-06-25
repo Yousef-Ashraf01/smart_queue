@@ -19,7 +19,11 @@ class IdRemoteDataSource {
     final response = await dio.post(
       ApiEndpoints.extractId,
       data: formData,
-      options: Options(contentType: "multipart/form-data"),
+      options: Options(
+        contentType: "multipart/form-data",
+        connectTimeout: const Duration(seconds: 30),
+        receiveTimeout: const Duration(minutes: 2),
+      ),
     );
 
     return response.data["data"];

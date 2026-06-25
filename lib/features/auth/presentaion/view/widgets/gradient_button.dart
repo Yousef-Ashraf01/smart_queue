@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smart_queue/core/styling/app_colors.dart';
 
 class GradientButton extends StatelessWidget {
   final String text;
@@ -22,35 +23,45 @@ class GradientButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(30),
           gradient: const LinearGradient(
             colors: [
-              Color.fromARGB(255, 118, 226, 136),
-              Color.fromARGB(255, 11, 58, 30),
+              AppColors.tealLight,
+              AppColors.teal,
             ],
           ),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.teal.withOpacity(0.25),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
+            ),
+          ],
         ),
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.transparent,
             shadowColor: Colors.transparent,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(30),
+            ),
           ),
           onPressed: isLoading ? null : onTap,
-          child:
-              isLoading
-                  ? const SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
-                      strokeWidth: 3,
-                    ),
-                  )
-                  : Text(
-                    text,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
+          child: isLoading
+              ? const SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+                    strokeWidth: 3,
                   ),
+                )
+              : Text(
+                  text,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                    letterSpacing: 0.5,
+                  ),
+                ),
         ),
       ),
     );

@@ -82,4 +82,46 @@ class BranchModel {
               .toList(),
     );
   }
+
+  bool get isCurrentlyOpen {
+    if (isActive == false) return false;
+    if (operatingHours.isEmpty) return isActive ?? false;
+
+    final now = DateTime.now();
+    final isoWeekday = now.weekday; // 1 = Monday, 7 = Sunday
+    final backendWeekday = isoWeekday - 1; // 0 = Monday, 6 = Sunday (Django backend)
+    OperatingHour? todayHour;
+
+    for (final hour in operatingHours) {
+      if (hour.weekday == backendWeekday) {
+        todayHour = hour;
+        break;
+      }
+    }
+
+    if (todayHour == null) {
+      // If operating hours are defined but none match today, the branch is closed today
+      return false;
+    }
+
+    try {
+      final fromParts = todayHour.fromHour.split(':');
+      final toParts = todayHour.toHour.split(':');
+
+      final fromMin = int.parse(fromParts[0]) * 60 + int.parse(fromParts[1]);
+      final toMin = int.parse(toParts[0]) * 60 + int.parse(toParts[1]);
+
+      final currentMin = now.hour * 60 + now.minute;
+
+      if (toMin < fromMin) {
+        // Overnight shift
+        return currentMin >= fromMin || currentMin <= toMin;
+      }
+
+      return currentMin >= fromMin && currentMin <= toMin;
+    } catch (_) {
+      return isActive ?? false;
+    }
+  }
 }
+

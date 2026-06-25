@@ -24,6 +24,11 @@ void main() async {
 
   await authCubit.checkAuthStatus();
 
+  // Only fetch profile if the user is already authenticated
+  if (authCubit.state is LoginSuccess) {
+    personalInfoCubit.getProfile();
+  }
+
   runApp(
     EasyLocalization(
       supportedLocales: const [Locale('en'), Locale('ar')],
@@ -32,7 +37,7 @@ void main() async {
       child: MultiBlocProvider(
         providers: [
           BlocProvider.value(value: authCubit),
-          BlocProvider.value(value: personalInfoCubit..getProfile()),
+          BlocProvider.value(value: personalInfoCubit),
           BlocProvider(create: (_) => sl<ActiveBookingCubit>()),
         ],
         child: const SmartQueueApp(),

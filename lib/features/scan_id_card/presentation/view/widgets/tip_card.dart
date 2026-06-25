@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:smart_queue/core/styling/app_colors.dart';
 
 class TipCard extends StatelessWidget {
   final IconData icon;
@@ -9,25 +8,51 @@ class TipCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const activeColor = Color(0xFF10B981);
+
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
         decoration: BoxDecoration(
-          color: AppColors.white,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: AppColors.tealSubtle.withOpacity(0.7)),
+          color: Colors.white.withOpacity(0.85),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: activeColor.withOpacity(0.15),
+            width: 1,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.03),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 18, color: AppColors.teal),
-            const SizedBox(height: 4),
+            Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: activeColor.withOpacity(0.08),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                icon,
+                size: 16,
+                color: activeColor,
+              ),
+            ),
+            const SizedBox(height: 8),
             Text(
               label,
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontSize: 10.5,
-                color: AppColors.tealMuted,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF1A1D4E),
+                height: 1.2,
+                fontFamily: 'Inter Tight',
               ),
             ),
           ],

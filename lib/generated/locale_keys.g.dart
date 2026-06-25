@@ -1,0 +1,83 @@
+// DO NOT EDIT. This is code generated via package:easy_localization/generate.dart
+
+// ignore_for_file: constant_identifier_names
+
+abstract class  LocaleKeys {
+  static const welcome_title = 'welcome_title';
+  static const welcome_desc = 'welcome_desc';
+  static const register = 'register';
+  static const login = 'login';
+  static const welcome_back = 'welcome_back';
+  static const login_subtitle = 'login_subtitle';
+  static const national_id_label = 'national_id_label';
+  static const national_id_hint = 'national_id_hint';
+  static const national_id_required = 'national_id_required';
+  static const national_id_invalid = 'national_id_invalid';
+  static const password_label = 'password_label';
+  static const password_hint = 'password_hint';
+  static const password_required = 'password_required';
+  static const password_length_error = 'password_length_error';
+  static const password_format_error = 'password_format_error';
+  static const forgot_password = 'forgot_password';
+  static const no_account = 'no_account';
+  static const app_settings = 'app_settings';
+  static const preferences = 'preferences';
+  static const dark_mode = 'dark_mode';
+  static const notifications = 'notifications';
+  static const location_access = 'location_access';
+  static const app_section = 'app_section';
+  static const language = 'language';
+  static const change_password = 'change_password';
+  static const app_version = 'app_version';
+  static const select_language = 'select_language';
+  static const create_account_title = 'create_account_title';
+  static const already_have_account = 'already_have_account';
+  static const complete_profile = 'complete_profile';
+  static const username_label = 'username_label';
+  static const username_hint = 'username_hint';
+  static const username_required = 'username_required';
+  static const username_min_length = 'username_min_length';
+  static const username_max_length = 'username_max_length';
+  static const username_invalid = 'username_invalid';
+  static const email_label = 'email_label';
+  static const email_hint = 'email_hint';
+  static const email_required = 'email_required';
+  static const email_invalid = 'email_invalid';
+  static const full_name_label = 'full_name_label';
+  static const full_name_hint = 'full_name_hint';
+  static const full_name_required = 'full_name_required';
+  static const full_name_min_length = 'full_name_min_length';
+  static const address_label = 'address_label';
+  static const address_hint = 'address_hint';
+  static const address_required = 'address_required';
+  static const birth_date_label = 'birth_date_label';
+  static const birth_date_required = 'birth_date_required';
+  static const birth_date_invalid = 'birth_date_invalid';
+  static const birth_date_future = 'birth_date_future';
+  static const birth_date_month_invalid = 'birth_date_month_invalid';
+  static const birth_date_day_invalid = 'birth_date_day_invalid';
+  static const phone_number_label = 'phone_number_label';
+  static const choose_photo_source = 'choose_photo_source';
+  static const select_photo_source_desc = 'select_photo_source_desc';
+  static const gallery = 'gallery';
+  static const gallery_desc = 'gallery_desc';
+  static const camera = 'camera';
+  static const camera_desc = 'camera_desc';
+  static const cancel = 'cancel';
+  static const add_profile_photo = 'add_profile_photo';
+  static const change_photo = 'change_photo';
+  static const verified_from_id = 'verified_from_id';
+  static const registered_successfully = 'registered_successfully';
+  static const chat_title = 'chat.title';
+  static const chat_subtitle = 'chat.subtitle';
+  static const chat_preparing = 'chat.preparing';
+  static const chat_connection_error_title = 'chat.connection_error_title';
+  static const chat_retry = 'chat.retry';
+  static const chat_action_label = 'chat.action_label';
+  static const chat_input_name_hint = 'chat.input.name_hint';
+  static const chat_input_phone_hint = 'chat.input.phone_hint';
+  static const chat_input_national_id_hint = 'chat.input.national_id_hint';
+  static const chat_input = 'chat.input';
+  static const chat = 'chat';
+
+}

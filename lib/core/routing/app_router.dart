@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
 import 'package:smart_queue/core/routing/auth_notifier.dart';
-import 'package:smart_queue/features/ai/ai_screen.dart';
+import 'package:smart_queue/features/ai/presentation/view/ai_screen.dart';
 import 'package:smart_queue/features/app_settings/about_us/presentation/about_us_screen.dart';
 import 'package:smart_queue/features/app_settings/change_password/presentation/cubit/change_password_cubit.dart';
 import 'package:smart_queue/features/app_settings/change_password/presentation/view/change_password_screen.dart';
@@ -13,10 +13,12 @@ import 'package:smart_queue/features/app_settings/terms_and_policy/presentation/
 import 'package:smart_queue/features/auth/presentaion/cubit/auth_cubit.dart';
 import 'package:smart_queue/features/auth/presentaion/view/login_page.dart';
 import 'package:smart_queue/features/auth/presentaion/view/register_page.dart';
+import 'package:smart_queue/features/auth/data/models/register_request_model.dart';
 import 'package:smart_queue/features/branch_booking/data/models/appointment_response_model.dart';
 import 'package:smart_queue/features/branch_booking/presentation/cubit/booking_cubit.dart';
 import 'package:smart_queue/features/branch_booking/presentation/cubit/service_counter_cubit.dart';
 import 'package:smart_queue/features/branch_booking/presentation/view/branch_booking_screen.dart';
+import 'package:smart_queue/features/forget_password/presentation/cubit/forget_password_cubit.dart';
 import 'package:smart_queue/features/forget_password/presentation/view/create_new_password_screen.dart';
 import 'package:smart_queue/features/forget_password/presentation/view/forget_password_screen.dart';
 import 'package:smart_queue/features/main/main_screen.dart';
@@ -41,7 +43,8 @@ import 'package:smart_queue/features/welcome/presentation/view/welcome_screen.da
 import '../di/service_locator.dart';
 
 class AppRouter {
-  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  static final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>();
 
   static GoRouter createRouter(AuthCubit authCubit) {
     final authNotifier = AuthNotifier(authCubit);
@@ -59,6 +62,8 @@ class AppRouter {
             state.matchedLocation == AppRoutes.login ||
             state.matchedLocation == AppRoutes.register ||
             state.matchedLocation == AppRoutes.createNewPassword ||
+            state.matchedLocation == AppRoutes.forgetPassword ||
+            state.matchedLocation == AppRoutes.changePassword ||
             state.matchedLocation == AppRoutes.verificationCode ||
             state.matchedLocation == AppRoutes.forgetPassword;
 
@@ -94,17 +99,71 @@ class AppRouter {
         GoRoute(
           path: AppRoutes.forgetPassword,
           name: 'forgetPassword',
-          builder: (context, state) => const ForgetPasswordScreen(),
+          builder:
+              (context, state) => BlocProvider(
+                create: (_) => sl<ForgetPasswordCubit>(),
+                child: const ForgetPasswordScreen(),
+              ),
         ),
         GoRoute(
           path: AppRoutes.verificationCode,
           name: 'verificationCode',
-          builder: (context, state) => const VerificationCodeScreen(),
+          builder: (context, state) {
+            final extra = state.extra;
+            if (extra is Map<String, dynamic>) {
+              final purpose = extra['purpose'] as String? ?? 'reset_password';
+              final phone = extra['phone'] as String;
+              final registerModelRaw = extra['registerModel'];
+              RegisterRequestModel? registerModel;
+              if (registerModelRaw is RegisterRequestModel) {
+                registerModel = registerModelRaw;
+              } else if (registerModelRaw is Map<String, dynamic>) {
+                registerModel = RegisterRequestModel.fromJson(registerModelRaw);
+              }
+
+              if (purpose == 'register') {
+                // For register flow: provide both ForgetPasswordCubit and AuthCubit
+                return MultiBlocProvider(
+                  providers: [
+                    BlocProvider(create: (_) => sl<ForgetPasswordCubit>()),
+                    BlocProvider.value(
+                      value: context.read<AuthCubit>(),
+                    ),
+                  ],
+                  child: VerificationCodeScreen(
+                    phone: phone,
+                    purpose: purpose,
+                    registerModel: registerModel,
+                  ),
+                );
+              }
+
+              return BlocProvider(
+                create: (_) => sl<ForgetPasswordCubit>(),
+                child: VerificationCodeScreen(
+                  phone: phone,
+                  purpose: purpose,
+                ),
+              );
+            }
+            return BlocProvider(
+              create: (_) => sl<ForgetPasswordCubit>(),
+              child: VerificationCodeScreen(phone: extra as String),
+            );
+          },
         ),
         GoRoute(
           path: AppRoutes.createNewPassword,
           name: 'createNewPassword',
-          builder: (context, state) => const CreateNewPasswordScreen(),
+          builder: (context, state) {
+            final sessionToken = state.extra as String;
+            return BlocProvider(
+              create: (_) => sl<ForgetPasswordCubit>(),
+              child: CreateNewPasswordScreen(
+                sessionToken: sessionToken,
+              ),
+            );
+          },
         ),
         GoRoute(
           path: AppRoutes.changePassword,

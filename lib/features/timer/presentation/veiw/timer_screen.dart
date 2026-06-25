@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:smart_queue/core/styling/app_colors.dart';
+import 'package:smart_queue/core/styling/app_styles.dart';
 import 'package:smart_queue/core/utils/booking_keys.dart';
 import 'package:smart_queue/core/widgets/app_flushbar.dart';
 import 'package:smart_queue/core/widgets/notification_widget.dart';
@@ -12,10 +14,15 @@ import 'package:smart_queue/features/timer/presentation/veiw/widgets/time_circle
 
 class TimerScreen extends StatefulWidget {
   final Duration initialDuration;
+  final VoidCallback? onBookNow;
 
   static Duration pendingDuration = Duration.zero;
 
-  const TimerScreen({super.key, this.initialDuration = Duration.zero});
+  const TimerScreen({
+    super.key,
+    this.initialDuration = Duration.zero,
+    this.onBookNow,
+  });
 
   @override
   State<TimerScreen> createState() => _TimerScreenState();
@@ -65,9 +72,6 @@ class _TimerScreenState extends State<TimerScreen> {
 
     try {
       final slotStartRaw = booking[BookingKeys.slotStart] as String?;
-      if (slotStartRaw != null) {
-        final slotStart = DateTime.tryParse(slotStartRaw);
-      }
       final createdAtRaw = booking['createdAt'] as String?;
       if (slotStartRaw == null || createdAtRaw == null) return;
 
@@ -171,6 +175,16 @@ class _TimerScreenState extends State<TimerScreen> {
           if (state is ActiveBookingLoaded && state.bookings.isNotEmpty) {
             _lastBookings = state.bookings;
           }
+
+          final currentBookings =
+              state is ActiveBookingLoaded && state.bookings.isNotEmpty
+                  ? state.bookings
+                  : state is ActiveBookingCancelling
+                      ? _lastBookings
+                      : (state is ActiveBookingLoaded ? <Map<String, dynamic>>[] : _lastBookings);
+
+          final int bookingsCount = currentBookings.length;
+
           return Scaffold(
             body: Container(
               width: double.infinity,
@@ -178,23 +192,28 @@ class _TimerScreenState extends State<TimerScreen> {
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [Color(0xffEEFEFF), Color(0xffD6F9F7)],
+                  colors: [AppColors.bgTop, AppColors.bgBottom],
                 ),
               ),
               child: SafeArea(
-                child:
-                    state is ActiveBookingLoading
-                        ? const Center(
-                          child: CircularProgressIndicator(
-                            color: Color(0xff1A9E7A),
-                          ),
-                        )
-                        : state is ActiveBookingCancelling
-                        ? _buildMultiBookingView(_lastBookings)
-                        : state is ActiveBookingLoaded &&
-                            state.bookings.isNotEmpty
-                        ? _buildMultiBookingView(state.bookings)
-                        : _buildEmptyState(context),
+                child: Column(
+                  children: [
+                    // Structured and modern Header
+                    _buildHeader(bookingsCount),
+
+                    Expanded(
+                      child: state is ActiveBookingLoading
+                          ? const Center(
+                              child: CircularProgressIndicator(
+                                color: AppColors.teal,
+                              ),
+                            )
+                          : bookingsCount > 0
+                              ? _buildMultiBookingView(currentBookings)
+                              : _buildEmptyState(context),
+                    ),
+                  ],
+                ),
               ),
             ),
           );
@@ -203,21 +222,54 @@ class _TimerScreenState extends State<TimerScreen> {
     );
   }
 
+  Widget _buildHeader(int count) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "My Queue",
+                  style: TextStyle(
+                    fontFamily: AppStyle.fontFamily,
+                    fontSize: 26,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.primaryDark,
+                    letterSpacing: -0.5,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  count > 0
+                      ? "You have $count active ${count == 1 ? 'ticket' : 'tickets'} in progress"
+                      : "Check your active queue status",
+                  style: const TextStyle(
+                    fontFamily: AppStyle.fontFamily,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.greyText,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const NotificationWidget(),
+        ],
+      ),
+    );
+  }
+
   Widget _buildMultiBookingView(List<Map<String, dynamic>> bookings) {
     return Column(
       children: [
-        const SizedBox(height: 25),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30),
-          child: Align(
-            alignment: AlignmentDirectional.centerEnd,
-            child: NotificationWidget(),
-          ),
-        ),
-        const SizedBox(height: 10),
-
         // Page indicator dots (only shown when multiple bookings)
         if (bookings.length > 1) ...[
+          const SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(bookings.length, (i) {
@@ -225,19 +277,18 @@ class _TimerScreenState extends State<TimerScreen> {
               return AnimatedContainer(
                 duration: const Duration(milliseconds: 250),
                 margin: const EdgeInsets.symmetric(horizontal: 4),
-                width: isActive ? 20 : 8,
-                height: 8,
+                width: isActive ? 20 : 6,
+                height: 6,
                 decoration: BoxDecoration(
-                  color:
-                      isActive
-                          ? const Color(0xff1A9E7A)
-                          : const Color(0xff1A9E7A).withOpacity(0.3),
-                  borderRadius: BorderRadius.circular(4),
+                  color: isActive
+                      ? const Color(0xFF10B981)
+                      : const Color(0xFF10B981).withValues(alpha: 0.25),
+                  borderRadius: BorderRadius.circular(3),
                 ),
               );
             }),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
         ],
 
         Expanded(
@@ -260,17 +311,35 @@ class _TimerScreenState extends State<TimerScreen> {
     final canCancel = booking['canCancel'] as bool? ?? true;
 
     return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(30, 10, 30, 30),
         child: Column(
           children: [
-            Text(
-              orgName,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: AppColors.teal.withValues(alpha: 0.06),
+                borderRadius: BorderRadius.circular(30),
+                border: Border.all(
+                  color: AppColors.tealLight.withValues(alpha: 0.2),
+                  width: 1,
+                ),
+              ),
+              child: Text(
+                orgName,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontFamily: AppStyle.fontFamily,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.teal,
+                  letterSpacing: 0.3,
+                ),
+              ),
             ),
 
-            const SizedBox(height: 30),
+            const SizedBox(height: 24),
 
             Center(
               child: TimeCircle(
@@ -279,7 +348,7 @@ class _TimerScreenState extends State<TimerScreen> {
               ),
             ),
 
-            const SizedBox(height: 30),
+            const SizedBox(height: 24),
 
             ServiceCard(
               serviceName: booking['serviceName'] as String? ?? "",
@@ -287,36 +356,49 @@ class _TimerScreenState extends State<TimerScreen> {
               branchAddress: booking['branchAddress'] as String? ?? "",
             ),
 
-            const SizedBox(height: 30),
+            const SizedBox(height: 24),
 
             GradientButton(
-              text: "Cancel",
+              text: "Cancel Appointment",
               enabled: canCancel,
               onTap: () => _showCancelDialog(context, booking),
             ),
 
             if (!canCancel) ...[
-              const SizedBox(height: 12),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Icon(
-                    Icons.info_outline,
-                    color: Color(0xFFE24B4A),
-                    size: 16,
+              Container(
+                margin: const EdgeInsets.only(top: 16),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFF2F2),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                    color: const Color(0xFFFEE2E2),
+                    width: 1,
                   ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      "Cancellation limit reached for this service (Allowed once).",
-                      style: TextStyle(
-                        color: Colors.red[800],
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Icon(
+                      Icons.info_outline_rounded,
+                      color: Color(0xFFE24B4A),
+                      size: 18,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        "Cancellation limit reached for this service (Allowed once).",
+                        style: TextStyle(
+                          fontFamily: AppStyle.fontFamily,
+                          color: Colors.red[900],
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          height: 1.4,
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
 
@@ -340,6 +422,17 @@ class _TimerScreenState extends State<TimerScreen> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(24),
+                border: Border.all(
+                  color: AppColors.tealLight.withValues(alpha: 0.15),
+                  width: 1,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.08),
+                    blurRadius: 24,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -347,12 +440,16 @@ class _TimerScreenState extends State<TimerScreen> {
                   Container(
                     width: 64,
                     height: 64,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFFEE2E2),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFFF2F2),
                       shape: BoxShape.circle,
+                      border: Border.all(
+                        color: const Color(0xFFFEE2E2),
+                        width: 1.5,
+                      ),
                     ),
                     child: const Icon(
-                      Icons.calendar_today_outlined,
+                      Icons.warning_amber_rounded,
                       color: Color(0xFFE24B4A),
                       size: 28,
                     ),
@@ -360,67 +457,88 @@ class _TimerScreenState extends State<TimerScreen> {
                   const SizedBox(height: 16),
                   const Text(
                     "Cancel booking?",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                    style: TextStyle(
+                      fontFamily: AppStyle.fontFamily,
+                      fontSize: 19,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.blackColor,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   const Text(
                     "Are you sure you want to cancel your appointment? This action cannot be undone.",
                     textAlign: TextAlign.center,
                     style: TextStyle(
+                      fontFamily: AppStyle.fontFamily,
                       fontSize: 14,
-                      color: Colors.grey,
-                      height: 1.6,
+                      color: AppColors.greyText,
+                      height: 1.5,
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 18),
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.all(12),
+                    padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.grey[100],
-                      borderRadius: BorderRadius.circular(12),
+                      color: AppColors.bgBottom.withValues(alpha: 0.4),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: AppColors.tealLight.withValues(alpha: 0.15),
+                        width: 1,
+                      ),
                     ),
                     child: Column(
                       children: [
                         Row(
                           children: [
                             const Icon(
-                              Icons.work_outline,
-                              size: 15,
-                              color: Colors.grey,
+                              Icons.room_service_outlined,
+                              size: 16,
+                              color: AppColors.tealMuted,
                             ),
-                            const SizedBox(width: 6),
+                            const SizedBox(width: 8),
                             const Text(
                               "Service",
                               style: TextStyle(
+                                fontFamily: AppStyle.fontFamily,
                                 fontSize: 13,
-                                color: Colors.grey,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.tealMuted,
                               ),
                             ),
                             const Spacer(),
-                            Text(
-                              booking['serviceName'] as String? ?? "",
-                              style: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w500,
+                            Expanded(
+                              child: Text(
+                                booking['serviceName'] as String? ?? "",
+                                textAlign: TextAlign.end,
+                                style: const TextStyle(
+                                  fontFamily: AppStyle.fontFamily,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.blackColor,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 10),
                         Row(
                           children: [
                             const Icon(
-                              Icons.access_time,
-                              size: 15,
-                              color: Colors.grey,
+                              Icons.schedule_outlined,
+                              size: 16,
+                              color: AppColors.tealMuted,
                             ),
-                            const SizedBox(width: 6),
+                            const SizedBox(width: 8),
                             const Text(
                               "Time slot",
                               style: TextStyle(
+                                fontFamily: AppStyle.fontFamily,
                                 fontSize: 13,
-                                color: Colors.grey,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.tealMuted,
                               ),
                             ),
                             const Spacer(),
@@ -428,34 +546,42 @@ class _TimerScreenState extends State<TimerScreen> {
                               booking[BookingKeys.slotStartTime] as String? ??
                                   "",
                               style: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w500,
-                              ),
+                                  fontFamily: AppStyle.fontFamily,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.blackColor),
                             ),
                           ],
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 22),
                   Row(
                     children: [
                       Expanded(
                         child: OutlinedButton(
                           onPressed: () => Navigator.pop(context),
                           style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            side: BorderSide(
+                              color: AppColors.tealLight.withValues(alpha: 0.6),
+                            ),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(14),
                             ),
                           ),
                           child: const Text(
                             "Keep it",
-                            style: TextStyle(color: Colors.black87),
+                            style: TextStyle(
+                              fontFamily: AppStyle.fontFamily,
+                              color: AppColors.teal,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
                       ),
-                      const SizedBox(width: 10),
+                      const SizedBox(width: 12),
                       Expanded(
                         child: ElevatedButton(
                           onPressed: () async {
@@ -466,14 +592,19 @@ class _TimerScreenState extends State<TimerScreen> {
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFFE24B4A),
-                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            elevation: 0,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(14),
                             ),
                           ),
                           child: const Text(
                             "Yes, cancel",
-                            style: TextStyle(color: Colors.white),
+                            style: TextStyle(
+                              fontFamily: AppStyle.fontFamily,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
                       ),
@@ -488,21 +619,174 @@ class _TimerScreenState extends State<TimerScreen> {
 
   Widget _buildEmptyState(BuildContext context) {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: const [
-          Icon(Icons.event_busy, size: 80, color: Colors.grey),
-          SizedBox(height: 20),
-          Text(
-            "No Active Booking",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+      child: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 36),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.85),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.6),
+              width: 1.5,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.03),
+                blurRadius: 20,
+                offset: const Offset(0, 8),
+              ),
+            ],
           ),
-          SizedBox(height: 10),
-          Text(
-            "You don't have any booking yet",
-            style: TextStyle(color: Colors.grey),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 100,
+                height: 100,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF10B981).withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: Container(
+                    width: 76,
+                    height: 76,
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF34D399), Color(0xFF10B981)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF10B981).withValues(alpha: 0.25),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.hourglass_empty_rounded,
+                      size: 32,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                "No Active Bookings",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: AppStyle.fontFamily,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.primaryDark,
+                  letterSpacing: -0.3,
+                ),
+              ),
+              const SizedBox(height: 10),
+              const Text(
+                "You don't have any tickets in progress right now. Go to the Home screen to book a new appointment.",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: AppStyle.fontFamily,
+                  fontSize: 14,
+                  color: AppColors.greyText,
+                  height: 1.5,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 28),
+              _BookButton(
+                onTap: () {
+                  if (widget.onBookNow != null) {
+                    widget.onBookNow!();
+                  }
+                },
+              ),
+            ],
           ),
-        ],
+        ),
+      ),
+    );
+  }
+}
+
+class _BookButton extends StatefulWidget {
+  final VoidCallback onTap;
+
+  const _BookButton({required this.onTap});
+
+  @override
+  State<_BookButton> createState() => _BookButtonState();
+}
+
+class _BookButtonState extends State<_BookButton> {
+  bool _isPressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedScale(
+      scale: _isPressed ? 0.96 : 1.0,
+      duration: const Duration(milliseconds: 150),
+      curve: Curves.easeOutCubic,
+      child: GestureDetector(
+        onTapDown: (_) => setState(() => _isPressed = true),
+        onTapUp: (_) => setState(() => _isPressed = false),
+        onTapCancel: () => setState(() => _isPressed = false),
+        onTap: widget.onTap,
+        child: Container(
+          height: 50,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(14),
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color(0xFF34D399), // Emerald 400
+                Color(0xFF10B981), // Emerald 500
+              ],
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF10B981).withValues(alpha: 0.2),
+                blurRadius: 16,
+                offset: const Offset(0, 6),
+              ),
+            ],
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.2),
+              width: 1,
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const [
+              Icon(
+                Icons.add_circle_outline_rounded,
+                color: Colors.white,
+                size: 18,
+              ),
+              SizedBox(width: 8),
+              Text(
+                "Book New Appointment",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.3,
+                  fontFamily: 'Inter Tight',
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

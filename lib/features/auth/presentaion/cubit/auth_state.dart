@@ -16,6 +16,11 @@ class RegisterSuccess extends AuthState {
   RegisterSuccess(this.profile);
 }
 
+class RegisterOtpSentSuccess extends AuthState {
+  final String phone;
+  RegisterOtpSentSuccess(this.phone);
+}
+
 class LoginSuccess extends AuthState {}
 
 class AuthError extends AuthState {

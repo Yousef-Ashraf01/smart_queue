@@ -1,5 +1,6 @@
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:smart_queue/core/routing/app_router.dart';
 
 enum MessageType { success, error, warning, info }
 
@@ -11,6 +12,7 @@ class AppFlushbar {
     MessageType type = MessageType.info,
     Duration duration = const Duration(seconds: 3),
   }) {
+    final showContext = AppRouter.navigatorKey.currentContext ?? context;
     final _FlushbarStyle style = _FlushbarStyle.of(type);
 
     late final Flushbar flushbarInstance;
@@ -69,7 +71,7 @@ class AppFlushbar {
       ),
     );
 
-    flushbarInstance.show(context);
+    flushbarInstance.show(showContext);
     return flushbarInstance;
   }
 }

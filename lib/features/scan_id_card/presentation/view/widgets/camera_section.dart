@@ -55,8 +55,17 @@ class CameraSection extends StatelessWidget {
                 ),
               ),
             ),
-            ScanLine(scanAnim: scanAnim),
-            Center(child: IdFrame(key: frameKey)),
+            if (capturedImage == null) ...[
+              ScanLine(scanAnim: scanAnim),
+              Center(child: IdFrame(key: frameKey)),
+            ],
+            if (capturedImage != null)
+              Positioned.fill(
+                child: Image.file(
+                  capturedImage!,
+                  fit: BoxFit.cover,
+                ),
+              ),
             CaptureStatus(capturedImage: capturedImage),
           ],
         ),

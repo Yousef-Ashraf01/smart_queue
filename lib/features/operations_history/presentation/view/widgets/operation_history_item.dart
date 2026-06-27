@@ -23,11 +23,49 @@ class OperationHistoryItem extends StatelessWidget {
     // Check if the date is in the past
     try {
       final appointmentDate = DateTime.parse(item.date);
-      if (appointmentDate.isBefore(DateTime.now().subtract(const Duration(days: 1)))) {
+      if (appointmentDate.isBefore(
+        DateTime.now().subtract(const Duration(days: 1)),
+      )) {
         return _AppointmentStatus.completed;
       }
     } catch (_) {}
     return _AppointmentStatus.upcoming;
+  }
+
+  String _paymentMethodLabel(String? method) {
+    switch (method?.toUpperCase()) {
+      case 'CASH':
+        return 'Cash';
+      case 'ONLINE':
+      case 'STRIPE':
+        return 'Online';
+      default:
+        return 'Unpaid';
+    }
+  }
+
+  IconData _paymentMethodIcon(String? method) {
+    switch (method?.toUpperCase()) {
+      case 'CASH':
+        return Icons.payments_rounded;
+      case 'ONLINE':
+      case 'STRIPE':
+        return Icons.credit_card_rounded;
+      default:
+        return Icons.pending_rounded;
+    }
+  }
+
+  Color _paymentMethodColor(String? method) {
+    switch (method?.toUpperCase()) {
+      case 'CASH':
+        return const Color(0xFF3B82F6); // أزرق للكاش
+      case 'ONLINE':
+      case 'STRIPE':
+        return const Color(0xFF8B5CF6); // بنفسجي للأونلاين
+      default:
+        return const Color(0xFFF59E0B); // أصفر لـ unpaid
+    }
   }
 
   @override
@@ -75,10 +113,7 @@ class OperationHistoryItem extends StatelessWidget {
                       gradient: LinearGradient(
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
-                        colors: [
-                          status.color,
-                          status.color.withOpacity(0.6),
-                        ],
+                        colors: [status.color, status.color.withOpacity(0.6)],
                       ),
                     ),
                   ),
@@ -206,9 +241,14 @@ class OperationHistoryItem extends StatelessWidget {
                                   vertical: 5,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: item.paid == true
-                                      ? const Color(0xFF10B981).withOpacity(0.08)
-                                      : const Color(0xFFF59E0B).withOpacity(0.08),
+                                  color:
+                                      item.paid == true
+                                          ? const Color(
+                                            0xFF10B981,
+                                          ).withOpacity(0.08)
+                                          : _paymentMethodColor(
+                                            item.paymentMethod,
+                                          ).withOpacity(0.08),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Row(
@@ -217,21 +257,33 @@ class OperationHistoryItem extends StatelessWidget {
                                     Icon(
                                       item.paid == true
                                           ? Icons.check_circle_rounded
-                                          : Icons.pending_rounded,
+                                          : _paymentMethodIcon(
+                                            item.paymentMethod,
+                                          ),
                                       size: 14,
-                                      color: item.paid == true
-                                          ? const Color(0xFF10B981)
-                                          : const Color(0xFFF59E0B),
+                                      color:
+                                          item.paid == true
+                                              ? const Color(0xFF10B981)
+                                              : _paymentMethodColor(
+                                                item.paymentMethod,
+                                              ),
                                     ),
                                     const SizedBox(width: 4),
                                     Text(
-                                      item.paid == true ? "Paid" : "Unpaid",
+                                      item.paid == true
+                                          ? "Paid"
+                                          : _paymentMethodLabel(
+                                            item.paymentMethod,
+                                          ),
                                       style: TextStyle(
                                         fontSize: 12,
                                         fontWeight: FontWeight.w600,
-                                        color: item.paid == true
-                                            ? const Color(0xFF10B981)
-                                            : const Color(0xFFF59E0B),
+                                        color:
+                                            item.paid == true
+                                                ? const Color(0xFF10B981)
+                                                : _paymentMethodColor(
+                                                  item.paymentMethod,
+                                                ),
                                       ),
                                     ),
                                   ],
@@ -276,9 +328,12 @@ class OperationHistoryItem extends StatelessWidget {
                                   width: 34,
                                   height: 34,
                                   decoration: BoxDecoration(
-                                    color: isBookmarked
-                                        ? const Color(0xFF10B981).withOpacity(0.1)
-                                        : Colors.grey.withOpacity(0.06),
+                                    color:
+                                        isBookmarked
+                                            ? const Color(
+                                              0xFF10B981,
+                                            ).withOpacity(0.1)
+                                            : Colors.grey.withOpacity(0.06),
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                   child: Icon(
@@ -286,9 +341,10 @@ class OperationHistoryItem extends StatelessWidget {
                                         ? Icons.bookmark_rounded
                                         : Icons.bookmark_outline_rounded,
                                     size: 20,
-                                    color: isBookmarked
-                                        ? const Color(0xFF10B981)
-                                        : Colors.grey[400],
+                                    color:
+                                        isBookmarked
+                                            ? const Color(0xFF10B981)
+                                            : Colors.grey[400],
                                   ),
                                 ),
                               ),
@@ -310,7 +366,8 @@ class OperationHistoryItem extends StatelessWidget {
   IconData get _serviceIcon {
     final name = item.counter.service.name.toLowerCase();
     if (name.contains('consult')) return Icons.medical_services_outlined;
-    if (name.contains('payment') || name.contains('pay')) return Icons.payment_outlined;
+    if (name.contains('payment') || name.contains('pay'))
+      return Icons.payment_outlined;
     if (name.contains('transfer')) return Icons.swap_horiz_outlined;
     if (name.contains('deposit')) return Icons.account_balance_wallet_outlined;
     if (name.contains('withdraw')) return Icons.money_off_outlined;
@@ -336,8 +393,19 @@ class OperationHistoryItem extends StatelessWidget {
     try {
       final d = DateTime.parse(date);
       const months = [
-        '', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+        '',
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
       ];
       return "${d.day} ${months[d.month]} ${d.year}";
     } catch (_) {
@@ -393,10 +461,7 @@ class _StatusChip extends StatelessWidget {
       decoration: BoxDecoration(
         color: status.color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: status.color.withOpacity(0.2),
-          width: 1,
-        ),
+        border: Border.all(color: status.color.withOpacity(0.2), width: 1),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

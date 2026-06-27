@@ -415,7 +415,10 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
                       "Amount",
                       "${item.counter.service.price} ${item.counter.service.currency}",
                     ),
-                    _paymentBadge(item.paid),
+                    if (item.paymentMethod?.toUpperCase() == 'CASH')
+                      _cashBadge()
+                    else
+                      _onlineBadge(),
                   ],
                 ),
               ],
@@ -424,7 +427,6 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
 
           const SizedBox(height: 10),
 
-          // ── Reminder ──────────────────────────────────────────────────
           _sectionCard(
             child: Row(
               children: [
@@ -460,12 +462,10 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
 
           const SizedBox(height: 10),
 
-          // ── Feedback ──────────────────────────────────────────────────
           _buildFeedbackSection(item),
 
           const SizedBox(height: 24),
 
-          // ── Actions ───────────────────────────────────────────────────
           Row(
             children: [
               Expanded(
@@ -514,8 +514,6 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
       ),
     );
   }
-
-  // ── Helpers ────────────────────────────────────────────────────────────────────
 
   bool _canEdit(AppointmentResponseModel item) {
     if (item.canceled || item.missed) return false;
@@ -693,6 +691,30 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
     );
   }
 
+  Widget _onlineBadge() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: const Color(0xFF8B5CF6).withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: const Row(
+        children: [
+          Icon(Icons.credit_card_rounded, size: 13, color: Color(0xFF8B5CF6)),
+          SizedBox(width: 4),
+          Text(
+            "Online",
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF8B5CF6),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _feedbackForm(int appointmentId, FeedbackState state) {
     return _sectionCard(
       child: Column(
@@ -807,6 +829,54 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
         ],
       ),
     );
+  }
+
+  Widget _cashBadge() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: const Color(0xFF3B82F6).withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: const Row(
+        children: [
+          Icon(Icons.payments_rounded, size: 13, color: Color(0xFF3B82F6)),
+          SizedBox(width: 4),
+          Text(
+            "Cash",
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF3B82F6),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _paymentMethodLabel(String? method) {
+    switch (method?.toUpperCase()) {
+      case 'CASH':
+        return 'Cash';
+      case 'ONLINE':
+      case 'STRIPE':
+        return 'Online';
+      default:
+        return 'Not Specified';
+    }
+  }
+
+  IconData _paymentMethodIcon(String? method) {
+    switch (method?.toUpperCase()) {
+      case 'CASH':
+        return Icons.payments_rounded;
+      case 'ONLINE':
+      case 'STRIPE':
+        return Icons.credit_card_rounded;
+      default:
+        return Icons.help_outline_rounded;
+    }
   }
 
   // "08:00:00" → "08:00"

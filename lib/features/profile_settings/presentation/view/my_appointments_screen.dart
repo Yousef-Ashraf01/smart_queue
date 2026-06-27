@@ -123,16 +123,43 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
     }
 
     if (_bookmarkedAppointments.isEmpty) {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: const [
-          Icon(Icons.bookmark_border, size: 60, color: Colors.grey),
-          SizedBox(height: 10),
-          Text(
-            "No saved appointments yet",
-            style: TextStyle(color: Colors.grey, fontSize: 16),
-          ),
-        ],
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.bookmark_border_rounded,
+                size: 52,
+                color: Colors.grey.shade400,
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              "No Saved Appointments",
+              style: TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF1A1D4E),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              "Bookmark appointments to find them here easily",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 13,
+                color: Colors.grey.shade500,
+                height: 1.4,
+              ),
+            ),
+          ],
+        ),
       );
     }
 

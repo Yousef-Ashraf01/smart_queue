@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:smart_queue/core/di/service_locator.dart';
 import 'package:smart_queue/core/routing/app_router.dart';
 import 'package:smart_queue/core/services/notification_service.dart';
@@ -14,7 +15,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
 
-  // Initialize Notification Service
+  Stripe.publishableKey =
+      'pk_test_51Q0BxtASiJSav9RQ0WPOOSAXW14kvFUHxgYOHErs9qlScsq4NA6ArUFXMnzkFGN7Ualq1UaF5B5IgAwPtHGaHLKu00DjOHTNrT';
+
   await NotificationService.init();
 
   setupServiceLocator();
@@ -24,7 +27,6 @@ void main() async {
 
   await authCubit.checkAuthStatus();
 
-  // Only fetch profile if the user is already authenticated
   if (authCubit.state is LoginSuccess) {
     personalInfoCubit.getProfile();
   }
@@ -51,27 +53,14 @@ class SmartQueueApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // GoTransition.defaultCurve = Curves.linearToEaseOut;
-    // // GoTransition.defaultCurve = Curves.fastOutSlowIn;
-    // GoTransition.defaultDuration = const Duration(milliseconds: 350);
-
     final authCubit = context.read<AuthCubit>();
     return MaterialApp.router(
       localizationsDelegates: context.localizationDelegates,
       supportedLocales: context.supportedLocales,
       locale: context.locale,
-      // theme: ThemeData(
-      //   pageTransitionsTheme: const PageTransitionsTheme(
-      //     builders: {
-      //       TargetPlatform.android: GoTransitions.fadeUpwards,
-      //       TargetPlatform.iOS: GoTransitions.cupertino,
-      //       TargetPlatform.macOS: GoTransitions.cupertino,
-      //     },
-      //   ),
-      // ),
+
       routerConfig: AppRouter.createRouter(authCubit),
       debugShowCheckedModeBanner: false,
-      //theme: ThemeData.light(),
     );
   }
 }

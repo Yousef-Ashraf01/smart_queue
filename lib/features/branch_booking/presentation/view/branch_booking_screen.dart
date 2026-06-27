@@ -21,6 +21,7 @@ import 'package:smart_queue/features/branch_booking/presentation/view/widgets/br
 import 'package:smart_queue/features/branch_booking/presentation/view/widgets/custom_picker_field.dart';
 import 'package:smart_queue/features/branch_booking/presentation/view/widgets/empty_services.dart';
 import 'package:smart_queue/features/branch_booking/presentation/view/widgets/gradient_button.dart';
+import 'package:smart_queue/features/branch_booking/presentation/view/widgets/payment_method_selector.dart';
 import 'package:smart_queue/features/branch_booking/presentation/view/widgets/service_bottom_sheet.dart';
 import 'package:smart_queue/features/branch_booking/presentation/view/widgets/service_dropdown.dart';
 import 'package:smart_queue/features/branch_booking/presentation/view/widgets/slots_bottom_sheet.dart';
@@ -42,6 +43,7 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
   ServiceCounterModel? selectedService;
   DateTime? selectedDate;
   Map<String, String>? selectedSlot;
+  String? selectedPaymentMethod;
   List _cachedSlots = [];
 
   String formatTime(String time) {
@@ -84,57 +86,19 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
       },
 
       onBookingSuccess: (appointment) {
-        _addToCalendar(appointment);
+        // If payment method is ONLINE, initiate Stripe payment flow
+        if (selectedPaymentMethod == 'ONLINE') {
+          context.read<BookingCubit>().initiatePayment(appointment);
+          return;
+        }
 
-        final startParts = selectedSlot!['start']!.split(':');
+        // CASH flow — proceed as usual
+        _handleBookingComplete(appointment);
+      },
 
-        final slotStart = DateTime(
-          selectedDate!.year,
-          selectedDate!.month,
-          selectedDate!.day,
-          int.parse(startParts[0]),
-          int.parse(startParts[1]),
-        );
-
-        final difference = slotStart.difference(DateTime.now());
-        final hours = difference.inHours;
-        final minutes = difference.inMinutes % 60;
-
-        final orgName =
-            (widget.branch.organizationId == 1)
-                ? 'Egyptian Post'
-                : (widget.branch.organizationId == 2
-                    ? 'Traffic Department'
-                    : widget.branch.name);
-
-        final bookingData = <String, dynamic>{
-          'id': appointment.id,
-          'counterId': appointment.counter.id,
-          BookingKeys.branchName: widget.branch.name,
-          BookingKeys.branchAddress: widget.branch.address ?? "",
-          BookingKeys.serviceName: appointment.counter.service.name,
-          BookingKeys.serviceDesc: appointment.counter.service.description,
-          BookingKeys.slotStart: slotStart.toIso8601String(),
-          BookingKeys.slotStartTime: '${selectedSlot!["start"]}:00',
-          BookingKeys.slotEnd: '${selectedSlot!["end"]}:00',
-          BookingKeys.bookingDate: DateFormat(
-            'yyyy-MM-dd',
-          ).format(selectedDate!),
-          'createdAt': DateTime.now().toIso8601String(),
-          'serviceId': selectedService!.serviceId,
-          'orgName': orgName,
-        };
-
-        context.read<ActiveBookingCubit>().addBooking(bookingData);
-
-        _showSuccessDialog(
-          context,
-          hours,
-          minutes,
-          difference,
-          slotStart,
-          appointment,
-        );
+      onPaymentCompleted: (appointment) {
+        // Stripe payment succeeded — complete the booking
+        _handleBookingComplete(appointment);
       },
 
       onBookingError: (message) {},
@@ -165,39 +129,41 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
                   BookingSection(
                     stepNumber: 1,
                     title: "Service",
-                    child: BlocBuilder<ServiceCounterCubit, ServiceCounterState>(
-                      builder: (context, state) {
-                        if (state is ServiceCounterLoading) {
-                          return const DropdownShimmer();
-                        }
-                        if (state is ServiceCounterLoaded) {
-                          if (state.serviceCounter.isEmpty) {
-                            return const EmptyServices();
-                          }
-                          return GestureDetector(
-                            onTap: () => showServiceBottomSheet(
-                              context: context,
-                              items: state.serviceCounter,
-                              selectedService: selectedService,
-                              onSelect: (item) {
-                                setState(() {
-                                  selectedService = item;
-                                  selectedSlot = null;
-                                });
-                                _fetchSlotsIfReady();
-                              },
-                            ),
-                            child: ServiceDropdown(
-                              selectedService: selectedService,
-                            ),
-                          );
-                        }
-                        if (state is ServiceCounterError) {
-                          return Text(state.message);
-                        }
-                        return const Text("No services");
-                      },
-                    ),
+                    child:
+                        BlocBuilder<ServiceCounterCubit, ServiceCounterState>(
+                          builder: (context, state) {
+                            if (state is ServiceCounterLoading) {
+                              return const DropdownShimmer();
+                            }
+                            if (state is ServiceCounterLoaded) {
+                              if (state.serviceCounter.isEmpty) {
+                                return const EmptyServices();
+                              }
+                              return GestureDetector(
+                                onTap:
+                                    () => showServiceBottomSheet(
+                                      context: context,
+                                      items: state.serviceCounter,
+                                      selectedService: selectedService,
+                                      onSelect: (item) {
+                                        setState(() {
+                                          selectedService = item;
+                                          selectedSlot = null;
+                                        });
+                                        _fetchSlotsIfReady();
+                                      },
+                                    ),
+                                child: ServiceDropdown(
+                                  selectedService: selectedService,
+                                ),
+                              );
+                            }
+                            if (state is ServiceCounterError) {
+                              return Text(state.message);
+                            }
+                            return const Text("No services");
+                          },
+                        ),
                   ),
 
                   BookingSection(
@@ -206,9 +172,10 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
                     child: CustomPickerField(
                       hint: "Select a date",
                       icon: Icons.calendar_today,
-                      valueText: selectedDate != null
-                          ? DateFormat('yyyy-MM-dd').format(selectedDate!)
-                          : null,
+                      valueText:
+                          selectedDate != null
+                              ? DateFormat('yyyy-MM-dd').format(selectedDate!)
+                              : null,
                       onTap: () async {
                         final picked = await showDatePicker(
                           context: context,
@@ -217,21 +184,22 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
                           lastDate: DateTime.now().add(
                             const Duration(days: 365),
                           ),
-                          builder: (context, child) => Theme(
-                            data: Theme.of(context).copyWith(
-                              colorScheme: const ColorScheme.light(
-                                primary: AppColors.teal,
-                                onPrimary: Colors.white,
-                                onSurface: AppColors.blackColor,
-                              ),
-                              textButtonTheme: TextButtonThemeData(
-                                style: TextButton.styleFrom(
-                                  foregroundColor: AppColors.teal,
+                          builder:
+                              (context, child) => Theme(
+                                data: Theme.of(context).copyWith(
+                                  colorScheme: const ColorScheme.light(
+                                    primary: AppColors.teal,
+                                    onPrimary: Colors.white,
+                                    onSurface: AppColors.blackColor,
+                                  ),
+                                  textButtonTheme: TextButtonThemeData(
+                                    style: TextButton.styleFrom(
+                                      foregroundColor: AppColors.teal,
+                                    ),
+                                  ),
                                 ),
+                                child: child!,
                               ),
-                            ),
-                            child: child!,
-                          ),
                         );
                         if (picked != null) {
                           setState(() {
@@ -246,16 +214,16 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
 
                   BookingSection(
                     stepNumber: 3,
-                    isLast: true,
                     title: "Time Slot",
                     child: BlocBuilder<BookingCubit, BookingState>(
-                      buildWhen: (prev, curr) =>
-                          curr is SlotsLoaded ||
-                          curr is SlotsLoading ||
-                          curr is SlotsError ||
-                          curr is BookingLoading ||
-                          curr is BookingError ||
-                          curr is BookingSuccess,
+                      buildWhen:
+                          (prev, curr) =>
+                              curr is SlotsLoaded ||
+                              curr is SlotsLoading ||
+                              curr is SlotsError ||
+                              curr is BookingLoading ||
+                              curr is BookingError ||
+                              curr is BookingSuccess,
                       builder: (context, state) {
                         return GestureDetector(
                           onTap: () {
@@ -272,35 +240,45 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
                           },
                           child: Container(
                             decoration: BoxDecoration(
-                              color: selectedSlot != null
-                                  ? AppColors.teal.withOpacity(0.03)
-                                  : Colors.white,
+                              color:
+                                  selectedSlot != null
+                                      ? AppColors.teal.withValues(alpha: 0.03)
+                                      : Colors.white,
                               borderRadius: BorderRadius.circular(14),
                               border: Border.all(
-                                color: selectedSlot != null
-                                    ? AppColors.teal.withOpacity(0.3)
-                                    : Colors.grey.shade200,
+                                color:
+                                    selectedSlot != null
+                                        ? AppColors.teal.withValues(alpha: 0.3)
+                                        : Colors.grey.shade200,
                                 width: 1.2,
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.02),
+                                  color: Colors.black.withValues(alpha: 0.02),
                                   blurRadius: 6,
                                   offset: const Offset(0, 2),
                                 ),
                               ],
                             ),
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 13,
+                              ),
                               child: Row(
                                 children: [
                                   // Icon Container
                                   Container(
                                     padding: const EdgeInsets.all(8),
                                     decoration: BoxDecoration(
-                                      color: selectedSlot != null
-                                          ? AppColors.teal.withOpacity(0.1)
-                                          : AppColors.tealLight.withOpacity(0.15),
+                                      color:
+                                          selectedSlot != null
+                                              ? AppColors.teal.withValues(
+                                                alpha: 0.1,
+                                              )
+                                              : AppColors.tealLight.withValues(
+                                                alpha: 0.15,
+                                              ),
                                       borderRadius: BorderRadius.circular(10),
                                     ),
                                     child: Icon(
@@ -320,8 +298,14 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
                                           : "Select a time slot",
                                       style: TextStyle(
                                         fontSize: 14,
-                                        fontWeight: selectedSlot != null ? FontWeight.bold : FontWeight.w500,
-                                        color: selectedSlot != null ? AppColors.teal : Colors.grey.shade500,
+                                        fontWeight:
+                                            selectedSlot != null
+                                                ? FontWeight.bold
+                                                : FontWeight.w500,
+                                        color:
+                                            selectedSlot != null
+                                                ? AppColors.teal
+                                                : Colors.grey.shade500,
                                         fontFamily: 'Inter Tight',
                                       ),
                                     ),
@@ -351,11 +335,26 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
                     ),
                   ),
 
+                  BookingSection(
+                    stepNumber: 4,
+                    isLast: true,
+                    title: "Payment Method",
+                    child: PaymentMethodSelector(
+                      selectedMethod: selectedPaymentMethod,
+                      onSelected: (method) {
+                        setState(() {
+                          selectedPaymentMethod = method;
+                        });
+                      },
+                    ),
+                  ),
+
                   const SizedBox(height: 32),
 
                   BlocBuilder<BookingCubit, BookingState>(
                     builder: (context, state) {
-                      if (state is BookingLoading) {
+                      if (state is BookingLoading ||
+                          state is PaymentIntentLoading) {
                         return const Center(
                           child: CircularProgressIndicator(
                             color: AppColors.teal,
@@ -396,7 +395,8 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
   void _onBookTap() {
     if (selectedService == null ||
         selectedDate == null ||
-        selectedSlot == null) {
+        selectedSlot == null ||
+        selectedPaymentMethod == null) {
       AppFlushbar.show(
         context,
         message: "Please fill all fields!",
@@ -412,11 +412,64 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
       counterId: selectedService!.id.toString(),
       wantReminder: true,
       additionalInfo: "",
-      paid: false,
+      paid: selectedPaymentMethod == 'ONLINE' ? true : false,
       amountToPay: selectedService!.servicePrice,
+      paymentMethod: selectedPaymentMethod!,
     );
 
     context.read<BookingCubit>().bookAppointment(appointment: request);
+  }
+
+  void _handleBookingComplete(AppointmentResponseModel appointment) {
+    _addToCalendar(appointment);
+
+    final startParts = selectedSlot!['start']!.split(':');
+
+    final slotStart = DateTime(
+      selectedDate!.year,
+      selectedDate!.month,
+      selectedDate!.day,
+      int.parse(startParts[0]),
+      int.parse(startParts[1]),
+    );
+
+    final difference = slotStart.difference(DateTime.now());
+    final hours = difference.inHours;
+    final minutes = difference.inMinutes % 60;
+
+    final orgName =
+        (widget.branch.organizationId == 1)
+            ? 'Egyptian Post'
+            : (widget.branch.organizationId == 2
+                ? 'Traffic Department'
+                : widget.branch.name);
+
+    final bookingData = <String, dynamic>{
+      'id': appointment.id,
+      'counterId': appointment.counter.id,
+      BookingKeys.branchName: widget.branch.name,
+      BookingKeys.branchAddress: widget.branch.address ?? "",
+      BookingKeys.serviceName: appointment.counter.service.name,
+      BookingKeys.serviceDesc: appointment.counter.service.description,
+      BookingKeys.slotStart: slotStart.toIso8601String(),
+      BookingKeys.slotStartTime: '${selectedSlot!["start"]}:00',
+      BookingKeys.slotEnd: '${selectedSlot!["end"]}:00',
+      BookingKeys.bookingDate: DateFormat('yyyy-MM-dd').format(selectedDate!),
+      'createdAt': DateTime.now().toIso8601String(),
+      'serviceId': selectedService!.serviceId,
+      'orgName': orgName,
+    };
+
+    context.read<ActiveBookingCubit>().addBooking(bookingData);
+
+    _showSuccessDialog(
+      context,
+      hours,
+      minutes,
+      difference,
+      slotStart,
+      appointment,
+    );
   }
 
   void showServiceBottomSheet({

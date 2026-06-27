@@ -12,6 +12,7 @@ class AppointmentResponseModel {
   final CounterModel counter;
   final bool canceled;
   final bool missed;
+  final String? paymentMethod;
 
   AppointmentResponseModel({
     required this.id,
@@ -25,6 +26,7 @@ class AppointmentResponseModel {
     required this.counter,
     this.canceled = false,
     this.missed = false,
+    required this.paymentMethod,
   });
 
   factory AppointmentResponseModel.fromJson(Map<String, dynamic> json) {
@@ -40,6 +42,7 @@ class AppointmentResponseModel {
       counter: CounterModel.fromJson(json['counter']),
       canceled: json['canceled'] ?? false,
       missed: json['missed'] ?? false,
+      paymentMethod: json['payment_method'],
     );
   }
 
@@ -54,6 +57,7 @@ class AppointmentResponseModel {
       'paid': paid,
       'amount_to_pay': amountToPay,
       'counter_id': counter.id,
+      'payment_method': paymentMethod,
     };
   }
 
@@ -82,6 +86,7 @@ class AppointmentResponseModel {
       counter: counter ?? this.counter,
       canceled: canceled ?? this.paid,
       missed: missed ?? this.paid,
+      paymentMethod: paymentMethod ?? this.paymentMethod,
     );
   }
 }

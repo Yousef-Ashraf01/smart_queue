@@ -31,3 +31,28 @@ class SlotsError extends BookingState {
   final String message;
   SlotsError(this.message);
 }
+
+// Payment States
+class PaymentIntentLoading extends BookingState {}
+
+class PaymentIntentSuccess extends BookingState {
+  final String clientSecret;
+  final AppointmentResponseModel appointment;
+
+  PaymentIntentSuccess({
+    required this.clientSecret,
+    required this.appointment,
+  });
+}
+
+class PaymentIntentError extends BookingState {
+  final String message;
+  PaymentIntentError(this.message);
+}
+
+class PaymentCompleted extends BookingState {
+  final AppointmentResponseModel appointment;
+  PaymentCompleted(this.appointment);
+}
+
+class PaymentCancelled extends BookingState {}

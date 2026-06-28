@@ -25,7 +25,7 @@ class _OperationsHistoryScreenState extends State<OperationsHistoryScreen>
   final ScrollController scrollController = ScrollController();
   final BookmarkService _bookmarkService = sl<BookmarkService>();
   Set<int> _bookmarkedIds = {};
-  int _selectedFilter = 0; // 0=All, 1=Upcoming, 2=Completed, 3=Saved
+  int _selectedFilter = 0;
 
   late AnimationController _headerAnimController;
   late Animation<double> _headerFadeAnim;
@@ -47,10 +47,12 @@ class _OperationsHistoryScreenState extends State<OperationsHistoryScreen>
     _headerSlideAnim = Tween<Offset>(
       begin: const Offset(0, -0.15),
       end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _headerAnimController,
-      curve: Curves.easeOutCubic,
-    ));
+    ).animate(
+      CurvedAnimation(
+        parent: _headerAnimController,
+        curve: Curves.easeOutCubic,
+      ),
+    );
     _headerAnimController.forward();
 
     context.read<OperationsCubit>().fetchOperations();
@@ -109,7 +111,6 @@ class _OperationsHistoryScreenState extends State<OperationsHistoryScreen>
         bottom: false,
         child: Column(
           children: [
-            // ── Header ────────────────────────────────────
             SlideTransition(
               position: _headerSlideAnim,
               child: FadeTransition(
@@ -118,7 +119,6 @@ class _OperationsHistoryScreenState extends State<OperationsHistoryScreen>
                   padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
                   child: Column(
                     children: [
-                      // Top bar
                       Row(
                         children: [
                           Expanded(
@@ -137,9 +137,10 @@ class _OperationsHistoryScreenState extends State<OperationsHistoryScreen>
                                 const SizedBox(height: 4),
                                 BlocBuilder<OperationsCubit, OperationsState>(
                                   builder: (context, state) {
-                                    final count = state is OperationsLoaded
-                                        ? state.operations.length
-                                        : 0;
+                                    final count =
+                                        state is OperationsLoaded
+                                            ? state.operations.length
+                                            : 0;
                                     return Text(
                                       state is OperationsLoaded
                                           ? "$count appointment${count != 1 ? 's' : ''} found"
@@ -161,7 +162,6 @@ class _OperationsHistoryScreenState extends State<OperationsHistoryScreen>
 
                       const SizedBox(height: 20),
 
-                      // ── Filter chips ──────────────────
                       SizedBox(
                         height: 38,
                         child: ListView(
@@ -205,7 +205,6 @@ class _OperationsHistoryScreenState extends State<OperationsHistoryScreen>
 
             const SizedBox(height: 16),
 
-            // ── List ──────────────────────────────────────
             Expanded(
               child: BlocBuilder<OperationsCubit, OperationsState>(
                 builder: (context, state) {
@@ -223,8 +222,9 @@ class _OperationsHistoryScreenState extends State<OperationsHistoryScreen>
                   if (state is OperationsError) {
                     return _ErrorState(
                       message: state.message,
-                      onRetry: () =>
-                          context.read<OperationsCubit>().fetchOperations(),
+                      onRetry:
+                          () =>
+                              context.read<OperationsCubit>().fetchOperations(),
                     );
                   }
 
@@ -249,12 +249,14 @@ class _OperationsHistoryScreenState extends State<OperationsHistoryScreen>
                           physics: const AlwaysScrollableScrollPhysics(
                             parent: BouncingScrollPhysics(),
                           ),
-                          itemCount: filtered.length + (state.isLoadingMore ? 1 : 0),
+                          itemCount:
+                              filtered.length + (state.isLoadingMore ? 1 : 0),
                           itemBuilder: (context, index) {
-                            // Loading more indicator
                             if (index == filtered.length) {
                               return Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 20),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 20,
+                                ),
                                 child: Center(
                                   child: SizedBox(
                                     width: 24,
@@ -328,17 +330,19 @@ class _OperationsHistoryScreenState extends State<OperationsHistoryScreen>
 
   List _applyFilter(List operations) {
     switch (_selectedFilter) {
-      case 1: // Upcoming
+      case 1:
         return operations.where((op) {
           if (op.canceled || op.missed) return false;
           try {
             final d = DateTime.parse(op.date);
-            return !d.isBefore(DateTime.now().subtract(const Duration(days: 1)));
+            return !d.isBefore(
+              DateTime.now().subtract(const Duration(days: 1)),
+            );
           } catch (_) {
             return true;
           }
         }).toList();
-      case 2: // Completed
+      case 2:
         return operations.where((op) {
           if (op.canceled || op.missed) return false;
           try {
@@ -348,17 +352,16 @@ class _OperationsHistoryScreenState extends State<OperationsHistoryScreen>
             return false;
           }
         }).toList();
-      case 3: // Saved
+      case 3:
         return operations
             .where((op) => _bookmarkedIds.contains(op.id))
             .toList();
-      default: // All
+      default:
         return operations;
     }
   }
 }
 
-// ── Filter Chip ──────────────────────────────────────────────────────
 class _FilterChip extends StatelessWidget {
   final String label;
   final IconData icon;
@@ -381,11 +384,12 @@ class _FilterChip extends StatelessWidget {
         curve: Curves.easeInOut,
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          gradient: isSelected
-              ? const LinearGradient(
-                  colors: [Color(0xFF10B981), Color(0xFF34D399)],
-                )
-              : null,
+          gradient:
+              isSelected
+                  ? const LinearGradient(
+                    colors: [Color(0xFF10B981), Color(0xFF34D399)],
+                  )
+                  : null,
           color: isSelected ? null : Colors.white.withOpacity(0.7),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
@@ -393,15 +397,16 @@ class _FilterChip extends StatelessWidget {
                 isSelected ? Colors.transparent : Colors.grey.withOpacity(0.15),
             width: 1,
           ),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: const Color(0xFF10B981).withOpacity(0.25),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
-                  ),
-                ]
-              : [],
+          boxShadow:
+              isSelected
+                  ? [
+                    BoxShadow(
+                      color: const Color(0xFF10B981).withOpacity(0.25),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ]
+                  : [],
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -427,7 +432,6 @@ class _FilterChip extends StatelessWidget {
   }
 }
 
-// ── Empty State ──────────────────────────────────────────────────────
 class _EmptyState extends StatelessWidget {
   final int filter;
 
@@ -443,7 +447,6 @@ class _EmptyState extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Decorative icon container
             Container(
               width: 100,
               height: 100,
@@ -458,11 +461,7 @@ class _EmptyState extends StatelessWidget {
                 ),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                data.icon,
-                size: 44,
-                color: Colors.grey[400],
-              ),
+              child: Icon(data.icon, size: 44, color: Colors.grey[400]),
             ),
             const SizedBox(height: 24),
             Text(
@@ -524,14 +523,9 @@ class _EmptyData {
   final String title;
   final String subtitle;
 
-  _EmptyData({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-  });
+  _EmptyData({required this.icon, required this.title, required this.subtitle});
 }
 
-// ── Error State ──────────────────────────────────────────────────────
 class _ErrorState extends StatelessWidget {
   final String message;
   final VoidCallback onRetry;
@@ -582,8 +576,10 @@ class _ErrorState extends StatelessWidget {
             GestureDetector(
               onTap: onRetry,
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [Color(0xFF10B981), Color(0xFF34D399)],

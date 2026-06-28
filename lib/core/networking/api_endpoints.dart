@@ -44,6 +44,10 @@ class ApiEndpoints {
   static String feedback(int appointmentId) =>
       '${ApiEndpoints.appointments}$appointmentId/feedback/';
 
+  // Payment
+  static String paymentIntent(int appointmentId) =>
+      '${ApiEndpoints.appointments}$appointmentId/payment_intent/';
+
   static String feedbackList(int appointmentId) =>
       '${ApiEndpoints.appointments}$appointmentId/feedback/';
 

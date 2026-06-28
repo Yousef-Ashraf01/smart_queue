@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:smart_queue/core/networking/api_endpoints.dart';
 import 'package:smart_queue/features/branch_booking/data/models/appointment_model.dart';
 import 'package:smart_queue/features/branch_booking/data/models/appointment_response_model.dart';
+import 'package:smart_queue/features/branch_booking/data/models/payment_intent_model.dart';
 import 'package:smart_queue/features/branch_booking/data/models/service_model.dart';
 import 'package:smart_queue/features/operations_history/data/models/paginated_response.dart';
 
@@ -75,5 +76,12 @@ class BookingRemoteDataSource {
       '${ApiEndpoints.appointments}$id/',
       data: {"canceled": true},
     );
+  }
+
+  Future<PaymentIntentModel> createPaymentIntent(int appointmentId) async {
+    final response = await dio.post(
+      ApiEndpoints.paymentIntent(appointmentId),
+    );
+    return PaymentIntentModel.fromJson(response.data);
   }
 }

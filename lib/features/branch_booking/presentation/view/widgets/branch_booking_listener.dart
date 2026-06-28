@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:smart_queue/core/services/notification_service.dart';
 import 'package:smart_queue/core/widgets/app_flushbar.dart';
 import 'package:smart_queue/features/branch_booking/presentation/cubit/booking_cubit.dart';
 
@@ -12,6 +13,7 @@ class BranchBookingListener extends StatelessWidget {
   final VoidCallback onSlotsError;
   final Function(AppointmentResponseModel appointment) onBookingSuccess;
   final Function(String message) onBookingError;
+  final Function(AppointmentResponseModel appointment)? onPaymentCompleted;
 
   const BranchBookingListener({
     super.key,
@@ -20,6 +22,7 @@ class BranchBookingListener extends StatelessWidget {
     required this.onSlotsError,
     required this.onBookingSuccess,
     required this.onBookingError,
+    this.onPaymentCompleted,
   });
 
   @override
@@ -57,8 +60,46 @@ class BranchBookingListener extends StatelessWidget {
 
           AppFlushbar.show(context, message: message, type: MessageType.error);
         }
+
+        // Payment flow states
+        if (state is PaymentIntentSuccess) {
+          context.read<BookingCubit>().confirmStripePayment(
+                state.clientSecret,
+                state.appointment,
+              );
+        }
+
+        if (state is PaymentCompleted) {
+          // Fire payment confirmation notification
+          NotificationService.showPaymentSuccessNotification(
+            bookingId: state.appointment.id,
+            serviceName: state.appointment.counter.service.name,
+            amount: state.appointment.counter.service.price,
+          );
+
+          if (onPaymentCompleted != null) {
+            onPaymentCompleted!(state.appointment);
+          }
+        }
+
+        if (state is PaymentIntentError) {
+          AppFlushbar.show(
+            context,
+            message: state.message,
+            type: MessageType.error,
+          );
+        }
+
+        if (state is PaymentCancelled) {
+          AppFlushbar.show(
+            context,
+            message: "Payment was cancelled. Your booking is saved, you can pay later.",
+            type: MessageType.warning,
+          );
+        }
       },
       child: child,
     );
   }
 }
+

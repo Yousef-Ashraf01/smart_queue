@@ -4,6 +4,7 @@ import 'package:smart_queue/core/errors/error_handler.dart';
 import 'package:smart_queue/core/errors/failure.dart';
 import 'package:smart_queue/features/branch_booking/data/datasources/booking_remote_data_source.dart';
 import 'package:smart_queue/features/branch_booking/data/models/appointment_model.dart';
+import 'package:smart_queue/features/branch_booking/data/models/payment_intent_model.dart';
 import 'package:smart_queue/features/branch_booking/data/models/appointment_response_model.dart';
 import 'package:smart_queue/features/branch_booking/data/models/service_model.dart';
 import 'package:smart_queue/features/operations_history/data/models/paginated_response.dart';
@@ -109,6 +110,19 @@ class BookingRepository {
     try {
       await remote.cancelAppointment(id);
       return const Right(unit);
+    } on DioException catch (e) {
+      return Left(handleDioError(e));
+    } catch (e) {
+      return Left(UnknownFailure(e.toString()));
+    }
+  }
+
+  Future<Either<Failure, PaymentIntentModel>> createPaymentIntent(
+    int appointmentId,
+  ) async {
+    try {
+      final result = await remote.createPaymentIntent(appointmentId);
+      return Right(result);
     } on DioException catch (e) {
       return Left(handleDioError(e));
     } catch (e) {

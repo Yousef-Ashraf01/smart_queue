@@ -6,6 +6,7 @@ class AppointmentModel {
   final String additionalInfo;
   final bool paid;
   final double amountToPay;
+  final String paymentMethod; // "CASH" or "ONLINE"
 
   AppointmentModel({
     required this.date,
@@ -15,6 +16,7 @@ class AppointmentModel {
     required this.additionalInfo,
     required this.paid,
     required this.amountToPay,
+    this.paymentMethod = 'CASH',
   });
 
   Map<String, dynamic> toJson() {
@@ -26,6 +28,7 @@ class AppointmentModel {
       "additional_info": additionalInfo,
       "paid": paid,
       "amount_to_pay": amountToPay,
+      "payment_method": paymentMethod,
     };
   }
 
@@ -38,6 +41,8 @@ class AppointmentModel {
       additionalInfo: json['additional_info'],
       paid: json['paid'],
       amountToPay: (json['amount_to_pay'] as num).toDouble(),
+      paymentMethod: json['payment_method'] ?? 'CASH',
     );
   }
 }
+

@@ -197,6 +197,59 @@ class NotificationService {
     await NotificationStore.pruneOld();
   }
 
+  /// Shows an instant local notification confirming a successful Stripe payment
+  /// and persists it in the in-app notification inbox.
+  static Future<void> showPaymentSuccessNotification({
+    required int bookingId,
+    required String serviceName,
+    required double amount,
+  }) async {
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
+          'smart_queue_payments',
+          'Payment Confirmations',
+          channelDescription: 'Notifications for successful payments',
+          importance: Importance.max,
+          priority: Priority.high,
+          playSound: true,
+        );
+
+    const DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+    );
+
+    const NotificationDetails platformDetails = NotificationDetails(
+      android: androidDetails,
+      iOS: iosDetails,
+    );
+
+    final notifId = bookingId * 10 + 3;
+    const title = 'Payment Successful ✅';
+    final body =
+        'Your payment of ${amount.toStringAsFixed(0)} EGP for $serviceName has been confirmed. Thank you!';
+
+    await _notificationsPlugin.show(
+      notifId,
+      title,
+      body,
+      platformDetails,
+      payload: 'timer',
+    );
+
+    // Persist in inbox store so it appears in the in-app notification list
+    await NotificationStore.add(
+      NotificationEntry(
+        id: notifId,
+        title: title,
+        body: body,
+        triggerTime: DateTime.now(),
+        bookingId: bookingId,
+      ),
+    );
+  }
+
   /// Cancels both scheduled reminders for a specific booking ID
   static Future<void> cancelBookingReminders(int bookingId) async {
     await _notificationsPlugin.cancel(bookingId * 10 + 1);

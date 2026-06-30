@@ -1,7 +1,9 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:go_router/go_router.dart';
+import 'package:smart_queue/core/localization/api_localization.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
 import 'package:smart_queue/core/services/bookmark_service.dart';
 import 'package:smart_queue/core/widgets/app_flushbar.dart';
@@ -83,7 +85,10 @@ class _OperationsHistoryScreenState extends State<OperationsHistoryScreen>
 
     AppFlushbar.show(
       context,
-      message: isNowBookmarked ? "Appointment saved!" : "Appointment removed!",
+      message:
+          isNowBookmarked
+              ? "appointment_saved".tr()
+              : "appointment_removed".tr(),
       type: isNowBookmarked ? MessageType.success : MessageType.warning,
     );
   }
@@ -126,7 +131,7 @@ class _OperationsHistoryScreenState extends State<OperationsHistoryScreen>
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  "My Appointments",
+                                  "my_appointments_title".tr(),
                                   style: TextStyle(
                                     fontSize: 26,
                                     fontWeight: FontWeight.w800,
@@ -143,8 +148,10 @@ class _OperationsHistoryScreenState extends State<OperationsHistoryScreen>
                                             : 0;
                                     return Text(
                                       state is OperationsLoaded
-                                          ? "$count appointment${count != 1 ? 's' : ''} found"
-                                          : "Loading...",
+                                          ? "appointments_found".tr(
+                                            args: [count.toString()],
+                                          )
+                                          : "loading".tr(),
                                       style: TextStyle(
                                         fontSize: 13,
                                         fontWeight: FontWeight.w500,
@@ -168,28 +175,28 @@ class _OperationsHistoryScreenState extends State<OperationsHistoryScreen>
                           scrollDirection: Axis.horizontal,
                           children: [
                             _FilterChip(
-                              label: "All",
+                              label: "all".tr(),
                               icon: Icons.grid_view_rounded,
                               isSelected: _selectedFilter == 0,
                               onTap: () => setState(() => _selectedFilter = 0),
                             ),
                             const SizedBox(width: 8),
                             _FilterChip(
-                              label: "Upcoming",
+                              label: "upcoming".tr(),
                               icon: Icons.event_available_rounded,
                               isSelected: _selectedFilter == 1,
                               onTap: () => setState(() => _selectedFilter = 1),
                             ),
                             const SizedBox(width: 8),
                             _FilterChip(
-                              label: "Completed",
+                              label: "completed".tr(),
                               icon: Icons.check_circle_outline_rounded,
                               isSelected: _selectedFilter == 2,
                               onTap: () => setState(() => _selectedFilter = 2),
                             ),
                             const SizedBox(width: 8),
                             _FilterChip(
-                              label: "Saved",
+                              label: "saved".tr(),
                               icon: Icons.bookmark_outline_rounded,
                               isSelected: _selectedFilter == 3,
                               onTap: () => setState(() => _selectedFilter = 3),
@@ -221,7 +228,7 @@ class _OperationsHistoryScreenState extends State<OperationsHistoryScreen>
 
                   if (state is OperationsError) {
                     return _ErrorState(
-                      message: state.message,
+                      message: state.message.localizedApi,
                       onRetry:
                           () =>
                               context.read<OperationsCubit>().fetchOperations(),
@@ -493,26 +500,26 @@ class _EmptyState extends StatelessWidget {
       case 1:
         return _EmptyData(
           icon: Icons.event_busy_rounded,
-          title: "No Upcoming Appointments",
-          subtitle: "You don't have any upcoming\nappointments scheduled.",
+          title: "no_upcoming_appointments".tr(),
+          subtitle: "no_upcoming_appointments_desc".tr(),
         );
       case 2:
         return _EmptyData(
           icon: Icons.history_rounded,
-          title: "No History Yet",
-          subtitle: "Your completed appointments\nwill appear here.",
+          title: "no_history_yet".tr(),
+          subtitle: "completed_appointments_appear".tr(),
         );
       case 3:
         return _EmptyData(
           icon: Icons.bookmark_outline_rounded,
-          title: "No Saved Appointments",
-          subtitle: "Bookmark your appointments\nto find them quickly later.",
+          title: "no_saved_appointments".tr(),
+          subtitle: "bookmark_appointments_quickly".tr(),
         );
       default:
         return _EmptyData(
           icon: Icons.calendar_today_rounded,
-          title: "No Appointments Yet",
-          subtitle: "Book your first appointment\nand it will show up here.",
+          title: "no_appointments_yet".tr(),
+          subtitle: "book_first_appointment".tr(),
         );
     }
   }
@@ -554,8 +561,8 @@ class _ErrorState extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            const Text(
-              "Something went wrong",
+            Text(
+              "something_went_wrong".tr(),
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
@@ -593,13 +600,17 @@ class _ErrorState extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.refresh_rounded, color: Colors.white, size: 18),
-                    SizedBox(width: 8),
+                    const Icon(
+                      Icons.refresh_rounded,
+                      color: Colors.white,
+                      size: 18,
+                    ),
+                    const SizedBox(width: 8),
                     Text(
-                      "Try Again",
+                      "try_again".tr(),
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w700,

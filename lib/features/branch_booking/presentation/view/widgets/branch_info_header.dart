@@ -1,4 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:smart_queue/core/localization/api_localization.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
 import 'package:smart_queue/features/map/data/models/branch_model.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -23,11 +25,12 @@ class BranchInfoHeader extends StatelessWidget {
   }
 
   String _getOperatingHoursText() {
-    if (branch.operatingHours.isEmpty) return "Not available";
+    if (branch.operatingHours.isEmpty) return "not_available".tr();
 
     final now = DateTime.now();
     final isoWeekday = now.weekday;
-    final backendWeekday = isoWeekday - 1; // 0 = Monday, 6 = Sunday (Django backend)
+    final backendWeekday =
+        isoWeekday - 1; // 0 = Monday, 6 = Sunday (Django backend)
     OperatingHour? todayHour;
 
     for (final hour in branch.operatingHours) {
@@ -37,7 +40,7 @@ class BranchInfoHeader extends StatelessWidget {
       }
     }
 
-    if (todayHour == null) return "Closed Today";
+    if (todayHour == null) return "closed_today".tr();
 
     final fromStr = _formatTime(todayHour.fromHour);
     final toStr = _formatTime(todayHour.toHour);
@@ -101,7 +104,7 @@ class BranchInfoHeader extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        branch.name,
+                        branch.name.localizedApi,
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -112,15 +115,19 @@ class BranchInfoHeader extends StatelessWidget {
                     ),
                     const SizedBox(width: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
-                        color: isActive
-                            ? Colors.green.withOpacity(0.1)
-                            : Colors.red.withOpacity(0.1),
+                        color:
+                            isActive
+                                ? Colors.green.withOpacity(0.1)
+                                : Colors.red.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
-                        isActive ? "Open" : "Closed",
+                        isActive ? "open".tr() : "closed".tr(),
                         style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.bold,
@@ -136,11 +143,17 @@ class BranchInfoHeader extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.location_on_rounded, size: 16, color: Colors.grey.shade400),
+                    Icon(
+                      Icons.location_on_rounded,
+                      size: 16,
+                      color: Colors.grey.shade400,
+                    ),
                     const SizedBox(width: 6),
                     Expanded(
                       child: Text(
-                        branch.address ?? "No address details available",
+                        branch.address.localizedApiFallback(
+                          "no_address_details",
+                        ),
                         style: TextStyle(
                           fontSize: 13,
                           color: Colors.grey.shade600,
@@ -155,10 +168,14 @@ class BranchInfoHeader extends StatelessWidget {
                 // Operating Hours Row
                 Row(
                   children: [
-                    Icon(Icons.access_time_rounded, size: 16, color: Colors.grey.shade400),
+                    Icon(
+                      Icons.access_time_rounded,
+                      size: 16,
+                      color: Colors.grey.shade400,
+                    ),
                     const SizedBox(width: 6),
                     Text(
-                      "Today's Hours: ",
+                      "todays_hours".tr(),
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.bold,
@@ -197,11 +214,16 @@ class BranchInfoHeader extends StatelessWidget {
                           ),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: AppColors.teal,
-                            side: BorderSide(color: AppColors.teal.withOpacity(0.2)),
+                            side: BorderSide(
+                              color: AppColors.teal.withOpacity(0.2),
+                            ),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
-                            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 10,
+                              horizontal: 8,
+                            ),
                           ),
                         ),
                       ),
@@ -211,21 +233,30 @@ class BranchInfoHeader extends StatelessWidget {
                     // Map View Button
                     Expanded(
                       child: ElevatedButton.icon(
-                        onPressed: () => launchUrl(
-                          Uri.parse(
-                            "https://www.google.com/maps/search/?api=1&query=${branch.lat},${branch.lng}",
-                          ),
-                        ),
+                        onPressed:
+                            () => launchUrl(
+                              Uri.parse(
+                                "https://www.google.com/maps/search/?api=1&query=${branch.lat},${branch.lng}",
+                              ),
+                            ),
                         icon: const Icon(Icons.map_rounded, size: 16),
-                        label: const Text("View on Map", style: TextStyle(fontSize: 12)),
+                        label: Text(
+                          "view_on_map".tr(),
+                          style: const TextStyle(fontSize: 12),
+                        ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.tealLight.withOpacity(0.15),
+                          backgroundColor: AppColors.tealLight.withOpacity(
+                            0.15,
+                          ),
                           foregroundColor: AppColors.teal,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 10,
+                            horizontal: 8,
+                          ),
                         ),
                       ),
                     ),
@@ -263,4 +294,3 @@ class BranchInfoHeader extends StatelessWidget {
     );
   }
 }
-

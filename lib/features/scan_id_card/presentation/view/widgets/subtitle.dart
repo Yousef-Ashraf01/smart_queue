@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class Subtitle extends StatelessWidget {
@@ -6,7 +7,7 @@ class Subtitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      'Align your National ID card inside the frame',
+      'align_id_inside_frame'.tr(),
       style: TextStyle(
         fontSize: 13,
         fontWeight: FontWeight.w500,

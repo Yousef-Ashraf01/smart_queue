@@ -3,7 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:smart_queue/core/constants/app_assets.dart';
+import 'package:smart_queue/core/localization/api_localization.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
 import 'package:smart_queue/core/styling/app_styles.dart';
 import 'package:smart_queue/core/widgets/app_flushbar.dart';
@@ -108,14 +110,14 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
           _fillControllers(state.profile);
           AppFlushbar.show(
             context,
-            message: "Profile updated successfully",
+            message: "profile_updated_successfully".tr(),
             type: MessageType.success,
             duration: const Duration(seconds: 1),
           );
         } else if (state is PersonalInfoError) {
           AppFlushbar.show(
             context,
-            message: state.message,
+            message: state.message.localizedApi,
             type: MessageType.error,
           );
         } else if (state is AuthInitial) {
@@ -142,7 +144,10 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                   child: Column(
                     children: [
                       AppTopBar(),
-                      Text('Personal information', style: AppStyle.appBarTitle),
+                      Text(
+                        'personal_info_title'.tr(),
+                        style: AppStyle.appBarTitle,
+                      ),
                       const SizedBox(height: 20),
                       Expanded(child: _buildContent()),
                     ],
@@ -219,7 +224,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
       const SizedBox(height: 40),
 
       AppButton(
-        text: "Log out",
+        text: "logout_title".tr(),
         iconPath: AppAssets.iconloginout,
         backgroundColor: Colors.red,
         onPressed: () => LogoutDialog.show(context),

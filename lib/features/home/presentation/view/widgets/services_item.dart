@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:smart_queue/core/localization/api_localization.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
 import 'package:smart_queue/core/styling/app_styles.dart';
@@ -58,14 +60,14 @@ class ServicesItem extends StatelessWidget {
             const SizedBox(height: 12),
 
             Text(
-              organization.name,
+              organization.name.localizedApi,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: AppStyle.bold16black.copyWith(fontSize: 14),
             ),
 
             Text(
-              organization.code,
+              organization.code.localizedApi,
               style: TextStyle(color: Colors.grey, fontSize: 12),
             ),
 
@@ -85,7 +87,7 @@ class ServicesItem extends StatelessWidget {
                 onPressed: () {
                   context.push(AppRoutes.map, extra: organization.id);
                 },
-                child: Text("Book", style: AppStyle.regular14black),
+                child: Text("book_btn".tr(), style: AppStyle.regular14black),
               ),
             ),
           ],

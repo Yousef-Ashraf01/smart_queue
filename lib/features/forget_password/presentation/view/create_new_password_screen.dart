@@ -1,8 +1,10 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smart_queue/core/constants/app_assets.dart';
+import 'package:smart_queue/core/localization/api_localization.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
 import 'package:smart_queue/core/widgets/app_flushbar.dart';
@@ -57,25 +59,28 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                   onPressed: () => Navigator.pop(context),
                 ),
                 const SizedBox(height: 20),
-                const Center(
+                Center(
                   child: Text(
-                    'Create New Password',
-                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                    'create_new_password'.tr(),
+                    style: const TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 15),
-                const Center(
+                Center(
                   child: Text(
-                    'Your new password must be different\nfrom previously used password',
+                    'new_password_hint'.tr(),
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 15, color: Color(0xFF8E8E93)),
                   ),
                 ),
                 const SizedBox(height: 40),
 
-                const FieldLabel(text: "New Password"),
+                FieldLabel(text: "new_password".tr()),
                 _buildPasswordField(
-                  hint: "Password",
+                  hint: "password_label".tr(),
                   controller: _passwordController,
                   isHidden: _isPasswordHidden,
                   onToggle: () {
@@ -87,9 +92,9 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
 
                 const SizedBox(height: 20),
 
-                const FieldLabel(text: "Confirm Password"),
+                FieldLabel(text: "confirm_password".tr()),
                 _buildPasswordField(
-                  hint: "Confirm Password",
+                  hint: "confirm_password".tr(),
                   controller: _confirmPasswordController,
                   isHidden: _isConfirmPasswordHidden,
                   onToggle: () {
@@ -106,8 +111,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                     if (state is ForgetPasswordConfirmSuccess) {
                       AppFlushbar.show(
                         context,
-                        message:
-                            "Password reset successfully! Please log in with your new password.",
+                        message: "password_reset_success".tr(),
                         type: MessageType.success,
                         duration: const Duration(milliseconds: 1500),
                       );
@@ -117,14 +121,14 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                     } else if (state is ForgetPasswordError) {
                       AppFlushbar.show(
                         context,
-                        message: state.message,
+                        message: state.message.localizedApi,
                         type: MessageType.error,
                       );
                     }
                   },
                   builder: (context, state) {
                     return _buildGradientButton(
-                      "Send",
+                      "send_btn".tr(),
                       state is ForgetPasswordLoading
                           ? null
                           : () {
@@ -136,7 +140,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                             if (password.isEmpty || confirmPassword.isEmpty) {
                               AppFlushbar.show(
                                 context,
-                                message: "Please enter both password fields",
+                                message: "enter_both_password_fields".tr(),
                                 type: MessageType.error,
                               );
                               return;
@@ -145,8 +149,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                             if (password.length < 8) {
                               AppFlushbar.show(
                                 context,
-                                message:
-                                    "Password must be at least 8 characters long",
+                                message: "password_length_error".tr(),
                                 type: MessageType.error,
                               );
                               return;
@@ -155,7 +158,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                             if (password != confirmPassword) {
                               AppFlushbar.show(
                                 context,
-                                message: "Passwords do not match",
+                                message: "passwords_do_not_match".tr(),
                                 type: MessageType.error,
                               );
                               return;

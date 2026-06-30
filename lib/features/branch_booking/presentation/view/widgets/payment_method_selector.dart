@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
 
@@ -18,8 +19,8 @@ class PaymentMethodSelector extends StatelessWidget {
         Expanded(
           child: _PaymentOptionCard(
             icon: Icons.payments_outlined,
-            label: 'Cash',
-            subtitle: 'Pay at branch',
+            label: 'cash'.tr(),
+            subtitle: 'pay_at_branch'.tr(),
             isSelected: selectedMethod == 'CASH',
             onTap: () => onSelected('CASH'),
           ),
@@ -28,8 +29,8 @@ class PaymentMethodSelector extends StatelessWidget {
         Expanded(
           child: _PaymentOptionCard(
             icon: Icons.credit_card_rounded,
-            label: 'Online',
-            subtitle: 'Pay with Stripe',
+            label: 'online'.tr(),
+            subtitle: 'pay_with_stripe'.tr(),
             isSelected: selectedMethod == 'ONLINE',
             onTap: () => onSelected('ONLINE'),
           ),
@@ -70,9 +71,10 @@ class _PaymentOptionCardState extends State<_PaymentOptionCard>
       vsync: this,
       duration: const Duration(milliseconds: 150),
     );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.96).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.96,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -97,14 +99,13 @@ class _PaymentOptionCardState extends State<_PaymentOptionCard>
           curve: Curves.easeInOut,
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
           decoration: BoxDecoration(
-            color: widget.isSelected
-                ? AppColors.teal.withValues(alpha: 0.06)
-                : Colors.white,
+            color:
+                widget.isSelected
+                    ? AppColors.teal.withValues(alpha: 0.06)
+                    : Colors.white,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: widget.isSelected
-                  ? AppColors.teal
-                  : Colors.grey.shade200,
+              color: widget.isSelected ? AppColors.teal : Colors.grey.shade200,
               width: widget.isSelected ? 1.8 : 1.2,
             ),
             boxShadow: [
@@ -127,16 +128,16 @@ class _PaymentOptionCardState extends State<_PaymentOptionCard>
                 duration: const Duration(milliseconds: 250),
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: widget.isSelected
-                      ? AppColors.teal.withValues(alpha: 0.12)
-                      : AppColors.tealLight.withValues(alpha: 0.12),
+                  color:
+                      widget.isSelected
+                          ? AppColors.teal.withValues(alpha: 0.12)
+                          : AppColors.tealLight.withValues(alpha: 0.12),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   widget.icon,
-                  color: widget.isSelected
-                      ? AppColors.teal
-                      : AppColors.tealMuted,
+                  color:
+                      widget.isSelected ? AppColors.teal : AppColors.tealMuted,
                   size: 24,
                 ),
               ),
@@ -147,9 +148,8 @@ class _PaymentOptionCardState extends State<_PaymentOptionCard>
                   fontSize: 14,
                   fontWeight:
                       widget.isSelected ? FontWeight.bold : FontWeight.w600,
-                  color: widget.isSelected
-                      ? AppColors.teal
-                      : AppColors.blackColor,
+                  color:
+                      widget.isSelected ? AppColors.teal : AppColors.blackColor,
                   fontFamily: 'Inter Tight',
                 ),
               ),
@@ -170,21 +170,20 @@ class _PaymentOptionCardState extends State<_PaymentOptionCard>
                 height: 20,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: widget.isSelected ? AppColors.teal : Colors.transparent,
+                  color:
+                      widget.isSelected ? AppColors.teal : Colors.transparent,
                   border: Border.all(
-                    color: widget.isSelected
-                        ? AppColors.teal
-                        : Colors.grey.shade300,
+                    color:
+                        widget.isSelected
+                            ? AppColors.teal
+                            : Colors.grey.shade300,
                     width: 2,
                   ),
                 ),
-                child: widget.isSelected
-                    ? const Icon(
-                        Icons.check,
-                        color: Colors.white,
-                        size: 14,
-                      )
-                    : null,
+                child:
+                    widget.isSelected
+                        ? const Icon(Icons.check, color: Colors.white, size: 14)
+                        : null,
               ),
             ],
           ),

@@ -1,4 +1,5 @@
 import 'package:country_picker/country_picker.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:smart_queue/features/personal_info/presentation/view/widgets/custom_text_field.dart';
@@ -83,15 +84,15 @@ class _PhoneInputFieldState extends State<PhoneInputField> {
               LengthLimitingTextInputFormatter(10),
             ],
 
-            hintText: "Phone number",
+            hintText: "phone_number_label".tr(),
             controller: widget.controller,
             keyboardType: TextInputType.phone,
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return "Phone number is required";
+                return "phone_required".tr();
               }
               if (!RegExp(r'^\d{10}$').hasMatch(value)) {
-                return "Phone must be 11 digits";
+                return "phone_digits_error".tr();
               }
               return null;
             },

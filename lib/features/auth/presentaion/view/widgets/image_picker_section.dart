@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -110,7 +111,9 @@ class ImagePickerSection extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              pickedImage != null ? 'Change Photo' : 'Add Profile Photo',
+              pickedImage != null
+                  ? 'change_photo'.tr()
+                  : 'add_profile_photo'.tr(),
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w500,

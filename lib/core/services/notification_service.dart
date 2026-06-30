@@ -1,5 +1,7 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:go_router/go_router.dart';
+import 'package:smart_queue/core/localization/api_localization.dart';
 import 'package:smart_queue/core/routing/app_router.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
 import 'package:smart_queue/core/services/notification_store.dart';
@@ -136,9 +138,10 @@ class NotificationService {
     if (oneHourBefore.isAfter(now)) {
       final tzDateTime = tz.TZDateTime.from(oneHourBefore, tz.local);
       final notifId = bookingId * 10 + 1;
-      const title = 'Upcoming Booking in 1 Hour!';
-      final body =
-          'Your booking for $serviceName at $orgName starts in 1 hour.';
+      final title = 'upcoming_booking_1_hour_title'.tr();
+      final body = 'upcoming_booking_1_hour_body'.tr(
+        args: [serviceName.localizedApi, orgName.localizedApi],
+      );
       await _notificationsPlugin.zonedSchedule(
         notifId,
         title,
@@ -167,9 +170,10 @@ class NotificationService {
     if (tenMinutesBefore.isAfter(now)) {
       final tzDateTime = tz.TZDateTime.from(tenMinutesBefore, tz.local);
       final notifId = bookingId * 10 + 2;
-      const title = 'Upcoming Booking in 10 Minutes!';
-      final body =
-          'Your booking for $serviceName at $orgName starts in 10 minutes. Get ready!';
+      final title = 'upcoming_booking_10_min_title'.tr();
+      final body = 'upcoming_booking_10_min_body'.tr(
+        args: [serviceName.localizedApi, orgName.localizedApi],
+      );
       await _notificationsPlugin.zonedSchedule(
         notifId,
         title,
@@ -226,9 +230,10 @@ class NotificationService {
     );
 
     final notifId = bookingId * 10 + 3;
-    const title = 'Payment Successful ✅';
-    final body =
-        'Your payment of ${amount.toStringAsFixed(0)} EGP for $serviceName has been confirmed. Thank you!';
+    final title = 'payment_successful_title'.tr();
+    final body = 'payment_successful_body'.tr(
+      args: [amount.toStringAsFixed(0), serviceName.localizedApi],
+    );
 
     await _notificationsPlugin.show(
       notifId,

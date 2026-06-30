@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
@@ -59,8 +60,8 @@ class BookingSuccessDialog extends StatelessWidget {
             ),
             const SizedBox(height: 20),
 
-            const Text(
-              'Booking confirmed',
+            Text(
+              'booking_confirmed'.tr(),
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
@@ -70,7 +71,7 @@ class BookingSuccessDialog extends StatelessWidget {
             const SizedBox(height: 8),
 
             Text(
-              'Your appointment has been successfully booked. You can track it from your queue.',
+              'booking_confirmed_desc'.tr(),
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 13,
@@ -108,7 +109,7 @@ class BookingSuccessDialog extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Estimated wait',
+                            'estimated_wait'.tr(),
                             style: TextStyle(
                               fontSize: 11,
                               color: Colors.grey.shade400,
@@ -134,8 +135,8 @@ class BookingSuccessDialog extends StatelessWidget {
                           color: const Color(0xFFE1F5EE),
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        child: const Text(
-                          'Active',
+                        child: Text(
+                          'active'.tr(),
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w700,
@@ -147,10 +148,7 @@ class BookingSuccessDialog extends StatelessWidget {
                   ),
                   const Padding(
                     padding: EdgeInsets.symmetric(vertical: 12),
-                    child: Divider(
-                      height: 1,
-                      color: Color(0xFFE2E8F0),
-                    ),
+                    child: Divider(height: 1, color: Color(0xFFE2E8F0)),
                   ),
                   Row(
                     children: [
@@ -172,7 +170,7 @@ class BookingSuccessDialog extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Appointment ID',
+                            'appointment_id'.tr(),
                             style: TextStyle(
                               fontSize: 11,
                               color: Colors.grey.shade400,
@@ -208,8 +206,8 @@ class BookingSuccessDialog extends StatelessWidget {
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                child: const Text(
-                  'Go to home',
+                child: Text(
+                  'go_to_home'.tr(),
                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
                 ),
               ),
@@ -231,8 +229,8 @@ class BookingSuccessDialog extends StatelessWidget {
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                child: const Text(
-                  'Maybe later',
+                child: Text(
+                  'maybe_later'.tr(),
                   style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
                 ),
               ),

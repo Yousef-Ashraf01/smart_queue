@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:smart_queue/core/constants/app_assets.dart';
@@ -87,8 +88,8 @@ class HomeAppBar extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Hi, $name", style: AppStyle.bold16black),
-                    Text("Welcome back!", style: AppStyle.normal16black),
+                    Text("hi".tr(args: [name]), style: AppStyle.bold16black),
+                    Text("welcome_back".tr(), style: AppStyle.normal16black),
                   ],
                 ),
               ],

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:smart_queue/core/styling/app_colors.dart';
 import 'package:smart_queue/core/styling/app_styles.dart';
 
 class TimeCircle extends StatelessWidget {
@@ -25,9 +24,7 @@ class TimeCircle extends StatelessWidget {
             child: CircularProgressIndicator(
               value: 1.0,
               strokeWidth: 5,
-              valueColor: AlwaysStoppedAnimation(
-                activeColor.withOpacity(0.08),
-              ),
+              valueColor: AlwaysStoppedAnimation(activeColor.withOpacity(0.08)),
             ),
           ),
 
@@ -103,7 +100,10 @@ class TimeCircle extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: activeColor.withOpacity(0.06),
                     borderRadius: BorderRadius.circular(10),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:smart_queue/core/constants/app_assets.dart';
 
 class TermsPolicyScreen extends StatelessWidget {
@@ -32,10 +33,10 @@ class TermsPolicyScreen extends StatelessWidget {
 
                 const SizedBox(height: 10),
 
-                const Center(
+                Center(
                   child: Text(
-                    "Terms & Privacy Policy",
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    "terms_privacy_title".tr(),
+                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                 ),
 
@@ -45,73 +46,73 @@ class TermsPolicyScreen extends StatelessWidget {
                   child: ListView(
                     physics: const BouncingScrollPhysics(),
                     children: [
-                      _sectionTitle("Introduction"),
+                      _sectionTitle("intro_title".tr()),
                       const SizedBox(height: 10),
                       _card(
-                        const Text(
-                          "By using Smart Queue, you agree to comply with and be bound by the following terms and conditions.",
-                          style: TextStyle(color: Colors.grey, height: 1.5),
+                        Text(
+                          "intro_desc".tr(),
+                          style: const TextStyle(color: Colors.grey, height: 1.5),
                         ),
                       ),
 
                       const SizedBox(height: 25),
 
-                      _sectionTitle("User Responsibilities"),
+                      _sectionTitle("user_responsibilities".tr()),
                       const SizedBox(height: 10),
                       _card(
                         Column(
-                          children: const [
-                            _bulletItem("Provide accurate information"),
-                            Divider(),
-                            _bulletItem("Do not misuse the app"),
-                            Divider(),
-                            _bulletItem("Respect other users"),
+                          children: [
+                            _bulletItem("resp_1".tr()),
+                            const Divider(),
+                            _bulletItem("resp_2".tr()),
+                            const Divider(),
+                            _bulletItem("resp_3".tr()),
                           ],
                         ),
                       ),
 
                       const SizedBox(height: 25),
 
-                      _sectionTitle("Data & Privacy"),
+                      _sectionTitle("data_privacy_title".tr()),
                       const SizedBox(height: 10),
                       _card(
-                        const Text(
-                          "We collect limited personal data to improve user experience. Your data is stored securely and is not shared with third parties without consent.",
-                          style: TextStyle(color: Colors.grey, height: 1.5),
+                        Text(
+                          "data_privacy_desc".tr(),
+                          style: const TextStyle(color: Colors.grey, height: 1.5),
                         ),
                       ),
 
                       const SizedBox(height: 25),
 
-                      _sectionTitle("Booking & Usage"),
+                      _sectionTitle("booking_usage_title".tr()),
                       const SizedBox(height: 10),
                       _card(
-                        const Text(
-                          "Users can book appointments through the app. Availability depends on branch schedules and services offered.",
-                          style: TextStyle(color: Colors.grey, height: 1.5),
+                        Text(
+                          "booking_usage_desc".tr(),
+                          style: const TextStyle(color: Colors.grey, height: 1.5),
                         ),
                       ),
 
                       const SizedBox(height: 25),
 
-                      _sectionTitle("Changes to Terms"),
+                      _sectionTitle("changes_terms_title".tr()),
                       const SizedBox(height: 10),
                       _card(
-                        const Text(
-                          "We may update these terms at any time. Continued use of the app means you accept the updated terms.",
-                          style: TextStyle(color: Colors.grey, height: 1.5),
+                        Text(
+                          "changes_terms_desc".tr(),
+                          style: const TextStyle(color: Colors.grey, height: 1.5),
                         ),
                       ),
 
                       const SizedBox(height: 25),
 
-                      _sectionTitle("Contact Us"),
+                      _sectionTitle("contact_us_title".tr()),
                       const SizedBox(height: 10),
                       _card(
                         ListTile(
                           leading: const Icon(Icons.email_outlined),
                           title: const Text("support@smartqueue.com"),
-                          subtitle: const Text("For any inquiries"),
+                          subtitle: Text("inquiries_subtitle".tr()),
                           trailing: const Icon(
                             Icons.arrow_forward_ios,
                             size: 16,
@@ -142,12 +143,19 @@ class TermsPolicyScreen extends StatelessWidget {
   Widget _card(Widget child) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
       ),
-      child: child,
+      child: Material(
+        color: Colors.transparent,
+        clipBehavior: Clip.antiAlias,
+        borderRadius: BorderRadius.circular(20),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: child,
+        ),
+      ),
     );
   }
 }

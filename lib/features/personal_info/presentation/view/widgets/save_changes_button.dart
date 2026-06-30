@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:smart_queue/features/auth/data/models/profile_model.dart';
 import 'package:smart_queue/features/auth/data/models/register_request_model.dart';
 import 'package:smart_queue/features/personal_info/presentation/cubit/personal_info_cubit.dart';
@@ -40,7 +41,7 @@ class SaveChangesButton extends StatelessWidget {
         return Padding(
           padding: const EdgeInsets.fromLTRB(30, 10, 30, 25),
           child: AppButton(
-            text: "Save Changes",
+            text: "save_changes_btn".tr(),
             isLoading: isLoading,
             backgroundColor: const Color(0xFF00BFA6),
             onPressed: isLoading ? null : () => _onSave(context, state),

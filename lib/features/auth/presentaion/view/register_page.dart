@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:smart_queue/core/constants/app_assets.dart';
+import 'package:smart_queue/core/localization/api_localization.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
 import 'package:smart_queue/core/styling/app_styles.dart';
@@ -191,7 +192,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   textStyle: const TextStyle(fontWeight: FontWeight.w600),
                 ),
               ),
-              dialogTheme: DialogTheme(
+              dialogTheme: DialogThemeData(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(24),
                 ),
@@ -243,7 +244,7 @@ class _RegisterPageState extends State<RegisterPage> {
           // Pass the full register model so verification screen can complete registration
           AppFlushbar.show(
             context,
-            message: "Verification code sent successfully!",
+            message: "verification_code_sent_success".tr(),
             type: MessageType.success,
             duration: const Duration(seconds: 2),
           );
@@ -267,7 +268,7 @@ class _RegisterPageState extends State<RegisterPage> {
         } else if (state is AuthError) {
           AppFlushbar.show(
             context,
-            message: state.message,
+            message: state.message.localizedApi,
             type: MessageType.error,
             duration: const Duration(seconds: 3),
           );

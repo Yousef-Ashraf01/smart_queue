@@ -1,12 +1,14 @@
 import 'dart:io';
 
 import 'package:camera/camera.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:smart_queue/core/localization/api_localization.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
 import 'package:smart_queue/features/scan_id_card/presentation/cubit/id_cubit.dart';
@@ -204,17 +206,17 @@ class _ScanIdCardScreenState extends State<ScanIdCardScreen>
                 ),
               ],
             ),
-            child: const Row(
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
+                const Icon(
                   Icons.refresh_rounded,
                   color: Color(0xFFEF4444),
                   size: 18,
                 ),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 Text(
-                  'Retake Photo',
+                  'retake_photo'.tr(),
                   style: TextStyle(
                     color: Color(0xFFEF4444),
                     fontSize: 13.5,
@@ -247,17 +249,17 @@ class _ScanIdCardScreenState extends State<ScanIdCardScreen>
                 ),
               ],
             ),
-            child: const Row(
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
+                const Icon(
                   Icons.photo_library_rounded,
                   color: Color(0xFF059669),
                   size: 18,
                 ),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 Text(
-                  'Pick Gallery',
+                  'pick_gallery'.tr(),
                   style: TextStyle(
                     color: Color(0xFF059669),
                     fontSize: 13.5,
@@ -354,7 +356,9 @@ class _ScanIdCardScreenState extends State<ScanIdCardScreen>
         } else if (state is IdError) {
           setState(() => _capturedImage = null);
           await _initCamera();
-          if (mounted) ErrorBottomSheet.show(context, state.message);
+          if (mounted) {
+            ErrorBottomSheet.show(context, state.message.localizedApi);
+          }
         }
       },
       child: Scaffold(
@@ -397,7 +401,9 @@ class _ScanIdCardScreenState extends State<ScanIdCardScreen>
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const SizedBox(width: 56), // spacer to match gallery button width
+                                const SizedBox(
+                                  width: 56,
+                                ), // spacer to match gallery button width
                                 const SizedBox(width: 24),
                                 CaptureButton(
                                   captureAnim: _captureAnim,
@@ -409,7 +415,7 @@ class _ScanIdCardScreenState extends State<ScanIdCardScreen>
                             ),
                             const SizedBox(height: 6),
                             Text(
-                              'Tap to capture or select from gallery',
+                              'tap_capture_or_gallery'.tr(),
                               style: TextStyle(
                                 fontSize: 12,
                                 color: AppColors.tealMuted,

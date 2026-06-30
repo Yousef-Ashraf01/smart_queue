@@ -1,9 +1,11 @@
 import 'package:device_calendar/device_calendar.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:smart_queue/core/localization/api_localization.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
 import 'package:smart_queue/core/widgets/app_flushbar.dart';
 import 'package:smart_queue/features/branch_booking/data/models/appointment_response_model.dart';
@@ -48,9 +50,12 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
           child: Column(
             children: [
               const SizedBox(height: 20),
-              const Text(
-                "Appointment Details",
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              Text(
+                "appointment_details".tr(),
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               SizedBox(height: 30),
 
@@ -63,7 +68,7 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
                     if (state is AppointmentDeleted) {
                       AppFlushbar.show(
                         context,
-                        message: "Appointment deleted successfully",
+                        message: "appointment_deleted_success".tr(),
                         type: MessageType.success,
                         duration: const Duration(milliseconds: 1500),
                       );
@@ -78,7 +83,7 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
                     if (state is AppointmentDetailsError) {
                       AppFlushbar.show(
                         context,
-                        message: state.message,
+                        message: state.message.localizedApi,
                         type: MessageType.error,
                       );
                     }
@@ -256,7 +261,7 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  item.counter.service.name,
+                  item.counter.service.name.localizedApi,
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -340,8 +345,8 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
                   const SizedBox(width: 8),
                   Text(
                     item.canceled
-                        ? "This appointment was cancelled"
-                        : "This appointment was missed",
+                        ? "appointment_cancelled_status".tr()
+                        : "appointment_missed_status".tr(),
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
@@ -363,7 +368,7 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _sectionLabel("Service Details"),
+                _sectionLabel("service_details".tr()),
                 const SizedBox(height: 12),
                 Row(
                   children: [
@@ -385,7 +390,7 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            item.counter.service.name,
+                            item.counter.service.name.localizedApi,
                             style: const TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 15,
@@ -393,7 +398,7 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
                           ),
                           const SizedBox(height: 3),
                           Text(
-                            item.counter.service.description,
+                            item.counter.service.description.localizedApi,
                             style: TextStyle(
                               fontSize: 12,
                               color: Colors.grey[500],
@@ -412,7 +417,7 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
                   children: [
                     _detailRow(
                       Icons.payments_outlined,
-                      "Amount",
+                      "amount".tr(),
                       "${item.counter.service.price} ${item.counter.service.currency}",
                     ),
                     if (item.paymentMethod?.toUpperCase() == 'CASH')
@@ -449,7 +454,9 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
                 ),
                 const SizedBox(width: 12),
                 Text(
-                  item.wantReminder ? "Reminder is on" : "No reminder set",
+                  item.wantReminder
+                      ? "reminder_on".tr()
+                      : "no_reminder_set".tr(),
                   style: TextStyle(
                     fontSize: 14,
                     color: item.wantReminder ? Colors.orange : Colors.grey,
@@ -470,7 +477,7 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
             children: [
               Expanded(
                 child: _actionButton(
-                  label: "Delete",
+                  label: "delete".tr(),
                   icon: Icons.delete_outline,
                   bgColor: const Color(0xffFCEBEB),
                   textColor: const Color(0xffA32D2D),
@@ -480,7 +487,7 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
               const SizedBox(width: 10),
               Expanded(
                 child: _actionButton(
-                  label: "Edit",
+                  label: "edit".tr(),
                   icon: Icons.edit_outlined,
                   bgColor:
                       _canEdit(item)
@@ -592,9 +599,9 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
               ),
             ),
             const SizedBox(width: 12),
-            const Text(
-              "Appointment is Pending",
-              style: TextStyle(
+            Text(
+              "appointment_pending".tr(),
+              style: const TextStyle(
                 fontSize: 14,
                 color: Colors.orange,
                 fontWeight: FontWeight.w500,
@@ -611,14 +618,14 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
           if (state is FeedbackError) {
             AppFlushbar.show(
               context,
-              message: state.message,
+              message: state.message.localizedApi,
               type: MessageType.error,
             );
           }
           if (state is FeedbackSubmitted) {
             AppFlushbar.show(
               context,
-              message: "Feedback submitted successfully!",
+              message: "feedback_submitted_success".tr(),
               type: MessageType.success,
             );
 
@@ -643,7 +650,7 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _sectionLabel("Your Feedback"),
+          _sectionLabel("your_feedback".tr()),
           const SizedBox(height: 10),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -665,9 +672,9 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      "Completed",
-                      style: TextStyle(
+                    Text(
+                      "completed".tr(),
+                      style: const TextStyle(
                         fontSize: 13,
                         color: Color(0xff0F6E56),
                         fontWeight: FontWeight.w600,
@@ -838,13 +845,17 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
         color: const Color(0xFF3B82F6).withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(20),
       ),
-      child: const Row(
+      child: Row(
         children: [
-          Icon(Icons.payments_rounded, size: 13, color: Color(0xFF3B82F6)),
-          SizedBox(width: 4),
+          const Icon(
+            Icons.payments_rounded,
+            size: 13,
+            color: Color(0xFF3B82F6),
+          ),
+          const SizedBox(width: 4),
           Text(
-            "Cash",
-            style: TextStyle(
+            "cash".tr(),
+            style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
               color: Color(0xFF3B82F6),
@@ -858,12 +869,12 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
   String _paymentMethodLabel(String? method) {
     switch (method?.toUpperCase()) {
       case 'CASH':
-        return 'Cash';
+        return 'cash'.tr();
       case 'ONLINE':
       case 'STRIPE':
-        return 'Online';
+        return 'online'.tr();
       default:
-        return 'Not Specified';
+        return 'not_specified'.tr();
     }
   }
 
@@ -928,8 +939,8 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
 
     final event = Event(
       calendarId,
-      title: appointment.counter.service.name,
-      description: appointment.counter.service.description,
+      title: appointment.counter.service.name.localizedApi,
+      description: appointment.counter.service.description.localizedApi,
       start: tz.TZDateTime.from(start, tz.local),
       end: tz.TZDateTime.from(end, tz.local),
     );
@@ -951,27 +962,27 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            "Service",
-            style: TextStyle(fontSize: 13, color: Colors.grey),
+          Text(
+            "service_label".tr(),
+            style: const TextStyle(fontSize: 13, color: Colors.grey),
           ),
           const SizedBox(height: 8),
           Text(
-            service.name,
+            service.name.localizedApi,
             style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: 4),
           Text(
-            service.description,
+            service.description.localizedApi,
             style: const TextStyle(fontSize: 12, color: Colors.grey),
           ),
           const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                "Price",
-                style: TextStyle(fontSize: 12, color: Colors.grey),
+              Text(
+                "price".tr(),
+                style: const TextStyle(fontSize: 12, color: Colors.grey),
               ),
               Text(
                 "${service.price}",
@@ -1060,9 +1071,9 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
                       const SizedBox(height: 20),
 
                       // ── Title ─────────────────────────────────────────
-                      const Text(
-                        "Delete Appointment",
-                        style: TextStyle(
+                      Text(
+                        "delete_appointment".tr(),
+                        style: const TextStyle(
                           fontSize: 19,
                           fontWeight: FontWeight.bold,
                           color: Colors.black87,
@@ -1073,7 +1084,7 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
 
                       // ── Subtitle ──────────────────────────────────────
                       Text(
-                        "Are you sure you want to delete this appointment?\nThis action cannot be undone.",
+                        "delete_appointment_confirm".tr(),
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 13,
@@ -1104,7 +1115,7 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
                                 ),
                                 child: Center(
                                   child: Text(
-                                    "Cancel",
+                                    "cancel".tr(),
                                     style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w600,
@@ -1149,9 +1160,9 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
                                               color: Colors.white,
                                             ),
                                           )
-                                          : const Text(
-                                            "Delete",
-                                            style: TextStyle(
+                                          : Text(
+                                            "delete".tr(),
+                                            style: const TextStyle(
                                               fontSize: 14,
                                               fontWeight: FontWeight.w600,
                                               color: Colors.white,
@@ -1220,7 +1231,7 @@ class _FeedbackFormWidgetState extends State<_FeedbackFormWidget> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 14),
-        _sectionLabel("Rate your experience"),
+        _sectionLabel("rate_your_experience".tr()),
         const SizedBox(height: 12),
         Center(
           child: RatingBar.builder(
@@ -1269,9 +1280,9 @@ class _FeedbackFormWidgetState extends State<_FeedbackFormWidget> {
                           color: Colors.white,
                         ),
                       )
-                      : const Text(
-                        "Submit Feedback",
-                        style: TextStyle(
+                      : Text(
+                        "submit_feedback".tr(),
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 14,
                           fontWeight: FontWeight.w600,

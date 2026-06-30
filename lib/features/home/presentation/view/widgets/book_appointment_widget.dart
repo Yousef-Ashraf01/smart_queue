@@ -1,6 +1,8 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:smart_queue/core/constants/app_assets.dart';
+import 'package:smart_queue/core/localization/api_localization.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
 import 'package:smart_queue/core/styling/app_styles.dart';
 
@@ -52,7 +54,7 @@ class BookAppointmentWidget extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        "Savings Account Passbook Issuance",
+                        "Savings Account Passbook Issuance".localizedApi,
                         style: AppStyle.medium14gray.copyWith(
                           fontWeight: FontWeight.normal,
                           fontSize: 10,
@@ -74,7 +76,10 @@ class BookAppointmentWidget extends StatelessWidget {
             ],
           ),
           SizedBox(height: 15),
-          Text("National Postal Authority", style: AppStyle.bold16black),
+          Text(
+            "National Postal Authority".localizedApi,
+            style: AppStyle.bold16black,
+          ),
           SizedBox(height: 20),
           Row(
             children: [
@@ -93,14 +98,14 @@ class BookAppointmentWidget extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Your address",
+                            "your_address".tr(),
                             style: AppStyle.medium14gray.copyWith(
                               color: const Color(0xff898EBC),
                             ),
                           ),
                           const SizedBox(height: 3),
                           Text(
-                            "Zagazig , Sharqia, Egypt",
+                            "Zagazig, Sharqia, Egypt".localizedApi,
                             style: AppStyle.bold16black,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
@@ -127,13 +132,16 @@ class BookAppointmentWidget extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Remaining time for you",
+                            "remaining_time_for_you".tr(),
                             style: AppStyle.medium14gray.copyWith(
                               color: const Color(0xff898EBC),
                             ),
                           ),
                           const SizedBox(height: 3),
-                          Text("15 minutes", style: AppStyle.bold16black),
+                          Text(
+                            "wait_mins".tr(args: ['15']),
+                            style: AppStyle.bold16black,
+                          ),
                         ],
                       ),
                     ),

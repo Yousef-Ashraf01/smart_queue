@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
 import 'package:smart_queue/core/styling/app_styles.dart';
@@ -74,8 +75,8 @@ class SlotsBottomSheet extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      "Select Time Slot",
+                    Text(
+                      "select_time_slot".tr(),
                       style: TextStyle(
                         fontFamily: AppStyle.fontFamily,
                         fontSize: 20,
@@ -85,7 +86,7 @@ class SlotsBottomSheet extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      "Choose a convenient slot for your visit",
+                      "choose_convenient_slot".tr(),
                       style: TextStyle(
                         fontFamily: AppStyle.fontFamily,
                         fontSize: 13,
@@ -106,7 +107,7 @@ class SlotsBottomSheet extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    "${slots.length} Slots",
+                    "slots_count".tr(args: [slots.length.toString()]),
                     style: const TextStyle(
                       fontFamily: AppStyle.fontFamily,
                       color: Color(0xff3CC572),
@@ -143,8 +144,8 @@ class SlotsBottomSheet extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      const Text(
-                        "No Time Slots Available",
+                      Text(
+                        "no_time_slots_available".tr(),
                         style: TextStyle(
                           fontFamily: AppStyle.fontFamily,
                           fontSize: 16,
@@ -154,7 +155,7 @@ class SlotsBottomSheet extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        "Please select a service and date first to view available times.",
+                        "select_service_date_first".tr(),
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontFamily: AppStyle.fontFamily,
@@ -177,7 +178,7 @@ class SlotsBottomSheet extends StatelessWidget {
                     if (morningSlots.isNotEmpty) ...[
                       _buildSectionHeader(
                         context,
-                        title: "Morning",
+                        title: "morning".tr(),
                         icon: Icons.wb_twilight_rounded,
                         iconColor: Colors.orangeAccent,
                         count: morningSlots.length,
@@ -189,7 +190,7 @@ class SlotsBottomSheet extends StatelessWidget {
                     if (afternoonSlots.isNotEmpty) ...[
                       _buildSectionHeader(
                         context,
-                        title: "Afternoon",
+                        title: "afternoon".tr(),
                         icon: Icons.wb_sunny_rounded,
                         iconColor: Colors.amber,
                         count: afternoonSlots.length,
@@ -201,7 +202,7 @@ class SlotsBottomSheet extends StatelessWidget {
                     if (eveningSlots.isNotEmpty) ...[
                       _buildSectionHeader(
                         context,
-                        title: "Evening",
+                        title: "evening".tr(),
                         icon: Icons.nights_stay_rounded,
                         iconColor: Colors.indigoAccent,
                         count: eveningSlots.length,

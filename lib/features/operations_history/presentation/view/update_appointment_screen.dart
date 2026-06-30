@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:smart_queue/core/localization/api_localization.dart';
 import 'package:smart_queue/core/styling/app_styles.dart';
 import 'package:smart_queue/core/widgets/app_flushbar.dart';
 import 'package:smart_queue/features/branch_booking/data/models/appointment_response_model.dart';
@@ -96,7 +98,7 @@ class _UpdateAppointmentScreenState extends State<UpdateAppointmentScreen> {
         // 400 = past date
         AppFlushbar.show(
           context,
-          message: "Cannot select a past date",
+          message: "cannot_select_past_date".tr(),
           type: MessageType.error,
         );
       },
@@ -105,7 +107,7 @@ class _UpdateAppointmentScreenState extends State<UpdateAppointmentScreen> {
           // holiday or no slots
           AppFlushbar.show(
             context,
-            message: "No available slots on this date",
+            message: "no_available_slots".tr(),
             type: MessageType.warning,
           );
         } else {
@@ -202,7 +204,7 @@ class _UpdateAppointmentScreenState extends State<UpdateAppointmentScreen> {
         endTimeController.text == widget.appointment.endTime) {
       AppFlushbar.show(
         context,
-        message: "No changes made!",
+        message: "no_changes_made".tr(),
         type: MessageType.warning,
       );
       return;
@@ -225,7 +227,7 @@ class _UpdateAppointmentScreenState extends State<UpdateAppointmentScreen> {
         (failure) {
           AppFlushbar.show(
             context,
-            message: "Cannot select a past date",
+            message: "cannot_select_past_date".tr(),
             type: MessageType.error,
           );
         },
@@ -233,7 +235,7 @@ class _UpdateAppointmentScreenState extends State<UpdateAppointmentScreen> {
           if (slots.isEmpty) {
             AppFlushbar.show(
               context,
-              message: "No available slots on this date",
+              message: "no_available_slots".tr(),
               type: MessageType.warning,
             );
           } else {
@@ -265,7 +267,7 @@ class _UpdateAppointmentScreenState extends State<UpdateAppointmentScreen> {
         if (state is AppointmentDetailsLoaded && _isUpdating) {
           AppFlushbar.show(
             context,
-            message: "Appointment updated successfully!",
+            message: "appointment_updated_success".tr(),
             type: MessageType.success,
             duration: const Duration(milliseconds: 1500),
           );
@@ -281,7 +283,7 @@ class _UpdateAppointmentScreenState extends State<UpdateAppointmentScreen> {
           setState(() => _isUpdating = false);
           AppFlushbar.show(
             context,
-            message: state.message,
+            message: state.message.localizedApi,
             type: MessageType.error,
           );
         }
@@ -307,8 +309,11 @@ class _UpdateAppointmentScreenState extends State<UpdateAppointmentScreen> {
                 padding: const EdgeInsets.fromLTRB(30, 50, 30, 20),
                 child: Column(
                   children: [
-                    SizedBox(height: 10),
-                    Text("Update Appointment", style: AppStyle.appBarTitle),
+                    const SizedBox(height: 10),
+                    Text(
+                      "update_appointment_title".tr(),
+                      style: AppStyle.appBarTitle,
+                    ),
 
                     const SizedBox(height: 20),
 
@@ -348,9 +353,9 @@ class _UpdateAppointmentScreenState extends State<UpdateAppointmentScreen> {
                           color: Colors.green[200],
                         ),
                       )
-                      : const Text(
-                        "Save Changes",
-                        style: TextStyle(color: Colors.white),
+                      : Text(
+                        "save_changes_btn".tr(),
+                        style: const TextStyle(color: Colors.white),
                       ),
             ),
           ),
@@ -391,7 +396,7 @@ class _UpdateAppointmentScreenState extends State<UpdateAppointmentScreen> {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  widget.appointment.counter.service.name,
+                  widget.appointment.counter.service.name.localizedApi,
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -400,7 +405,9 @@ class _UpdateAppointmentScreenState extends State<UpdateAppointmentScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  "Appointment #${widget.appointment.id}",
+                  "appointment_hash".tr(
+                    args: [widget.appointment.id.toString()],
+                  ),
                   style: TextStyle(
                     fontSize: 13,
                     color: Colors.white.withOpacity(0.75),
@@ -413,11 +420,11 @@ class _UpdateAppointmentScreenState extends State<UpdateAppointmentScreen> {
           const SizedBox(height: 20),
 
           // ── Date & Time ───────────────────────────────────────────────
-          _sectionLabel("Schedule"),
+          _sectionLabel("schedule_label".tr()),
           const SizedBox(height: 10),
 
           _inputCard(
-            label: "Date",
+            label: "date_label".tr(),
             value: dateController.text,
             icon: Icons.calendar_today_outlined,
             onTap: pickDate,
@@ -429,7 +436,7 @@ class _UpdateAppointmentScreenState extends State<UpdateAppointmentScreen> {
             children: [
               Expanded(
                 child: _inputCard(
-                  label: "Start Time",
+                  label: "start_time_label".tr(),
                   value: startTimeController.text,
                   icon: Icons.access_time,
                   onTap: pickStartTime,
@@ -441,7 +448,7 @@ class _UpdateAppointmentScreenState extends State<UpdateAppointmentScreen> {
                 child: Opacity(
                   opacity: 0.6,
                   child: _inputCard(
-                    label: "End Time",
+                    label: "end_time_label".tr(),
                     value: endTimeController.text,
                     icon: Icons.access_time_filled_outlined,
                     showEditIcon: false,
@@ -456,7 +463,7 @@ class _UpdateAppointmentScreenState extends State<UpdateAppointmentScreen> {
           const SizedBox(height: 20),
 
           // ── Service ───────────────────────────────────────────────────
-          _sectionLabel("Service"),
+          _sectionLabel("service_label".tr()),
           const SizedBox(height: 10),
           _serviceCard(widget.appointment.counter.service),
 
@@ -513,7 +520,7 @@ class _UpdateAppointmentScreenState extends State<UpdateAppointmentScreen> {
                   const SizedBox(height: 4),
                   Text(
                     value.isEmpty
-                        ? "Select $label"
+                        ? "select_label".tr(args: [label])
                         : (isTime ? formatTime(value) : value),
                     style: const TextStyle(fontWeight: FontWeight.w600),
                   ),

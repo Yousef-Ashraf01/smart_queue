@@ -37,7 +37,7 @@ class NavItem extends StatelessWidget {
               curve: Curves.easeOutBack,
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
                 decoration: BoxDecoration(
                   color: isActive ? activeColor.withOpacity(0.08) : Colors.transparent,
                   borderRadius: BorderRadius.circular(12),
@@ -59,7 +59,7 @@ class NavItem extends StatelessWidget {
                       ),
               ),
             ),
-            const SizedBox(height: 3),
+            const SizedBox(height: 2),
             // Text Label
             AnimatedDefaultTextStyle(
               duration: const Duration(milliseconds: 200),
@@ -69,10 +69,15 @@ class NavItem extends StatelessWidget {
                 color: isActive ? activeColor : inactiveColor,
                 fontFamily: 'Inter Tight',
                 letterSpacing: -0.1,
+                height: 1.1,
               ),
-              child: Text(label),
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
-            const SizedBox(height: 3),
+            const SizedBox(height: 2),
             // Glow active indicator dot
             AnimatedContainer(
               duration: const Duration(milliseconds: 200),

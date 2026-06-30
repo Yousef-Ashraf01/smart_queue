@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:go_router/go_router.dart';
@@ -29,7 +30,8 @@ class UserMapView extends StatelessWidget {
       options: MapOptions(initialCenter: userLocation, initialZoom: 15),
       children: [
         TileLayer(
-          urlTemplate: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+          urlTemplate:
+              'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
           subdomains: const ['a', 'b', 'c', 'd'],
           userAgentPackageName: 'com.example.smart_queue',
         ),
@@ -45,33 +47,34 @@ class UserMapView extends StatelessWidget {
             ),
 
             // Branch markers
-            ...branches.map((branch) {
-              if (branch.lat == null || branch.lng == null) return null;
-              final isSelected = selectedBranch?.id == branch.id;
+            ...branches
+                .map((branch) {
+                  if (branch.lat == null || branch.lng == null) return null;
+                  final isSelected = selectedBranch?.id == branch.id;
 
-              return Marker(
-                point: LatLng(branch.lat!, branch.lng!),
-                width: isSelected ? 120 : 45,
-                height: isSelected ? 80 : 45,
-                child: GestureDetector(
-                  onTap: () {
-                    if (isSelected) {
-                      context.push(
-                        AppRoutes.branchBooking,
-                        extra: branch,
-                      );
-                    } else {
-                      if (onBranchTap != null) {
-                        onBranchTap!(branch);
-                      }
-                    }
-                  },
-                  child: isSelected
-                      ? _SelectedBranchMarker(branch: branch)
-                      : _UnselectedBranchMarker(branch: branch),
-                ),
-              );
-            }).whereType<Marker>().toList(),
+                  return Marker(
+                    point: LatLng(branch.lat!, branch.lng!),
+                    width: isSelected ? 120 : 45,
+                    height: isSelected ? 80 : 45,
+                    child: GestureDetector(
+                      onTap: () {
+                        if (isSelected) {
+                          context.push(AppRoutes.branchBooking, extra: branch);
+                        } else {
+                          if (onBranchTap != null) {
+                            onBranchTap!(branch);
+                          }
+                        }
+                      },
+                      child:
+                          isSelected
+                              ? _SelectedBranchMarker(branch: branch)
+                              : _UnselectedBranchMarker(branch: branch),
+                    ),
+                  );
+                })
+                .whereType<Marker>()
+                .toList(),
           ],
         ),
       ],
@@ -86,7 +89,8 @@ class _PulsingUserMarker extends StatefulWidget {
   State<_PulsingUserMarker> createState() => _PulsingUserMarkerState();
 }
 
-class _PulsingUserMarkerState extends State<_PulsingUserMarker> with SingleTickerProviderStateMixin {
+class _PulsingUserMarkerState extends State<_PulsingUserMarker>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
   @override
@@ -118,7 +122,9 @@ class _PulsingUserMarkerState extends State<_PulsingUserMarker> with SingleTicke
               height: 45 * _controller.value,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.blue.withOpacity(0.35 * (1.0 - _controller.value)),
+                color: Colors.blue.withOpacity(
+                  0.35 * (1.0 - _controller.value),
+                ),
               ),
             ),
             // Glowing border
@@ -210,17 +216,17 @@ class _SelectedBranchMarkerState extends State<_SelectedBranchMarker>
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
-              children: const [
+              children: [
                 Text(
-                  "Book Now",
-                  style: TextStyle(
+                  "book_now".tr(),
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                SizedBox(width: 3),
-                Icon(
+                const SizedBox(width: 3),
+                const Icon(
                   Icons.arrow_forward_ios,
                   color: AppColors.tealLight,
                   size: 9,
@@ -285,4 +291,3 @@ class _UnselectedBranchMarker extends StatelessWidget {
     );
   }
 }
-

@@ -1,9 +1,11 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:smart_queue/core/localization/api_localization.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
 import 'package:smart_queue/features/map/data/models/branch_model.dart';
 import 'package:smart_queue/features/map/presentation/cubit/branch_cubit.dart';
@@ -53,7 +55,7 @@ class _MapScreenState extends State<MapScreen> {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
           setState(() {
-            error = "Location permission denied by user.";
+            error = "location_permission_denied".tr();
             isLoading = false;
           });
           return;
@@ -62,8 +64,7 @@ class _MapScreenState extends State<MapScreen> {
 
       if (permission == LocationPermission.deniedForever) {
         setState(() {
-          error =
-              "Location permission denied permanently. Please enable it from settings.";
+          error = "location_permission_denied_forever".tr();
           isLoading = false;
         });
         return;
@@ -169,7 +170,10 @@ class _MapScreenState extends State<MapScreen> {
           }
 
           if (state is BranchError) {
-            return _MapErrorView(message: state.message, onRetry: _retry);
+            return _MapErrorView(
+              message: state.message.localizedApi,
+              onRetry: _retry,
+            );
           }
 
           if (state is BranchLoaded) {
@@ -252,7 +256,7 @@ class _MapScreenState extends State<MapScreen> {
                             ),
                             cursorColor: AppColors.teal,
                             decoration: InputDecoration(
-                              hintText: "Search nearby branches...",
+                              hintText: "search_nearby_branches".tr(),
                               hintStyle: TextStyle(color: Colors.grey.shade500),
                               prefixIcon: const Icon(
                                 Icons.search_rounded,
@@ -543,7 +547,7 @@ class _MapErrorView extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               Text(
-                "Access Denied or Error",
+                "access_denied_or_error".tr(),
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -564,7 +568,7 @@ class _MapErrorView extends StatelessWidget {
               ElevatedButton.icon(
                 onPressed: onRetry,
                 icon: const Icon(Icons.refresh_rounded),
-                label: const Text("Try Again"),
+                label: Text("try_again".tr()),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.teal,
                   foregroundColor: Colors.white,

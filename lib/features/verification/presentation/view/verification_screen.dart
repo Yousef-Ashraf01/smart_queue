@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
 import 'package:smart_queue/core/widgets/app_gradient_button.dart';
 
@@ -20,17 +21,17 @@ class VerificationScreen extends StatelessWidget {
     final focusNode = FocusNode();
     return Scaffold(
       appBar: AppBar(
-        title: Text("Verification"),
+        title: Text("verification_title".tr()),
         centerTitle: true,
-        backgroundColor: Color(0xffEEFEFF),
-        surfaceTintColor: Color(0xffEEFEFF),
+        backgroundColor: const Color(0xffEEFEFF),
+        surfaceTintColor: const Color(0xffEEFEFF),
         elevation: 0,
       ),
       body: Stack(
         children: [
           Container(
             width: double.infinity,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -39,18 +40,18 @@ class VerificationScreen extends StatelessWidget {
             ),
           ),
           Container(
-            margin: EdgeInsets.only(top: 40),
+            margin: const EdgeInsets.only(top: 40),
             padding: const EdgeInsets.symmetric(horizontal: 30),
             decoration: BoxDecoration(
               color: AppColors.whiteColor,
-              borderRadius: BorderRadiusDirectional.only(
+              borderRadius: const BorderRadiusDirectional.only(
                 topEnd: Radius.circular(55),
                 topStart: Radius.circular(55),
               ),
               boxShadow: [
                 BoxShadow(
                   blurRadius: 5,
-                  offset: Offset(0, 3),
+                  offset: const Offset(0, 3),
                   color: AppColors.blackColor.withOpacity(0.7),
                 ),
               ],
@@ -59,7 +60,7 @@ class VerificationScreen extends StatelessWidget {
               width: double.infinity,
               child: Column(
                 children: [
-                  SizedBox(height: 100),
+                  const SizedBox(height: 100),
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
@@ -74,16 +75,16 @@ class VerificationScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 24),
 
-                  const Text(
-                    'Please Verify Your Phone',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                  Text(
+                    'verify_phone_title'.tr(),
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 8),
 
-                  const Text(
-                    'Enter the 6 digit code we sent by phone to\n010123456789',
+                  Text(
+                    'enter_otp_msg'.tr(args: ['010123456789']),
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.grey, fontSize: 14),
+                    style: const TextStyle(color: Colors.grey, fontSize: 14),
                   ),
 
                   const SizedBox(height: 28),
@@ -104,16 +105,16 @@ class VerificationScreen extends StatelessWidget {
                     },
                   ),
                   const SizedBox(height: 30),
-                  AppGradientButton(text: "Verify", onTap: () {}),
+                  AppGradientButton(text: "verify_btn".tr(), onTap: () {}),
                   const SizedBox(height: 20),
 
                   RichText(
                     text: TextSpan(
                       style: const TextStyle(color: Colors.grey),
                       children: [
-                        const TextSpan(text: "Didn't receive the code? "),
+                        TextSpan(text: "didnt_receive_code".tr()),
                         TextSpan(
-                          text: 'Resend Code',
+                          text: 'resend_code_btn'.tr(),
                           style: const TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.w600,

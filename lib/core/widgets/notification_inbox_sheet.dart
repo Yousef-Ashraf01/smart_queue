@@ -1,7 +1,8 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
+import 'package:smart_queue/core/localization/api_localization.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
 import 'package:smart_queue/core/utils/booking_keys.dart';
 import 'package:smart_queue/features/branch_booking/presentation/cubit/active_booking_cubit.dart';
@@ -69,9 +70,9 @@ class BookingStatusSheet extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 12),
-                    const Expanded(
+                    Expanded(
                       child: Text(
-                        'Active Bookings',
+                        'active_bookings'.tr(),
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
@@ -89,7 +90,7 @@ class BookingStatusSheet extends StatelessWidget {
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
-                        '${bookings.length} active',
+                        'active_count'.tr(args: [bookings.length.toString()]),
                         style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
@@ -105,7 +106,7 @@ class BookingStatusSheet extends StatelessWidget {
               const Divider(height: 1, color: Color(0xFFF0F0F0)),
 
               if (bookings.isEmpty)
-                _buildEmpty()
+                _buildEmpty(context)
               else
                 ListView.separated(
                   shrinkWrap: true,
@@ -137,7 +138,7 @@ class BookingStatusSheet extends StatelessWidget {
                         context.push(AppRoutes.timer);
                       },
                       icon: const Icon(Icons.timer_outlined, size: 18),
-                      label: const Text('View My Queue'),
+                      label: Text('view_my_queue'.tr()),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF1A9E7A),
                         foregroundColor: Colors.white,
@@ -161,11 +162,11 @@ class BookingStatusSheet extends StatelessWidget {
     );
   }
 
-  Widget _buildEmpty() {
-    return const Center(
+  Widget _buildEmpty(BuildContext context) {
+    return Center(
       child: Text(
-        'No active bookings.',
-        style: TextStyle(fontSize: 14, color: Color(0xFF8A8FA3)),
+        'no_active_bookings'.tr(),
+        style: const TextStyle(fontSize: 14, color: Color(0xFF8A8FA3)),
       ),
     );
   }
@@ -179,9 +180,9 @@ class _BookingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final serviceName = booking['serviceName'] as String? ?? '—';
-    final orgName = booking['orgName'] as String? ?? '—';
-    final branchName = booking['branchName'] as String? ?? '';
+    final serviceName = (booking['serviceName'] as String? ?? '—').localizedApi;
+    final orgName = (booking['orgName'] as String? ?? '—').localizedApi;
+    final branchName = (booking['branchName'] as String? ?? '').localizedApi;
     final slotStartRaw = booking[BookingKeys.slotStart] as String?;
     final slotStartTime = booking[BookingKeys.slotStartTime] as String? ?? '—';
 

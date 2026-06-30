@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:go_router/go_router.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
 import 'package:smart_queue/core/services/bookmark_service.dart';
 import 'package:smart_queue/core/styling/app_styles.dart';
@@ -81,7 +82,7 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
 
     AppFlushbar.show(
       context,
-      message: "Appointment removed from saved!",
+      message: "appointment_removed_saved".tr(),
       type: MessageType.warning,
     );
   }
@@ -104,7 +105,7 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
           child: Column(
             children: [
               AppTopBar(),
-              Text("My Appointments", style: AppStyle.bold24black),
+              Text("my_appointments_title".tr(), style: AppStyle.bold24black),
               const SizedBox(height: 20),
               Expanded(child: _buildContent()),
             ],
@@ -140,9 +141,9 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            const Text(
-              "No Saved Appointments",
-              style: TextStyle(
+            Text(
+              "no_saved_appointments".tr(),
+              style: const TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.w700,
                 color: Color(0xFF1A1D4E),
@@ -150,7 +151,7 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              "Bookmark appointments to find them here easily",
+              "bookmark_to_find_easily".tr(),
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 13,

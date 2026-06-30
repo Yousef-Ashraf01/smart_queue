@@ -1,8 +1,10 @@
 import 'package:device_calendar/device_calendar.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:smart_queue/core/localization/api_localization.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
 import 'package:smart_queue/core/utils/booking_keys.dart';
@@ -128,7 +130,7 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
 
                   BookingSection(
                     stepNumber: 1,
-                    title: "Service",
+                    title: "service_label".tr(),
                     child:
                         BlocBuilder<ServiceCounterCubit, ServiceCounterState>(
                           builder: (context, state) {
@@ -159,18 +161,18 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
                               );
                             }
                             if (state is ServiceCounterError) {
-                              return Text(state.message);
+                              return Text(state.message.localizedApi);
                             }
-                            return const Text("No services");
+                            return Text("no_services".tr());
                           },
                         ),
                   ),
 
                   BookingSection(
                     stepNumber: 2,
-                    title: "Date",
+                    title: "date_label".tr(),
                     child: CustomPickerField(
-                      hint: "Select a date",
+                      hint: "select_date".tr(),
                       icon: Icons.calendar_today,
                       valueText:
                           selectedDate != null
@@ -214,7 +216,7 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
 
                   BookingSection(
                     stepNumber: 3,
-                    title: "Time Slot",
+                    title: "time_slot".tr(),
                     child: BlocBuilder<BookingCubit, BookingState>(
                       buildWhen:
                           (prev, curr) =>
@@ -295,7 +297,7 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
                                     child: Text(
                                       selectedSlot != null
                                           ? "${selectedSlot!['start']} - ${selectedSlot!['end']}"
-                                          : "Select a time slot",
+                                          : "select_time_slot".tr(),
                                       style: TextStyle(
                                         fontSize: 14,
                                         fontWeight:
@@ -338,7 +340,7 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
                   BookingSection(
                     stepNumber: 4,
                     isLast: true,
-                    title: "Payment Method",
+                    title: "payment_method".tr(),
                     child: PaymentMethodSelector(
                       selectedMethod: selectedPaymentMethod,
                       onSelected: (method) {
@@ -361,7 +363,10 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
                           ),
                         );
                       }
-                      return GradientButton(text: "Book", onTap: _onBookTap);
+                      return GradientButton(
+                        text: "book_btn".tr(),
+                        onTap: _onBookTap,
+                      );
                     },
                   ),
                 ],
@@ -399,7 +404,7 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
         selectedPaymentMethod == null) {
       AppFlushbar.show(
         context,
-        message: "Please fill all fields!",
+        message: "fill_all_fields".tr(),
         type: MessageType.error,
       );
 
@@ -556,9 +561,9 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
 
     final event = Event(
       calendars.first.id,
-      title: appointment.counter.service.name,
-      description: appointment.counter.service.description,
-      location: widget.branch.address ?? "Branch",
+      title: appointment.counter.service.name.localizedApi,
+      description: appointment.counter.service.description.localizedApi,
+      location: widget.branch.address.localizedApiFallback("branch"),
       start: tz.TZDateTime.from(start, tz.local),
       end: tz.TZDateTime.from(end, tz.local),
     );

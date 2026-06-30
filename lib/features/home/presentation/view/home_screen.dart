@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:smart_queue/core/styling/app_styles.dart';
 import 'package:smart_queue/features/home/presentation/cubit/organization_cubit.dart';
 import 'package:smart_queue/features/home/presentation/view/widgets/active_booking_summary.dart';
@@ -44,7 +45,7 @@ class HomeScreen extends StatelessWidget {
                 const SizedBox(height: 23),
                 ActiveBookingSummary(onTap: () => onNavigateToQueue?.call()),
                 const SizedBox(height: 23),
-                Text("Government agencies", style: AppStyle.bold16black),
+                Text("gov_agencies".tr(), style: AppStyle.bold16black),
                 const SizedBox(height: 16),
                 const ServicesListView(),
                 const SizedBox(height: 28),

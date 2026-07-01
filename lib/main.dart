@@ -1,6 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:smart_queue/core/di/service_locator.dart';
 import 'package:smart_queue/core/routing/app_router.dart';
@@ -58,7 +58,6 @@ class SmartQueueApp extends StatelessWidget {
       localizationsDelegates: context.localizationDelegates,
       supportedLocales: context.supportedLocales,
       locale: context.locale,
-
       routerConfig: AppRouter.createRouter(authCubit),
       debugShowCheckedModeBanner: false,
     );

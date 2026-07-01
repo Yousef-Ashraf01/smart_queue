@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smart_queue/core/localization/api_localization.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
 import 'package:smart_queue/features/branch_booking/data/models/service_counter_model.dart';
 
@@ -36,7 +37,10 @@ class CustomDropdown extends StatelessWidget {
           return items.map((e) {
             return Align(
               alignment: Alignment.centerLeft,
-              child: Text(e.serviceName, overflow: TextOverflow.ellipsis),
+              child: Text(
+                e.serviceName.localizedApi,
+                overflow: TextOverflow.ellipsis,
+              ),
             );
           }).toList();
         },
@@ -58,14 +62,14 @@ class CustomDropdown extends StatelessWidget {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
-                                  item.serviceName,
+                                  item.serviceName.localizedApi,
                                   style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
-                                  item.serviceDescription,
+                                  item.serviceDescription.localizedApi,
                                   overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
                                     fontSize: 12,

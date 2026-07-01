@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smart_queue/core/constants/app_assets.dart';
+import 'package:smart_queue/core/localization/api_localization.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
 import 'package:smart_queue/core/styling/app_styles.dart';
@@ -37,7 +38,7 @@ class _LoginPageState extends State<LoginPage> {
         } else if (state is AuthError) {
           AppFlushbar.show(
             context,
-            message: state.message,
+            message: state.message.localizedApi,
             type: MessageType.error,
           );
         }

@@ -1,8 +1,10 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smart_queue/core/constants/app_assets.dart';
+import 'package:smart_queue/core/localization/api_localization.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
 import 'package:smart_queue/core/widgets/app_flushbar.dart';
 import 'package:smart_queue/features/forget_password/presentation/cubit/forget_password_cubit.dart';
@@ -52,9 +54,9 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
 
                 const SizedBox(height: 20),
 
-                const Center(
+                Center(
                   child: Text(
-                    'Forgot Password',
+                    'forgot_password'.tr(),
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 28,
@@ -73,8 +75,8 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                         child: Column(
                           children: [
                             const SizedBox(height: 10),
-                            const Text(
-                              'Don’t worry! We’ll help you recover your account.',
+                            Text(
+                              'forgot_password_desc'.tr(),
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 15,
@@ -116,13 +118,16 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                             ),
                             const SizedBox(height: 50),
 
-                            const Align(
+                            Align(
                               alignment: Alignment.centerLeft,
                               child: Padding(
-                                padding: EdgeInsets.only(left: 4, bottom: 8),
+                                padding: const EdgeInsets.only(
+                                  left: 4,
+                                  bottom: 8,
+                                ),
                                 child: Text(
-                                  'Phone',
-                                  style: TextStyle(
+                                  'phone'.tr(),
+                                  style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
                                     color: Colors.black,
@@ -150,7 +155,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                                   AppFlushbar.show(
                                     context,
                                     message:
-                                        "Verification code sent successfully!",
+                                        "verification_code_sent_success".tr(),
                                     type: MessageType.success,
                                     duration: const Duration(
                                       milliseconds: 1500,
@@ -168,7 +173,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                                 } else if (state is ForgetPasswordError) {
                                   AppFlushbar.show(
                                     context,
-                                    message: state.message,
+                                    message: state.message.localizedApi,
                                     type: MessageType.error,
                                   );
                                 }
@@ -186,7 +191,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                                               AppFlushbar.show(
                                                 context,
                                                 message:
-                                                    "Please enter your phone number",
+                                                    "enter_phone_number".tr(),
                                                 type: MessageType.error,
                                               );
                                               return;
@@ -223,9 +228,9 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                                               ? const CircularProgressIndicator(
                                                 color: Colors.white,
                                               )
-                                              : const Text(
-                                                "Next",
-                                                style: TextStyle(
+                                              : Text(
+                                                "next".tr(),
+                                                style: const TextStyle(
                                                   color: Colors.white,
                                                   fontSize: 18,
                                                   fontWeight: FontWeight.bold,

@@ -1,4 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:smart_queue/core/localization/api_localization.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
 import 'package:smart_queue/features/map/data/models/branch_model.dart';
 
@@ -9,11 +11,12 @@ class BranchListTile extends StatelessWidget {
   const BranchListTile({super.key, required this.branch, this.onTap});
 
   String _getOperatingHoursText() {
-    if (branch.operatingHours.isEmpty) return "Hours: N/A";
+    if (branch.operatingHours.isEmpty) return "hours_not_available".tr();
 
     final now = DateTime.now();
     final isoWeekday = now.weekday; // 1 = Monday, 7 = Sunday
-    final backendWeekday = isoWeekday - 1; // 0 = Monday, 6 = Sunday (Django backend)
+    final backendWeekday =
+        isoWeekday - 1; // 0 = Monday, 6 = Sunday (Django backend)
     OperatingHour? todayHour;
 
     for (final hour in branch.operatingHours) {
@@ -23,7 +26,7 @@ class BranchListTile extends StatelessWidget {
       }
     }
 
-    if (todayHour == null) return "Closed Today";
+    if (todayHour == null) return "closed_today".tr();
 
     final fromStr = _formatTime(todayHour.fromHour);
     final toStr = _formatTime(todayHour.toHour);
@@ -90,7 +93,7 @@ class BranchListTile extends StatelessWidget {
                         children: [
                           Expanded(
                             child: Text(
-                              branch.name,
+                              branch.name.localizedApi,
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -108,17 +111,21 @@ class BranchListTile extends StatelessWidget {
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
-                              color: isActive
-                                  ? Colors.green.withOpacity(0.1)
-                                  : Colors.red.withOpacity(0.1),
+                              color:
+                                  isActive
+                                      ? Colors.green.withOpacity(0.1)
+                                      : Colors.red.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
-                              isActive ? "Open" : "Closed",
+                              isActive ? "open".tr() : "closed".tr(),
                               style: TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.bold,
-                                color: isActive ? Colors.green[800] : Colors.red[800],
+                                color:
+                                    isActive
+                                        ? Colors.green[800]
+                                        : Colors.red[800],
                               ),
                             ),
                           ),
@@ -188,7 +195,9 @@ class BranchListTile extends StatelessWidget {
                           const SizedBox(width: 4),
                           Expanded(
                             child: Text(
-                              branch.address ?? "No address details available",
+                              branch.address.localizedApiFallback(
+                                "no_address_details",
+                              ),
                               style: TextStyle(
                                 fontSize: 12,
                                 color: Colors.grey.shade500,
@@ -225,4 +234,3 @@ class BranchListTile extends StatelessWidget {
     );
   }
 }
-

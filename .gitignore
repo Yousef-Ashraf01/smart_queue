@@ -33,6 +33,11 @@ migrate_working_dir/
 .pub/
 /build/
 
+# Gradle cache
+.gradle/
+**/.gradle/
+
+
 # Symbolication related
 app.*.symbols
 

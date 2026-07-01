@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:smart_queue/features/scan_id_card/presentation/view/widgets/tip_row.dart';
 
@@ -48,9 +49,9 @@ class ErrorBottomSheet extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          const Text(
-            'Could not read the ID',
-            style: TextStyle(
+          Text(
+            'could_not_read_id'.tr(),
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w700,
               color: Colors.black87,
@@ -81,21 +82,21 @@ class ErrorBottomSheet extends StatelessWidget {
                 ).withOpacity(0.3),
               ),
             ),
-            child: const Column(
+            child: Column(
               children: [
                 TipRow(
                   icon: Icons.wb_sunny_rounded,
-                  text: 'Make sure there\'s enough lighting',
+                  text: 'enough_lighting_tip'.tr(),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 TipRow(
                   icon: Icons.crop_free_rounded,
-                  text: 'Keep the ID fully inside the frame',
+                  text: 'id_inside_frame_tip'.tr(),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 TipRow(
                   icon: Icons.blur_off_rounded,
-                  text: 'Hold steady to avoid blur',
+                  text: 'hold_steady_tip'.tr(),
                 ),
               ],
             ),
@@ -121,9 +122,9 @@ class ErrorBottomSheet extends StatelessWidget {
                   color: Colors.white,
                   size: 18,
                 ),
-                label: const Text(
-                  'Try Again',
-                  style: TextStyle(
+                label: Text(
+                  'try_again'.tr(),
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 15,
                     fontWeight: FontWeight.w600,

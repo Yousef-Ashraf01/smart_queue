@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:smart_queue/core/localization/api_localization.dart';
 import 'package:smart_queue/core/utils/booking_keys.dart';
 import 'package:smart_queue/features/branch_booking/presentation/cubit/active_booking_cubit.dart';
 
@@ -107,8 +109,8 @@ class _ActiveBookingSummaryState extends State<ActiveBookingSummary> {
 
   Widget _buildActive(ActiveBookingLoaded state) {
     final booking = state.bookings.first;
-    final serviceName = booking['serviceName'] as String? ?? '';
-    final branchName = booking['branchName'] as String? ?? '';
+    final serviceName = (booking['serviceName'] as String? ?? '').localizedApi;
+    final branchName = (booking['branchName'] as String? ?? '').localizedApi;
     final count = state.bookings.length;
 
     return Column(
@@ -134,7 +136,7 @@ class _ActiveBookingSummaryState extends State<ActiveBookingSummary> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Active Booking${count > 1 ? 's ($count)' : ''}',
+                    '${count > 1 ? 'active_bookings'.tr() : 'active_booking'.tr()}${count > 1 ? ' ($count)' : ''}',
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 16,
@@ -205,7 +207,7 @@ class _ActiveBookingSummaryState extends State<ActiveBookingSummary> {
             Row(
               children: [
                 Text(
-                  'View Details',
+                  'view_details'.tr(),
                   style: TextStyle(
                     color: Colors.white.withValues(alpha: 0.9),
                     fontSize: 12,
@@ -246,9 +248,9 @@ class _ActiveBookingSummaryState extends State<ActiveBookingSummary> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'No upcoming appointments',
-                style: TextStyle(
+              Text(
+                'no_upcoming_appointments'.tr(),
+                style: const TextStyle(
                   color: Color(0xFF2D3436),
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
@@ -256,7 +258,7 @@ class _ActiveBookingSummaryState extends State<ActiveBookingSummary> {
               ),
               const SizedBox(height: 4),
               Text(
-                'Book a service to get started',
+                'book_service_get_started'.tr(),
                 style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
               ),
             ],

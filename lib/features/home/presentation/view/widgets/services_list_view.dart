@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:smart_queue/core/localization/api_localization.dart';
 import 'package:smart_queue/features/home/presentation/cubit/organization_cubit.dart';
 import 'package:smart_queue/features/home/presentation/view/widgets/service_item_skeleton.dart';
 import 'package:smart_queue/features/home/presentation/view/widgets/services_item.dart';
@@ -27,7 +28,7 @@ class ServicesListView extends StatelessWidget {
         }
 
         if (state is OrganizationsError) {
-          return Center(child: Text(state.message));
+          return Center(child: Text(state.message.localizedApi));
         }
 
         if (state is OrganizationsLoaded) {

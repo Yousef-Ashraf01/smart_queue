@@ -1,8 +1,10 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smart_queue/core/constants/app_assets.dart';
+import 'package:smart_queue/core/localization/api_localization.dart';
 import 'package:smart_queue/core/widgets/app_flushbar.dart';
 import 'package:smart_queue/features/app_settings/change_password/presentation/cubit/change_password_cubit.dart';
 import 'package:smart_queue/features/forget_password/presentation/view/create_new_password_screen.dart';
@@ -30,7 +32,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         if (state is ChangePasswordSuccess) {
           AppFlushbar.show(
             context,
-            message: "Password changed successfully",
+            message: "password_changed_success".tr(),
             type: MessageType.success,
             duration: const Duration(milliseconds: 1500),
           );
@@ -43,7 +45,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         if (state is ChangePasswordError) {
           AppFlushbar.show(
             context,
-            message: state.message,
+            message: state.message.localizedApi,
             type: MessageType.error,
           );
         }
@@ -72,10 +74,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
                   const SizedBox(height: 10),
 
-                  const Center(
+                  Center(
                     child: Text(
-                      "Change Password",
-                      style: TextStyle(
+                      "change_password".tr(),
+                      style: const TextStyle(
                         fontSize: 26,
                         fontWeight: FontWeight.bold,
                       ),
@@ -84,9 +86,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
                   const SizedBox(height: 10),
 
-                  const Center(
+                  Center(
                     child: Text(
-                      "Enter your current password\nand set a new one",
+                      "change_password_subtitle".tr(),
                       textAlign: TextAlign.center,
                       style: TextStyle(color: Colors.grey),
                     ),
@@ -94,10 +96,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
                   const SizedBox(height: 30),
 
-                  const FieldLabel(text: "Current Password"),
+                  FieldLabel(text: "current_password".tr()),
                   _buildField(
                     controller: currentController,
-                    hint: "Current Password",
+                    hint: "current_password".tr(),
                     isHidden: _isCurrentHidden,
                     onToggle: () {
                       setState(() {
@@ -108,10 +110,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
                   const SizedBox(height: 20),
 
-                  const FieldLabel(text: "New Password"),
+                  FieldLabel(text: "new_password".tr()),
                   _buildField(
                     controller: newController,
-                    hint: "New Password",
+                    hint: "new_password".tr(),
                     isHidden: _isNewHidden,
                     onToggle: () {
                       setState(() {
@@ -122,10 +124,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
                   const SizedBox(height: 20),
 
-                  const FieldLabel(text: "Confirm Password"),
+                  FieldLabel(text: "confirm_password".tr()),
                   _buildField(
                     controller: confirmController,
-                    hint: "Confirm Password",
+                    hint: "confirm_password".tr(),
                     isHidden: _isConfirmHidden,
                     onToggle: () {
                       setState(() {
@@ -141,7 +143,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                       final isLoading = state is ChangePasswordLoading;
 
                       return _buildButton(
-                        text: isLoading ? null : "Update Password",
+                        text: isLoading ? null : "update_password".tr(),
                         isLoading: isLoading,
                         onTap:
                             isLoading
@@ -237,17 +239,17 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     final confirm = confirmController.text.trim();
 
     if (current.isEmpty || newPass.isEmpty || confirm.isEmpty) {
-      _showError("Please fill all fields");
+      _showError("fill_all_fields".tr());
       return;
     }
 
     if (newPass.length < 8) {
-      _showError("Password must be at least 8 characters");
+      _showError("password_length_error".tr());
       return;
     }
 
     if (newPass != confirm) {
-      _showError("Passwords do not match");
+      _showError("passwords_do_not_match".tr());
       return;
     }
 

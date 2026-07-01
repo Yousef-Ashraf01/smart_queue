@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:smart_queue/features/scan_id_card/presentation/view/widgets/circle_button.dart';
 
@@ -18,9 +19,9 @@ class Header extends StatelessWidget {
               color: Color(0xFF1A1D4E),
             ),
           ),
-          const Expanded(
+          Expanded(
             child: Text(
-              'Scan ID Card',
+              'scan_id_card'.tr(),
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 18,

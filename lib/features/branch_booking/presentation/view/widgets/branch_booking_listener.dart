@@ -1,5 +1,7 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:smart_queue/core/localization/api_localization.dart';
 import 'package:smart_queue/core/services/notification_service.dart';
 import 'package:smart_queue/core/widgets/app_flushbar.dart';
 import 'package:smart_queue/features/branch_booking/presentation/cubit/booking_cubit.dart';
@@ -38,8 +40,8 @@ class BranchBookingListener extends StatelessWidget {
 
           final message =
               state.message.contains("past date")
-                  ? "Cannot select a past date. Please choose a future date."
-                  : state.message;
+                  ? "cannot_select_past_date_future".tr()
+                  : state.message.localizedApi;
 
           AppFlushbar.show(context, message: message, type: MessageType.error);
         }
@@ -49,11 +51,11 @@ class BranchBookingListener extends StatelessWidget {
         }
 
         if (state is BookingError) {
-          String message = state.message;
+          String message = state.message.localizedApi;
           if (message.contains("pending appointment")) {
-            message = "You already have a booking for this service!";
+            message = "already_have_booking_service".tr();
           } else if (message.contains("another appointment scheduled")) {
-            message = "You have another appointment scheduled during this time frame.";
+            message = "another_appointment_timeframe".tr();
           }
 
           onBookingError(message);
@@ -64,9 +66,9 @@ class BranchBookingListener extends StatelessWidget {
         // Payment flow states
         if (state is PaymentIntentSuccess) {
           context.read<BookingCubit>().confirmStripePayment(
-                state.clientSecret,
-                state.appointment,
-              );
+            state.clientSecret,
+            state.appointment,
+          );
         }
 
         if (state is PaymentCompleted) {
@@ -85,7 +87,7 @@ class BranchBookingListener extends StatelessWidget {
         if (state is PaymentIntentError) {
           AppFlushbar.show(
             context,
-            message: state.message,
+            message: state.message.localizedApi,
             type: MessageType.error,
           );
         }
@@ -93,7 +95,7 @@ class BranchBookingListener extends StatelessWidget {
         if (state is PaymentCancelled) {
           AppFlushbar.show(
             context,
-            message: "Payment was cancelled. Your booking is saved, you can pay later.",
+            message: "payment_cancelled_booking_saved".tr(),
             type: MessageType.warning,
           );
         }
@@ -102,4 +104,3 @@ class BranchBookingListener extends StatelessWidget {
     );
   }
 }
-

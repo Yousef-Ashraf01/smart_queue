@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:smart_queue/features/auth/presentaion/view/widgets/custom_text_field.dart';
 import 'package:smart_queue/features/forget_password/presentation/view/create_new_password_screen.dart';
 import 'package:smart_queue/features/personal_info/presentation/view/widgets/phone_input_field.dart';
@@ -25,20 +26,20 @@ class AccountInfoSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SectionLabel(text: "Account Info"),
+        SectionLabel(text: "account_info_label".tr()),
         const SizedBox(height: 12),
         CustomTextField(
-          label: "User name",
+          label: "username_field_label".tr(),
           controller: nameController,
-          hint: 'Enter your full name',
+          hint: "full_name_hint".tr(),
         ),
         CustomTextField(
-          label: "Email",
-          hint: "Enter your email",
+          label: "email_label".tr(),
+          hint: "email_hint".tr(),
           controller: emailController,
           keyboardType: TextInputType.emailAddress,
         ),
-        const FieldLabel(text: "Phone number"),
+        FieldLabel(text: "phone_number_label".tr()),
         PhoneInputField(
           controller: phoneController,
           initialCountryCode: countryCode,

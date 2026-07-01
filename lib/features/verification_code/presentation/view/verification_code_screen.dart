@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smart_queue/core/constants/app_assets.dart';
+import 'package:smart_queue/core/localization/api_localization.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
 import 'package:smart_queue/core/widgets/app_flushbar.dart';
@@ -96,7 +97,7 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
     if (code.length < 6) {
       AppFlushbar.show(
         context,
-        message: "Please enter the complete 6-digit verification code",
+        message: "enter_complete_otp".tr(),
         type: MessageType.error,
       );
       return;
@@ -124,7 +125,7 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
             state is RegisterSmsRequestSuccess) {
           AppFlushbar.show(
             context,
-            message: "Verification code resent successfully!",
+            message: "otp_resent_success".tr(),
             type: MessageType.success,
           );
         } else if (state is ForgetPasswordVerifySuccess) {
@@ -144,7 +145,7 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
             // Fallback: go to login if no register model
             AppFlushbar.show(
               context,
-              message: "Account verified successfully! Please login.",
+              message: "account_verified_success".tr(),
               type: MessageType.success,
               duration: const Duration(seconds: 2),
             );
@@ -155,7 +156,7 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
         } else if (state is ForgetPasswordError) {
           AppFlushbar.show(
             context,
-            message: state.message,
+            message: state.message.localizedApi,
             type: MessageType.error,
           );
         }
@@ -216,18 +217,15 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
               children: [
                 IconButton(
                   padding: EdgeInsets.zero,
-                  icon: SvgPicture.asset(
-                    AppAssets.iconArrowLeft,
-                    width: 30,
-                  ),
+                  icon: SvgPicture.asset(AppAssets.iconArrowLeft, width: 30),
                   onPressed: () => Navigator.pop(context),
                 ),
                 const SizedBox(height: 20),
-                const Center(
+                Center(
                   child: Text(
-                    'Verification Code',
+                    'verification_code_title'.tr(),
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
@@ -243,10 +241,10 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
                         child: Column(
                           children: [
                             const SizedBox(height: 15),
-                            const Text(
-                              'We sent otp verification to your phone\nthis code will expired in',
+                            Text(
+                              'otp_sent_expired_msg'.tr(),
                               textAlign: TextAlign.center,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 15,
                                 color: Color(0xFF8E8E93),
                               ),
@@ -277,41 +275,43 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const Text(
-                                  "Didn't receive the code? ",
-                                  style: TextStyle(
+                                Text(
+                                  "didnt_receive_code".tr(),
+                                  style: const TextStyle(
                                     color: Color(0xFF8E8E93),
                                   ),
                                 ),
                                 GestureDetector(
-                                  onTap: _secondsRemaining == 0
-                                      ? () {
-                                          setState(() {
-                                            _secondsRemaining = _otpDuration;
-                                            _startTimer();
-                                          });
-                                          if (widget.purpose == 'register') {
-                                            context
-                                                .read<ForgetPasswordCubit>()
-                                                .registerSmsRequest(
-                                                  widget.phone,
-                                                );
-                                          } else {
-                                            context
-                                                .read<ForgetPasswordCubit>()
-                                                .resetPasswordRequest(
-                                                  widget.phone,
-                                                );
+                                  onTap:
+                                      _secondsRemaining == 0
+                                          ? () {
+                                            setState(() {
+                                              _secondsRemaining = _otpDuration;
+                                              _startTimer();
+                                            });
+                                            if (widget.purpose == 'register') {
+                                              context
+                                                  .read<ForgetPasswordCubit>()
+                                                  .registerSmsRequest(
+                                                    widget.phone,
+                                                  );
+                                            } else {
+                                              context
+                                                  .read<ForgetPasswordCubit>()
+                                                  .resetPasswordRequest(
+                                                    widget.phone,
+                                                  );
+                                            }
                                           }
-                                        }
-                                      : null,
+                                          : null,
                                   child: Text(
-                                    "Resend Code",
+                                    "resend_code_btn".tr(),
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      color: _secondsRemaining == 0
-                                          ? Colors.black
-                                          : Colors.grey,
+                                      color:
+                                          _secondsRemaining == 0
+                                              ? Colors.black
+                                              : Colors.grey,
                                     ),
                                   ),
                                 ),
@@ -321,9 +321,10 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
                             const Spacer(),
 
                             GestureDetector(
-                              onTap: isLoading
-                                  ? null
-                                  : () => _onVerifyPressed(context),
+                              onTap:
+                                  isLoading
+                                      ? null
+                                      : () => _onVerifyPressed(context),
                               child: Container(
                                 width: double.infinity,
                                 height: 56,
@@ -336,30 +337,32 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
                                   gradient: LinearGradient(
                                     begin: Alignment.centerLeft,
                                     end: Alignment.centerRight,
-                                    colors: isLoading
-                                        ? [
-                                            Colors.grey,
-                                            Colors.grey.shade700,
-                                          ]
-                                        : const [
-                                            Color(0xFF63D98A),
-                                            Color(0xFF1B4332),
-                                          ],
+                                    colors:
+                                        isLoading
+                                            ? [
+                                              Colors.grey,
+                                              Colors.grey.shade700,
+                                            ]
+                                            : const [
+                                              Color(0xFF63D98A),
+                                              Color(0xFF1B4332),
+                                            ],
                                   ),
                                 ),
                                 child: Center(
-                                  child: isLoading
-                                      ? const CircularProgressIndicator(
-                                          color: Colors.white,
-                                        )
-                                      : const Text(
-                                          "Send",
-                                          style: TextStyle(
+                                  child:
+                                      isLoading
+                                          ? const CircularProgressIndicator(
                                             color: Colors.white,
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
+                                          )
+                                          : Text(
+                                            "send_btn".tr(),
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                           ),
-                                        ),
                                 ),
                               ),
                             ),

@@ -6,7 +6,9 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:smart_queue/core/di/service_locator.dart';
+import 'package:smart_queue/core/localization/api_localization.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
 import 'package:smart_queue/core/styling/app_styles.dart';
 import 'package:smart_queue/features/home/data/models/organization_model.dart';
@@ -154,7 +156,7 @@ class _LiveBranchesMapCarouselState extends State<LiveBranchesMapCarousel> {
       if (_selectedOrgId == null) {
         final firstOrg = orgState.organizations.first;
         _selectedOrgId = firstOrg.id;
-        _selectedOrgName = firstOrg.name;
+        _selectedOrgName = firstOrg.name.localizedApi;
         WidgetsBinding.instance.addPostFrameCallback((_) {
           _fetchBranchesForSelected(firstOrg.id);
         });
@@ -165,7 +167,7 @@ class _LiveBranchesMapCarouselState extends State<LiveBranchesMapCarousel> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          'Nearby Branches — ${_selectedOrgName ?? ''}',
+          'nearby_branches_for'.tr(args: [_selectedOrgName ?? '']),
           style: AppStyle.bold16black,
         ),
         const SizedBox(height: 16),
@@ -194,7 +196,7 @@ class _LiveBranchesMapCarouselState extends State<LiveBranchesMapCarousel> {
               if (org.id != _selectedOrgId) {
                 setState(() {
                   _selectedOrgId = org.id;
-                  _selectedOrgName = org.name;
+                  _selectedOrgName = org.name.localizedApi;
                   _activeCardIndex = 0;
                 });
                 _fetchBranchesForSelected(org.id);
@@ -214,7 +216,7 @@ class _LiveBranchesMapCarouselState extends State<LiveBranchesMapCarousel> {
                 ),
               ),
               child: Text(
-                org.name,
+                org.name.localizedApi,
                 style: TextStyle(
                   color: isSelected ? Colors.white : Colors.grey.shade700,
                   fontSize: 12,
@@ -240,7 +242,7 @@ class _LiveBranchesMapCarouselState extends State<LiveBranchesMapCarousel> {
         height: 100,
         alignment: Alignment.center,
         child: Text(
-          'Error loading branches: $_branchesError',
+          'error_loading_branches'.tr(args: [_branchesError ?? '']),
           style: TextStyle(color: Colors.red.shade600),
         ),
       );
@@ -301,9 +303,9 @@ class _LiveBranchesMapCarouselState extends State<LiveBranchesMapCarousel> {
               ),
             ),
             const SizedBox(height: 16),
-            const Text(
-              'No branches found',
-              style: TextStyle(
+            Text(
+              'no_branches_found'.tr(),
+              style: const TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
                 color: Color(0xFF2D3436),
@@ -311,7 +313,7 @@ class _LiveBranchesMapCarouselState extends State<LiveBranchesMapCarousel> {
             ),
             const SizedBox(height: 6),
             Text(
-              "This organization doesn't have any\nregistered branches in your area yet.",
+              "no_registered_branches_area".tr(),
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 13,
@@ -336,7 +338,7 @@ class _LiveBranchesMapCarouselState extends State<LiveBranchesMapCarousel> {
                   ),
                   const SizedBox(width: 6),
                   Text(
-                    'Try another organization',
+                    'try_another_organization'.tr(),
                     style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                   ),
                 ],
@@ -472,25 +474,25 @@ class _LiveBranchesMapCarouselState extends State<LiveBranchesMapCarousel> {
     final String waitTime;
 
     if (bid % 3 == 0) {
-      trafficText = 'Low Traffic';
+      trafficText = 'low_traffic'.tr();
       trafficColor = const Color(0xFF2ECC71);
       trafficBg = const Color(0xFFE8F5E9);
-      waitTime = '5 mins';
+      waitTime = 'wait_mins'.tr(args: ['5']);
     } else if (bid % 3 == 1) {
-      trafficText = 'Moderate';
+      trafficText = 'moderate_traffic'.tr();
       trafficColor = const Color(0xFFFB8C00);
       trafficBg = const Color(0xFFFFF3E0);
-      waitTime = '20 mins';
+      waitTime = 'wait_mins'.tr(args: ['20']);
     } else {
-      trafficText = 'Busy';
+      trafficText = 'busy_traffic'.tr();
       trafficColor = Colors.red.shade700;
       trafficBg = Colors.red.shade50;
-      waitTime = '45 mins';
+      waitTime = 'wait_mins'.tr(args: ['45']);
     }
 
     final dist =
         branch.distanceInKm != null
-            ? '${branch.distanceInKm!.toStringAsFixed(1)} km away'
+            ? 'km_away'.tr(args: [branch.distanceInKm!.toStringAsFixed(1)])
             : '';
 
     return Container(
@@ -519,7 +521,7 @@ class _LiveBranchesMapCarouselState extends State<LiveBranchesMapCarousel> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      branch.name,
+                      branch.name.localizedApi,
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
@@ -564,7 +566,7 @@ class _LiveBranchesMapCarouselState extends State<LiveBranchesMapCarousel> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Est. Wait Time',
+                    'estimated_wait_short'.tr(),
                     style: TextStyle(fontSize: 10, color: Colors.grey.shade500),
                   ),
                   Text(
@@ -593,17 +595,17 @@ class _LiveBranchesMapCarouselState extends State<LiveBranchesMapCarousel> {
                 onPressed: () {
                   context.push(AppRoutes.branchBooking, extra: branch);
                 },
-                child: const Row(
+                child: Row(
                   children: [
                     Text(
-                      'Book',
+                      'book_btn'.tr(),
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    SizedBox(width: 4),
-                    Icon(Icons.arrow_forward_ios_rounded, size: 10),
+                    const SizedBox(width: 4),
+                    const Icon(Icons.arrow_forward_ios_rounded, size: 10),
                   ],
                 ),
               ),

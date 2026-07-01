@@ -1,5 +1,7 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:smart_queue/core/localization/api_localization.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
 import 'package:smart_queue/features/map/data/models/branch_model.dart';
@@ -20,11 +22,12 @@ class BranchesBottomSheet extends StatelessWidget {
   });
 
   String _getOperatingHoursText(BranchModel branch) {
-    if (branch.operatingHours.isEmpty) return "Hours: N/A";
+    if (branch.operatingHours.isEmpty) return "hours_not_available".tr();
 
     final now = DateTime.now();
     final isoWeekday = now.weekday; // 1 = Monday, 7 = Sunday
-    final backendWeekday = isoWeekday - 1; // 0 = Monday, 6 = Sunday (Django backend)
+    final backendWeekday =
+        isoWeekday - 1; // 0 = Monday, 6 = Sunday (Django backend)
     OperatingHour? todayHour;
 
     for (final hour in branch.operatingHours) {
@@ -34,7 +37,7 @@ class BranchesBottomSheet extends StatelessWidget {
       }
     }
 
-    if (todayHour == null) return "Closed Today";
+    if (todayHour == null) return "closed_today".tr();
 
     final fromStr = _formatTime(todayHour.fromHour);
     final toStr = _formatTime(todayHour.toHour);
@@ -82,9 +85,10 @@ class BranchesBottomSheet extends StatelessWidget {
           borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
           child: AnimatedSwitcher(
             duration: const Duration(milliseconds: 250),
-            child: isBranchSelected
-                ? _buildSelectedBranchView(context, selectedBranch!)
-                : _buildBranchListView(context),
+            child:
+                isBranchSelected
+                    ? _buildSelectedBranchView(context, selectedBranch!)
+                    : _buildBranchListView(context),
           ),
         ),
       ),
@@ -116,7 +120,7 @@ class BranchesBottomSheet extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  branch.name,
+                  branch.name.localizedApi,
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -132,7 +136,11 @@ class BranchesBottomSheet extends StatelessWidget {
                   backgroundColor: Colors.grey.shade100,
                   padding: const EdgeInsets.all(8),
                 ),
-                icon: const Icon(Icons.close_rounded, size: 20, color: Colors.grey),
+                icon: const Icon(
+                  Icons.close_rounded,
+                  size: 20,
+                  color: Colors.grey,
+                ),
                 onPressed: onCloseDetails,
               ),
             ],
@@ -169,13 +177,14 @@ class BranchesBottomSheet extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: isActive
-                      ? Colors.green.withOpacity(0.1)
-                      : Colors.red.withOpacity(0.1),
+                  color:
+                      isActive
+                          ? Colors.green.withOpacity(0.1)
+                          : Colors.red.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  isActive ? "Open" : "Closed",
+                  isActive ? "open".tr() : "closed".tr(),
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
@@ -193,10 +202,7 @@ class BranchesBottomSheet extends StatelessWidget {
               Expanded(
                 child: Text(
                   _getOperatingHoursText(branch),
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey.shade600,
-                  ),
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -215,7 +221,7 @@ class BranchesBottomSheet extends StatelessWidget {
               const SizedBox(width: 4),
               Expanded(
                 child: Text(
-                  branch.address ?? "No address details available",
+                  branch.address.localizedApiFallback("no_address_details"),
                   style: TextStyle(
                     fontSize: 12,
                     color: Colors.grey.shade500,
@@ -256,14 +262,11 @@ class BranchesBottomSheet extends StatelessWidget {
                   ),
                 ),
                 onPressed: () {
-                  context.push(
-                    AppRoutes.branchBooking,
-                    extra: branch,
-                  );
+                  context.push(AppRoutes.branchBooking, extra: branch);
                 },
-                child: const Text(
-                  "Book Appointment",
-                  style: TextStyle(
+                child: Text(
+                  "book_appointment".tr(),
+                  style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                     fontSize: 15,
@@ -300,9 +303,9 @@ class BranchesBottomSheet extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
               children: [
-                const Text(
-                  'Nearby Branches',
-                  style: TextStyle(
+                Text(
+                  'nearby_branches'.tr(),
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: AppColors.teal,
@@ -353,7 +356,7 @@ class BranchesBottomSheet extends StatelessWidget {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        "No branches found",
+                        "no_branches_found".tr(),
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -364,7 +367,7 @@ class BranchesBottomSheet extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 32),
                         child: Text(
-                          "We couldn't find any branches matching your search. Try looking for a different name.",
+                          "no_branches_search_desc".tr(),
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 13,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:smart_queue/core/constants/app_assets.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import 'nav_item.dart';
 
@@ -30,26 +31,26 @@ class CustomBottomBar extends StatelessWidget {
           children: [
             NavItem(
               icon: AppAssets.iconHome,
-              label: "Home",
+              label: "nav_home".tr(),
               isActive: currentIndex == 0,
               onTap: () => onTap(0),
             ),
             NavItem(
               icon: Icons.queue_play_next_rounded,
-              label: "My Queue",
+              label: "nav_my_queue".tr(),
               isActive: currentIndex == 1,
               onTap: () => onTap(1),
             ),
             const SizedBox(width: 46), // Optimized space for the notched FAB
             NavItem(
               icon: AppAssets.iconCalendar,
-              label: "History",
+              label: "nav_history".tr(),
               isActive: currentIndex == 2,
               onTap: () => onTap(2),
             ),
             NavItem(
               icon: AppAssets.iconProfile,
-              label: "Profile",
+              label: "nav_profile".tr(),
               isActive: currentIndex == 3,
               onTap: () => onTap(3),
             ),

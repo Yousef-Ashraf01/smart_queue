@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:smart_queue/features/auth/presentaion/cubit/auth_cubit.dart';
 
 class LogoutDialog extends StatelessWidget {
@@ -26,8 +27,8 @@ class LogoutDialog extends StatelessWidget {
           children: [
             Container(
               padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: const Color(0xFFE8F8F6),
+              decoration: const BoxDecoration(
+                color: Color(0xFFE8F8F6),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -37,19 +38,19 @@ class LogoutDialog extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            const Text(
-              "Log out",
-              style: TextStyle(
+            Text(
+              "logout_title".tr(),
+              style: const TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.w600,
                 color: Colors.black87,
               ),
             ),
             const SizedBox(height: 12),
-            const Text(
-              "Are you sure you want to log out of your account?",
+            Text(
+              "logout_confirm_msg".tr(),
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 15,
                 color: Colors.black54,
                 height: 1.4,
@@ -71,9 +72,9 @@ class LogoutDialog extends StatelessWidget {
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    child: const Text(
-                      "Cancel",
-                      style: TextStyle(
+                    child: Text(
+                      "cancel".tr(),
+                      style: const TextStyle(
                         color: Color(0xFF00BFA6),
                         fontWeight: FontWeight.w600,
                       ),
@@ -95,9 +96,9 @@ class LogoutDialog extends StatelessWidget {
                       Navigator.pop(context);
                       context.read<AuthCubit>().logout();
                     },
-                    child: const Text(
-                      "Log out",
-                      style: TextStyle(
+                    child: Text(
+                      "logout_title".tr(),
+                      style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w600,
                       ),

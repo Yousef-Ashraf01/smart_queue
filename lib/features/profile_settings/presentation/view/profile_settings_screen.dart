@@ -1,3 +1,5 @@
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart' as material show TextDirection;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -82,20 +84,20 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
+                      children: [
                         Text(
-                          'Settings',
-                          style: TextStyle(
+                          'settings_title'.tr(),
+                          style: const TextStyle(
                             fontSize: 26,
                             fontWeight: FontWeight.w800,
                             color: Color(0xFF1A1D4E),
                             letterSpacing: -0.5,
                           ),
                         ),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         Text(
-                          'Manage your account and app preferences',
-                          style: TextStyle(
+                          'settings_subtitle'.tr(),
+                          style: const TextStyle(
                             fontSize: 13,
                             color: Colors.grey,
                             fontWeight: FontWeight.w500,
@@ -141,7 +143,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                     const SizedBox(height: 32),
 
                     // Account Section
-                    const SectionHeader(title: 'Account Settings'),
+                    SectionHeader(title: 'account_settings_section'.tr()),
                     const SizedBox(height: 12),
                     SettingsListContainer(
                       options: ProfileSettingsScreen._accountOptions,
@@ -150,7 +152,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                     const SizedBox(height: 28),
 
                     // App Settings Section
-                    const SectionHeader(title: 'App Preferences'),
+                    SectionHeader(title: 'app_preferences_section'.tr()),
                     const SizedBox(height: 12),
                     SettingsListContainer(
                       options: ProfileSettingsScreen._settingOptions,
@@ -202,6 +204,25 @@ class SettingsListContainer extends StatelessWidget {
     this.showLogout = false,
   });
 
+  String _getTranslatedTitle(String title) {
+    switch (title) {
+      case 'Personal information':
+        return 'personal_info_title'.tr();
+      case 'My Appointments':
+        return 'my_appointments_title'.tr();
+      case 'App settings':
+        return 'app_settings_title'.tr();
+      case 'Help and support center':
+        return 'help_support_title'.tr();
+      case 'About us':
+        return 'about_us_title'.tr();
+      case 'Terms and Policy':
+        return 'terms_policy_title'.tr();
+      default:
+        return title;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -217,30 +238,35 @@ class SettingsListContainer extends StatelessWidget {
         ],
         border: Border.all(color: Colors.white.withOpacity(0.6), width: 1),
       ),
-      child: Column(
-        children: [
-          ...List.generate(options.length, (index) {
-            final item = options[index];
-            return _buildTile(
-              context: context,
-              title: item.title,
-              iconPath: item.iconPath,
-              color: _getIconColor(item.title),
-              onTap: () => _handleTap(context, item.title),
-              isLast: index == options.length - 1 && !showLogout,
-            );
-          }),
-          if (showLogout)
-            _buildTile(
-              context: context,
-              title: 'Log out',
-              iconPath: AppAssets.iconloginout,
-              color: const Color(0xFFEF4444),
-              textColor: const Color(0xFFEF4444),
-              onTap: () => LogoutDialog.show(context),
-              isLast: true,
-            ),
-        ],
+      child: Material(
+        color: Colors.transparent,
+        clipBehavior: Clip.antiAlias,
+        borderRadius: BorderRadius.circular(22),
+        child: Column(
+          children: [
+            ...List.generate(options.length, (index) {
+              final item = options[index];
+              return _buildTile(
+                context: context,
+                title: _getTranslatedTitle(item.title),
+                iconPath: item.iconPath,
+                color: _getIconColor(item.title),
+                onTap: () => _handleTap(context, item.title),
+                isLast: index == options.length - 1 && !showLogout,
+              );
+            }),
+            if (showLogout)
+              _buildTile(
+                context: context,
+                title: 'logout_title'.tr(),
+                iconPath: AppAssets.iconloginout,
+                color: const Color(0xFFEF4444),
+                textColor: const Color(0xFFEF4444),
+                onTap: () => LogoutDialog.show(context),
+                isLast: true,
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -292,12 +318,23 @@ class SettingsListContainer extends StatelessWidget {
                       color: Colors.grey.withOpacity(0.06),
                       shape: BoxShape.circle,
                     ),
-                    child: SvgPicture.asset(
-                      AppAssets.iconChevronRight,
-                      width: 12,
-                      colorFilter: ColorFilter.mode(
-                        Colors.grey[400]!,
-                        BlendMode.srcIn,
+                    child: Transform(
+                      alignment: Alignment.center,
+                      transform:
+                          Matrix4.identity()..scale(
+                            Directionality.of(context) ==
+                                    material.TextDirection.rtl
+                                ? -1.0
+                                : 1.0,
+                            1.0,
+                          ),
+                      child: SvgPicture.asset(
+                        AppAssets.iconChevronRight,
+                        width: 12,
+                        colorFilter: ColorFilter.mode(
+                          Colors.grey[400]!,
+                          BlendMode.srcIn,
+                        ),
                       ),
                     ),
                   ),

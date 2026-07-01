@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:smart_queue/core/constants/app_assets.dart';
 
 class HelpSupportScreen extends StatelessWidget {
@@ -32,10 +33,10 @@ class HelpSupportScreen extends StatelessWidget {
 
                 const SizedBox(height: 10),
 
-                const Center(
+                Center(
                   child: Text(
-                    "Help & Support",
-                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+                    "help_support_header".tr(),
+                    style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
                   ),
                 ),
 
@@ -45,75 +46,75 @@ class HelpSupportScreen extends StatelessWidget {
                   child: ListView(
                     physics: const BouncingScrollPhysics(),
                     children: [
-                      _sectionTitle("Frequently Asked Questions"),
+                      _sectionTitle("faq_title".tr()),
 
                       const SizedBox(height: 10),
 
                       _card([
                         _faqItem(
-                          question: "How can I book an appointment?",
+                          question: "faq_q1".tr(),
                           answer:
-                              "Go to the branch, select a service, and tap Book.",
+                              "faq_a1".tr(),
                         ),
                         _divider(),
                         _faqItem(
-                          question: "Can I cancel my booking?",
+                          question: "faq_q2".tr(),
                           answer:
-                              "Yes, you can cancel from your bookings screen.",
+                              "faq_a2".tr(),
                         ),
                         _divider(),
                         _faqItem(
-                          question: "How do I change my password?",
+                          question: "faq_q3".tr(),
                           answer:
-                              "Go to settings → Change Password and update it.",
+                              "faq_a3".tr(),
                         ),
                       ]),
 
                       const SizedBox(height: 25),
 
-                      _sectionTitle("Contact Support"),
+                      _sectionTitle("contact_support_title".tr()),
 
                       const SizedBox(height: 10),
 
                       _card([
                         _contactTile(
                           icon: Icons.email_outlined,
-                          title: "Email",
+                          title: "email_contact".tr(),
                           subtitle: "support@smartqueue.com",
                           onTap: () {},
                         ),
                         _divider(),
                         _contactTile(
                           icon: Icons.phone_outlined,
-                          title: "Phone",
+                          title: "phone_contact".tr(),
                           subtitle: "+20 100 000 0000",
                           onTap: () {},
                         ),
                         _divider(),
                         _contactTile(
                           icon: Icons.chat_bubble_outline,
-                          title: "Live Chat",
-                          subtitle: "Chat with our support team",
+                          title: "live_chat_contact".tr(),
+                          subtitle: "live_chat_desc".tr(),
                           onTap: () {},
                         ),
                       ]),
 
                       const SizedBox(height: 25),
 
-                      _sectionTitle("Quick Actions"),
+                      _sectionTitle("quick_actions_title".tr()),
 
                       const SizedBox(height: 10),
 
                       _card([
                         _actionTile(
                           icon: Icons.report_problem_outlined,
-                          title: "Report a Problem",
+                          title: "report_problem".tr(),
                           onTap: () {},
                         ),
                         _divider(),
                         _actionTile(
                           icon: Icons.feedback_outlined,
-                          title: "Send Feedback",
+                          title: "send_feedback".tr(),
                           onTap: () {},
                         ),
                       ]),
@@ -141,7 +142,12 @@ class HelpSupportScreen extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
       ),
-      child: Column(children: children),
+      child: Material(
+        color: Colors.transparent,
+        clipBehavior: Clip.antiAlias,
+        borderRadius: BorderRadius.circular(20),
+        child: Column(children: children),
+      ),
     );
   }
 

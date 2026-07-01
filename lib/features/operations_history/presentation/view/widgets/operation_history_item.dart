@@ -1,4 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:smart_queue/core/localization/api_localization.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
 import 'package:smart_queue/features/branch_booking/data/models/appointment_response_model.dart';
 
@@ -35,12 +37,12 @@ class OperationHistoryItem extends StatelessWidget {
   String _paymentMethodLabel(String? method) {
     switch (method?.toUpperCase()) {
       case 'CASH':
-        return 'Cash';
+        return 'cash'.tr();
       case 'ONLINE':
       case 'STRIPE':
-        return 'Online';
+        return 'online'.tr();
       default:
-        return 'Unpaid';
+        return 'unpaid'.tr();
     }
   }
 
@@ -158,7 +160,7 @@ class OperationHistoryItem extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      item.counter.service.name,
+                                      item.counter.service.name.localizedApi,
                                       style: const TextStyle(
                                         fontSize: 15,
                                         fontWeight: FontWeight.w700,
@@ -169,7 +171,11 @@ class OperationHistoryItem extends StatelessWidget {
                                     ),
                                     const SizedBox(height: 3),
                                     Text(
-                                      item.counter.service.description,
+                                      item
+                                          .counter
+                                          .service
+                                          .description
+                                          .localizedApi,
                                       style: TextStyle(
                                         fontSize: 12,
                                         color: Colors.grey[500],
@@ -271,7 +277,7 @@ class OperationHistoryItem extends StatelessWidget {
                                     const SizedBox(width: 4),
                                     Text(
                                       item.paid == true
-                                          ? "Paid"
+                                          ? "paid".tr()
                                           : _paymentMethodLabel(
                                             item.paymentMethod,
                                           ),
@@ -385,27 +391,27 @@ class OperationHistoryItem extends StatelessWidget {
     final minute = parts[1];
     final period = hour >= 12 ? 'PM' : 'AM';
     final h12 = hour == 0 ? 12 : (hour > 12 ? hour - 12 : hour);
-    return "$h12:$minute $period";
+    return "$h12:$minute ${period.localizedApi}";
   }
 
   String _formatDate(String? date) {
     if (date == null || date.isEmpty) return "";
     try {
       final d = DateTime.parse(date);
-      const months = [
+      final months = [
         '',
-        'Jan',
-        'Feb',
-        'Mar',
-        'Apr',
-        'May',
-        'Jun',
-        'Jul',
-        'Aug',
-        'Sep',
-        'Oct',
-        'Nov',
-        'Dec',
+        'month_jan'.tr(),
+        'month_feb'.tr(),
+        'month_mar'.tr(),
+        'month_apr'.tr(),
+        'month_may'.tr(),
+        'month_jun'.tr(),
+        'month_jul'.tr(),
+        'month_aug'.tr(),
+        'month_sep'.tr(),
+        'month_oct'.tr(),
+        'month_nov'.tr(),
+        'month_dec'.tr(),
       ];
       return "${d.day} ${months[d.month]} ${d.year}";
     } catch (_) {
@@ -417,22 +423,22 @@ class OperationHistoryItem extends StatelessWidget {
 // ── Status Enum ──────────────────────────────────────────────────────
 enum _AppointmentStatus {
   upcoming(
-    label: "Upcoming",
+    label: "upcoming",
     color: Color(0xFF3B82F6),
     icon: Icons.event_available_rounded,
   ),
   completed(
-    label: "Completed",
+    label: "completed",
     color: Color(0xFF10B981),
     icon: Icons.check_circle_outline_rounded,
   ),
   cancelled(
-    label: "Cancelled",
+    label: "cancelled",
     color: Color(0xFFEF4444),
     icon: Icons.cancel_outlined,
   ),
   missed(
-    label: "Missed",
+    label: "missed",
     color: Color(0xFFF59E0B),
     icon: Icons.warning_amber_rounded,
   );
@@ -469,7 +475,7 @@ class _StatusChip extends StatelessWidget {
           Icon(status.icon, size: 12, color: status.color),
           const SizedBox(width: 4),
           Text(
-            status.label,
+            status.label.tr(),
             style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w700,

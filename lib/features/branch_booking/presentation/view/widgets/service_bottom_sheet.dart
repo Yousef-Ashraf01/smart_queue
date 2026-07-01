@@ -1,4 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:smart_queue/core/localization/api_localization.dart';
 import 'package:smart_queue/features/branch_booking/data/models/service_counter_model.dart';
 
 class ServiceBottomSheet extends StatelessWidget {
@@ -33,9 +35,9 @@ class ServiceBottomSheet extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
             ),
           ),
-          const Text(
-            "Select Service",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          Text(
+            "select_service".tr(),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
 
@@ -73,7 +75,7 @@ class ServiceBottomSheet extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                item.serviceName,
+                                item.serviceName.localizedApi,
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 14,
@@ -81,7 +83,7 @@ class ServiceBottomSheet extends StatelessWidget {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                item.serviceDescription,
+                                item.serviceDescription.localizedApi,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(

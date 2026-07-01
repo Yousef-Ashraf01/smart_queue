@@ -1,7 +1,8 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:smart_queue/core/constants/app_assets.dart';
-import 'package:smart_queue/core/styling/app_colors.dart';
+import 'package:smart_queue/core/localization/api_localization.dart';
 import 'package:smart_queue/core/styling/app_styles.dart';
 
 class ServiceCard extends StatelessWidget {
@@ -25,10 +26,7 @@ class ServiceCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.9),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: Colors.white.withOpacity(0.7),
-          width: 1.5,
-        ),
+        border: Border.all(color: Colors.white.withOpacity(0.7), width: 1.5),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.04),
@@ -59,7 +57,11 @@ class ServiceCard extends StatelessWidget {
                   ),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Image.asset(AppAssets.imageLogoBook, width: 36, height: 36),
+                child: Image.asset(
+                  AppAssets.imageLogoBook,
+                  width: 36,
+                  height: 36,
+                ),
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -67,7 +69,7 @@ class ServiceCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      branchName,
+                      branchName.localizedApi,
                       style: const TextStyle(
                         fontFamily: AppStyle.fontFamily,
                         fontSize: 16.5,
@@ -80,13 +82,16 @@ class ServiceCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 3),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
                       decoration: BoxDecoration(
                         color: activeColor.withOpacity(0.08),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
-                        "Active Ticket",
+                        "active_ticket".tr(),
                         style: TextStyle(
                           fontFamily: AppStyle.fontFamily,
                           fontSize: 10,
@@ -139,9 +144,9 @@ class ServiceCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  "SERVICE REQUESTED",
-                  style: TextStyle(
+                Text(
+                  "service_requested".tr(),
+                  style: const TextStyle(
                     fontFamily: AppStyle.fontFamily,
                     fontSize: 9.5,
                     fontWeight: FontWeight.w800,
@@ -151,7 +156,7 @@ class ServiceCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  serviceName,
+                  serviceName.localizedApi,
                   style: const TextStyle(
                     fontFamily: AppStyle.fontFamily,
                     fontSize: 16,
@@ -193,9 +198,9 @@ class ServiceCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      "BRANCH LOCATION",
-                      style: TextStyle(
+                    Text(
+                      "branch_location".tr(),
+                      style: const TextStyle(
                         fontFamily: AppStyle.fontFamily,
                         fontSize: 9,
                         fontWeight: FontWeight.w800,
@@ -205,7 +210,7 @@ class ServiceCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 3),
                     Text(
-                      branchAddress,
+                      branchAddress.localizedApi,
                       style: const TextStyle(
                         fontFamily: AppStyle.fontFamily,
                         fontSize: 13,

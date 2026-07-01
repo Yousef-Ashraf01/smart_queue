@@ -63,7 +63,6 @@ class AppRouter {
             state.matchedLocation == AppRoutes.register ||
             state.matchedLocation == AppRoutes.createNewPassword ||
             state.matchedLocation == AppRoutes.forgetPassword ||
-            state.matchedLocation == AppRoutes.changePassword ||
             state.matchedLocation == AppRoutes.verificationCode ||
             state.matchedLocation == AppRoutes.forgetPassword;
 

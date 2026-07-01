@@ -98,7 +98,10 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                         _buildSimpleTile(
                           title: "language".tr(),
                           icon: Icons.language,
-                          value: context.locale.languageCode == 'ar' ? 'العربية' : 'English',
+                          value:
+                              context.locale.languageCode == 'ar'
+                                  ? 'arabic_language'.tr()
+                                  : 'english_language'.tr(),
                           onTap: _showLanguageDialog,
                         ),
                         _divider(),
@@ -151,41 +154,52 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
             color: Colors.white,
             borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'select_language'.tr(),
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF0D2D35),
+          child: Material(
+            color: Colors.transparent,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'select_language'.tr(),
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF0D2D35),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 16),
-              ListTile(
-                title: const Text('English', style: TextStyle(fontWeight: FontWeight.w500)),
-                trailing: context.locale.languageCode == 'en'
-                    ? const Icon(Icons.check_circle, color: Colors.green)
-                    : null,
-                onTap: () {
-                  context.setLocale(const Locale('en'));
-                  Navigator.pop(context);
-                },
-              ),
-              const Divider(color: AppColors.dividerColor),
-              ListTile(
-                title: const Text('العربية', style: TextStyle(fontWeight: FontWeight.w500)),
-                trailing: context.locale.languageCode == 'ar'
-                    ? const Icon(Icons.check_circle, color: Colors.green)
-                    : null,
-                onTap: () {
-                  context.setLocale(const Locale('ar'));
-                  Navigator.pop(context);
-                },
-              ),
-            ],
+                const SizedBox(height: 16),
+                ListTile(
+                  title: Text(
+                    'english_language'.tr(),
+                    style: const TextStyle(fontWeight: FontWeight.w500),
+                  ),
+                  trailing:
+                      context.locale.languageCode == 'en'
+                          ? const Icon(Icons.check_circle, color: Colors.green)
+                          : null,
+                  onTap: () {
+                    context.setLocale(const Locale('en'));
+                    Navigator.pop(context);
+                  },
+                ),
+                const Divider(color: AppColors.dividerColor),
+                ListTile(
+                  title: Text(
+                    'arabic_language'.tr(),
+                    style: const TextStyle(fontWeight: FontWeight.w500),
+                  ),
+                  trailing:
+                      context.locale.languageCode == 'ar'
+                          ? const Icon(Icons.check_circle, color: Colors.green)
+                          : null,
+                  onTap: () {
+                    context.setLocale(const Locale('ar'));
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -205,7 +219,12 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
       ),
-      child: Column(children: children),
+      child: Material(
+        color: Colors.transparent,
+        clipBehavior: Clip.antiAlias,
+        borderRadius: BorderRadius.circular(20),
+        child: Column(children: children),
+      ),
     );
   }
 

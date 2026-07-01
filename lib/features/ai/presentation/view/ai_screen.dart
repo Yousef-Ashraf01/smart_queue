@@ -10,27 +10,74 @@ import 'package:smart_queue/features/ai/data/models/chatbot_message_model.dart';
 import 'package:smart_queue/features/ai/presentation/cubit/chatbot_cubit.dart';
 import 'package:smart_queue/features/ai/presentation/cubit/chatbot_state.dart';
 
-/// Design tokens for the chat experience.
-/// A calmer teal/emerald system (instead of generic bootstrap-green)
-/// to read as a deliberate "service desk" identity rather than a default.
-class _Palette {
-  static const bgTop = Color(0xFFEAFBF6);
-  static const bgBottom = Color(0xFFD6F1E9);
+import 'package:smart_queue/core/theme/app_theme.dart';
 
-  static const primaryDark = Color(0xFF0E6B52);
-  static const primary = Color(0xFF13966F);
-  static const primaryLight = Color(0xFF59C9A0);
+/// Dynamic design tokens for the chat experience.
+/// Returns appropriate colors for dark and light modes.
+class _PaletteData {
+  final Color bgTop;
+  final Color bgBottom;
+  final Color primaryDark;
+  final Color primary;
+  final Color primaryLight;
+  final Color ink;
+  final Color muted;
+  final Color surface;
+  final Color surfaceLine;
+  final Color danger;
+  final Color dangerBg;
+  final Color dangerBorder;
 
-  static const ink = Color(0xFF12302A);
-  static const muted = Color(0xFF6C8A82);
-
-  static const surface = Colors.white;
-  static const surfaceLine = Color(0xFFE3EEEA);
-
-  static const danger = Color(0xFFD6473D);
-  static const dangerBg = Color(0xFFFCEEEC);
-  static const dangerBorder = Color(0xFFF3BAB3);
+  const _PaletteData({
+    required this.bgTop,
+    required this.bgBottom,
+    required this.primaryDark,
+    required this.primary,
+    required this.primaryLight,
+    required this.ink,
+    required this.muted,
+    required this.surface,
+    required this.surfaceLine,
+    required this.danger,
+    required this.dangerBg,
+    required this.dangerBorder,
+  });
 }
+
+_PaletteData _palette(BuildContext context) {
+  final isDark = context.isDark;
+  if (isDark) {
+    return const _PaletteData(
+      bgTop: Color(0xFF0D1F1A),
+      bgBottom: Color(0xFF0A1A15),
+      primaryDark: Color(0xFF59C9A0),
+      primary: Color(0xFF13966F),
+      primaryLight: Color(0xFF59C9A0),
+      ink: Color(0xFFE0F5EE),
+      muted: Color(0xFF7FA898),
+      surface: Color(0xFF1C2B26),
+      surfaceLine: Color(0xFF2A3D35),
+      danger: Color(0xFFEF6E6E),
+      dangerBg: Color(0xFF2C1A1A),
+      dangerBorder: Color(0xFF5C2E2E),
+    );
+  }
+  return const _PaletteData(
+    bgTop: Color(0xFFEAFBF6),
+    bgBottom: Color(0xFFD6F1E9),
+    primaryDark: Color(0xFF0E6B52),
+    primary: Color(0xFF13966F),
+    primaryLight: Color(0xFF59C9A0),
+    ink: Color(0xFF12302A),
+    muted: Color(0xFF6C8A82),
+    surface: Colors.white,
+    surfaceLine: Color(0xFFE3EEEA),
+    danger: Color(0xFFD6473D),
+    dangerBg: Color(0xFFFCEEEC),
+    dangerBorder: Color(0xFFF3BAB3),
+  );
+}
+
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -92,12 +139,13 @@ class _ChatScreenState extends State<ChatScreen>
 
   @override
   Widget build(BuildContext context) {
+    final p = _palette(context);
     return BlocProvider(
       create: (context) => sl<ChatbotCubit>()..initializeChat(),
       child: Builder(
         builder: (context) {
           return Scaffold(
-            backgroundColor: _Palette.bgBottom,
+            backgroundColor: p.bgBottom,
             body: BlocListener<ChatbotCubit, ChatbotState>(
               listener: (context, state) => _scrollToBottom(),
               child: Stack(
@@ -216,27 +264,28 @@ class _ChatScreenState extends State<ChatScreen>
   // Ambient background — two soft glows, quiet enough to stay out of the way.
   // ---------------------------------------------------------------------
   Widget _buildAmbientBackground() {
+    final p = _palette(context);
     return Positioned.fill(
       child: Stack(
         children: [
           Container(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [_Palette.bgTop, _Palette.bgBottom],
+                colors: [p.bgTop, p.bgBottom],
               ),
             ),
           ),
           Positioned(
             top: -60,
             right: -50,
-            child: _glow(220, _Palette.primaryLight.withOpacity(0.22)),
+            child: _glow(220, p.primaryLight.withOpacity(0.22)),
           ),
           Positioned(
             bottom: 80,
             left: -70,
-            child: _glow(260, _Palette.primary.withOpacity(0.12)),
+            child: _glow(260, p.primary.withOpacity(0.12)),
           ),
         ],
       ),
@@ -259,15 +308,16 @@ class _ChatScreenState extends State<ChatScreen>
   // The notch motif nods to a queue ticket stub, the product's own subject.
   // ---------------------------------------------------------------------
   Widget _buildHeader(BuildContext context) {
+    final p = _palette(context);
     return ClipPath(
       clipper: const _TicketEdgeClipper(),
       child: Container(
         padding: const EdgeInsets.fromLTRB(18, 52, 18, 26),
         decoration: BoxDecoration(
-          color: _Palette.surface.withOpacity(0.92),
+          color: p.surface.withOpacity(0.92),
           boxShadow: [
             BoxShadow(
-              color: _Palette.primaryDark.withOpacity(0.08),
+              color: p.primaryDark.withOpacity(0.08),
               blurRadius: 16,
               offset: const Offset(0, 4),
             ),
@@ -281,14 +331,14 @@ class _ChatScreenState extends State<ChatScreen>
               child: Container(
                 padding: const EdgeInsets.all(9),
                 decoration: BoxDecoration(
-                  color: _Palette.bgTop,
+                  color: p.bgTop,
                   shape: BoxShape.circle,
-                  border: Border.all(color: _Palette.surfaceLine),
+                  border: Border.all(color: p.surfaceLine),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.arrow_back_ios_new,
                   size: 16,
-                  color: _Palette.ink,
+                  color: p.ink,
                   // Flips automatically so "back" always points toward
                   // the reading-start side, in both LTR and RTL locales.
                   // matchTextDirection: true,
@@ -305,15 +355,15 @@ class _ChatScreenState extends State<ChatScreen>
                   padding: const EdgeInsets.all(3),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    gradient: const LinearGradient(
-                      colors: [_Palette.primary, _Palette.primaryLight],
+                    gradient: LinearGradient(
+                      colors: [p.primary, p.primaryLight],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
                   ),
                   child: Container(
-                    decoration: const BoxDecoration(
-                      color: _Palette.surface,
+                    decoration: BoxDecoration(
+                      color: p.surface,
                       shape: BoxShape.circle,
                     ),
                     padding: const EdgeInsets.all(6),
@@ -339,8 +389,8 @@ class _ChatScreenState extends State<ChatScreen>
                               child: Container(
                                 width: 12 + (t * 8),
                                 height: 12 + (t * 8),
-                                decoration: const BoxDecoration(
-                                  color: _Palette.primary,
+                                decoration: BoxDecoration(
+                                  color: p.primary,
                                   shape: BoxShape.circle,
                                 ),
                               ),
@@ -349,7 +399,7 @@ class _ChatScreenState extends State<ChatScreen>
                               width: 10,
                               height: 10,
                               decoration: BoxDecoration(
-                                color: _Palette.primary,
+                                color: p.primary,
                                 shape: BoxShape.circle,
                                 border: Border.all(
                                   color: Colors.white,
@@ -373,11 +423,11 @@ class _ChatScreenState extends State<ChatScreen>
                 children: [
                   Text(
                     'chat.title'.tr(),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: 'Inter Tight',
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
-                      color: _Palette.ink,
+                      color: p.ink,
                     ),
                   ),
                   const SizedBox(height: 3),
@@ -386,7 +436,7 @@ class _ChatScreenState extends State<ChatScreen>
                     style: TextStyle(
                       fontFamily: 'Inter Tight',
                       fontSize: 11.5,
-                      color: _Palette.muted,
+                      color: p.muted,
                     ),
                   ),
                 ],
@@ -403,6 +453,7 @@ class _ChatScreenState extends State<ChatScreen>
   // Initial full-screen loading state
   // ---------------------------------------------------------------------
   Widget _buildInitialLoading() {
+    final p = _palette(context);
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -415,15 +466,15 @@ class _ChatScreenState extends State<ChatScreen>
                 height: 56,
                 child: CircularProgressIndicator(
                   strokeWidth: 2.4,
-                  color: _Palette.primary.withOpacity(0.4),
+                  color: p.primary.withOpacity(0.4),
                 ),
               ),
               Container(
                 width: 38,
                 height: 38,
                 padding: const EdgeInsets.all(7),
-                decoration: const BoxDecoration(
-                  color: _Palette.surface,
+                decoration: BoxDecoration(
+                  color: p.surface,
                   shape: BoxShape.circle,
                 ),
                 child: Image.asset(AppAssets.aiRobot),
@@ -436,7 +487,7 @@ class _ChatScreenState extends State<ChatScreen>
             style: TextStyle(
               fontFamily: 'Inter Tight',
               fontSize: 13,
-              color: _Palette.muted,
+              color: p.muted,
             ),
           ),
         ],
@@ -456,6 +507,7 @@ class _ChatScreenState extends State<ChatScreen>
     required bool isLastInGroup,
   }) {
     final bool isUser = chat.isUser;
+    final p = _palette(context);
 
     final radius = BorderRadius.only(
       topLeft: Radius.circular(isUser ? 18 : (isFirstInGroup ? 18 : 6)),
@@ -491,19 +543,19 @@ class _ChatScreenState extends State<ChatScreen>
                   decoration: BoxDecoration(
                     gradient:
                         isUser
-                            ? const LinearGradient(
-                              colors: [_Palette.primaryDark, _Palette.primary],
+                            ? LinearGradient(
+                              colors: [p.primaryDark, p.primary],
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                             )
                             : null,
-                    color: isUser ? null : _Palette.surface,
+                    color: isUser ? null : p.surface,
                     borderRadius: radius,
                     border:
-                        isUser ? null : Border.all(color: _Palette.surfaceLine),
+                        isUser ? null : Border.all(color: p.surfaceLine),
                     boxShadow: [
                       BoxShadow(
-                        color: _Palette.ink.withOpacity(0.04),
+                        color: p.ink.withOpacity(0.04),
                         blurRadius: 8,
                         offset: const Offset(0, 3),
                       ),
@@ -513,7 +565,7 @@ class _ChatScreenState extends State<ChatScreen>
                     chat.message ?? "",
                     style: TextStyle(
                       fontFamily: 'Inter Tight',
-                      color: isUser ? Colors.white : _Palette.ink,
+                      color: isUser ? Colors.white : p.ink,
                       fontSize: 15,
                       height: 1.35,
                     ),
@@ -549,19 +601,19 @@ class _ChatScreenState extends State<ChatScreen>
                             vertical: 10,
                           ),
                           decoration: BoxDecoration(
-                            color: _Palette.surface,
+                            color: p.surface,
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
-                              color: _Palette.primary.withOpacity(0.35),
+                              color: p.primary.withOpacity(0.35),
                               width: 1.2,
                             ),
                           ),
                           child: Text(
                             btn['label']?.toString() ??
                                 'chat.action_label'.tr(),
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontFamily: 'Inter Tight',
-                              color: _Palette.primaryDark,
+                              color: p.primaryDark,
                               fontWeight: FontWeight.w700,
                               fontSize: 13.5,
                             ),
@@ -577,14 +629,15 @@ class _ChatScreenState extends State<ChatScreen>
   }
 
   Widget _bubbleAvatar() {
+    final p = _palette(context);
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: _Palette.surface,
+        color: p.surface,
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
-            color: _Palette.ink.withOpacity(0.05),
+            color: p.ink.withOpacity(0.05),
             blurRadius: 4,
             offset: const Offset(0, 1),
           ),
@@ -602,6 +655,7 @@ class _ChatScreenState extends State<ChatScreen>
   // Typing indicator
   // ---------------------------------------------------------------------
   Widget _buildTypingIndicator() {
+    final p = _palette(context);
     return Padding(
       padding: const EdgeInsets.only(bottom: 12.0),
       child: Row(
@@ -612,17 +666,17 @@ class _ChatScreenState extends State<ChatScreen>
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             decoration: BoxDecoration(
-              color: _Palette.surface,
+              color: p.surface,
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(18),
                 topRight: Radius.circular(18),
                 bottomRight: Radius.circular(18),
                 bottomLeft: Radius.circular(4),
               ),
-              border: Border.all(color: _Palette.surfaceLine),
+              border: Border.all(color: p.surfaceLine),
               boxShadow: [
                 BoxShadow(
-                  color: _Palette.ink.withOpacity(0.04),
+                  color: p.ink.withOpacity(0.04),
                   blurRadius: 8,
                   offset: const Offset(0, 3),
                 ),
@@ -639,6 +693,7 @@ class _ChatScreenState extends State<ChatScreen>
   // Error state — explains what happened and offers the one fix that helps.
   // ---------------------------------------------------------------------
   Widget _buildErrorIndicator(BuildContext context, String error) {
+    final p = _palette(context);
     return Padding(
       padding: const EdgeInsets.only(bottom: 12.0),
       child: Row(
@@ -650,31 +705,31 @@ class _ChatScreenState extends State<ChatScreen>
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: _Palette.dangerBg,
+                color: p.dangerBg,
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(18),
                   topRight: Radius.circular(18),
                   bottomRight: Radius.circular(18),
                   bottomLeft: Radius.circular(4),
                 ),
-                border: Border.all(color: _Palette.dangerBorder),
+                border: Border.all(color: p.dangerBorder),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
-                      const Icon(
+                       Icon(
                         Icons.error_outline,
-                        color: _Palette.danger,
+                        color: p.danger,
                         size: 16,
                       ),
                       const SizedBox(width: 6),
                       Text(
                         'chat.connection_error_title'.tr(),
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontFamily: 'Inter Tight',
-                          color: _Palette.danger,
+                          color: p.danger,
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
                         ),
@@ -697,13 +752,13 @@ class _ChatScreenState extends State<ChatScreen>
                       onPressed:
                           () => context.read<ChatbotCubit>().initializeChat(),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: _Palette.surface,
-                        foregroundColor: _Palette.danger,
+                        backgroundColor: p.surface,
+                        foregroundColor: p.danger,
                         elevation: 0,
                         padding: const EdgeInsets.symmetric(horizontal: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
-                          side: const BorderSide(color: _Palette.dangerBorder),
+                          side: BorderSide(color: p.dangerBorder),
                         ),
                       ),
                       icon: const Icon(Icons.refresh, size: 14),
@@ -730,6 +785,7 @@ class _ChatScreenState extends State<ChatScreen>
   // Floating "scroll to latest" control
   // ---------------------------------------------------------------------
   Widget _buildScrollToBottomButton() {
+    final p = _palette(context);
     return ValueListenableBuilder<bool>(
       valueListenable: _showScrollToBottom,
       builder: (context, show, _) {
@@ -752,20 +808,20 @@ class _ChatScreenState extends State<ChatScreen>
                     width: 38,
                     height: 38,
                     decoration: BoxDecoration(
-                      color: _Palette.surface,
+                      color: p.surface,
                       shape: BoxShape.circle,
-                      border: Border.all(color: _Palette.surfaceLine),
+                      border: Border.all(color: p.surfaceLine),
                       boxShadow: [
                         BoxShadow(
-                          color: _Palette.ink.withOpacity(0.08),
+                          color: p.ink.withOpacity(0.08),
                           blurRadius: 10,
                           offset: const Offset(0, 3),
                         ),
                       ],
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.keyboard_arrow_down_rounded,
-                      color: _Palette.primaryDark,
+                      color: p.primaryDark,
                     ),
                   ),
                 ),
@@ -846,6 +902,7 @@ class _ThreeDotIndicatorState extends State<_ThreeDotIndicator>
 
   @override
   Widget build(BuildContext context) {
+    final p = _palette(context);
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: List.generate(3, (index) {
@@ -869,8 +926,8 @@ class _ThreeDotIndicatorState extends State<_ThreeDotIndicator>
                   margin: const EdgeInsets.symmetric(horizontal: 3),
                   width: 8,
                   height: 8,
-                  decoration: const BoxDecoration(
-                    color: _Palette.primary,
+                  decoration: BoxDecoration(
+                    color: p.primary,
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -935,6 +992,7 @@ class _DynamicInputAreaState extends State<_DynamicInputArea> {
 
   @override
   Widget build(BuildContext context) {
+    final p = _palette(context);
     String hint = "";
     TextInputType keyboardType = TextInputType.text;
     int? maxLength;
@@ -964,12 +1022,12 @@ class _DynamicInputAreaState extends State<_DynamicInputArea> {
           Expanded(
             child: Container(
               decoration: BoxDecoration(
-                color: _Palette.surface,
+                color: p.surface,
                 borderRadius: BorderRadius.circular(28),
-                border: Border.all(color: _Palette.surfaceLine),
+                border: Border.all(color: p.surfaceLine),
                 boxShadow: [
                   BoxShadow(
-                    color: _Palette.ink.withOpacity(0.05),
+                    color: p.ink.withOpacity(0.05),
                     blurRadius: 10,
                     offset: const Offset(0, 3),
                   ),
@@ -982,16 +1040,16 @@ class _DynamicInputAreaState extends State<_DynamicInputArea> {
                 // No hardcoded TextDirection.rtl anymore — the field now
                 // follows the ambient Directionality, which easy_localization
                 // / MaterialApp already sets based on the active locale.
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'Inter Tight',
                   fontSize: 15,
-                  color: _Palette.ink,
+                  color: p.ink,
                 ),
                 decoration: InputDecoration(
                   hintText: hint,
-                  hintStyle: TextStyle(color: _Palette.muted),
+                  hintStyle: TextStyle(color: p.muted),
                   counterText: "",
-                  prefixIcon: Icon(inputIcon, color: _Palette.primary),
+                  prefixIcon: Icon(inputIcon, color: p.primary),
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 20,
                     vertical: 14,
@@ -1017,18 +1075,18 @@ class _DynamicInputAreaState extends State<_DynamicInputArea> {
                     shape: BoxShape.circle,
                     gradient:
                         hasText
-                            ? const LinearGradient(
-                              colors: [_Palette.primaryDark, _Palette.primary],
+                            ? LinearGradient(
+                              colors: [p.primaryDark, p.primary],
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                             )
                             : null,
-                    color: hasText ? null : _Palette.surfaceLine,
+                    color: hasText ? null : p.surfaceLine,
                     boxShadow:
                         hasText
                             ? [
                               BoxShadow(
-                                color: _Palette.primary.withOpacity(0.25),
+                                color: p.primary.withOpacity(0.25),
                                 blurRadius: 8,
                                 offset: const Offset(0, 3),
                               ),
@@ -1037,7 +1095,7 @@ class _DynamicInputAreaState extends State<_DynamicInputArea> {
                   ),
                   child: Icon(
                     Icons.send_rounded,
-                    color: hasText ? Colors.white : _Palette.muted,
+                    color: hasText ? Colors.white : p.muted,
                     size: 20,
                   ),
                 ),

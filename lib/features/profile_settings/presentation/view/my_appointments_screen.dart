@@ -6,6 +6,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
 import 'package:smart_queue/core/services/bookmark_service.dart';
 import 'package:smart_queue/core/styling/app_styles.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
 import 'package:smart_queue/core/widgets/app_flushbar.dart';
 import 'package:smart_queue/core/widgets/app_top_bar.dart';
 import 'package:smart_queue/features/branch_booking/data/models/appointment_response_model.dart';
@@ -89,15 +90,16 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final ext = context.appTheme;
     return Scaffold(
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xffEEFEFF), Color(0xffD6F9F7)],
+            colors: [ext.bgGradientTop, ext.bgGradientBottom],
           ),
         ),
         child: Padding(
@@ -105,7 +107,10 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
           child: Column(
             children: [
               AppTopBar(),
-              Text("my_appointments_title".tr(), style: AppStyle.bold24black),
+              Text(
+                "my_appointments_title".tr(),
+                style: AppStyle.bold24black.adaptive(context),
+              ),
               const SizedBox(height: 20),
               Expanded(child: _buildContent()),
             ],
@@ -131,22 +136,23 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: Colors.grey.shade100,
+                color: context.appTheme.cardColor,
                 shape: BoxShape.circle,
+                border: Border.all(color: context.appTheme.cardBorder),
               ),
               child: Icon(
                 Icons.bookmark_border_rounded,
                 size: 52,
-                color: Colors.grey.shade400,
+                color: context.appTheme.subtleText,
               ),
             ),
             const SizedBox(height: 20),
             Text(
               "no_saved_appointments".tr(),
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF1A1D4E),
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 8),
@@ -155,7 +161,7 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 13,
-                color: Colors.grey.shade500,
+                color: context.appTheme.subtleText,
                 height: 1.4,
               ),
             ),

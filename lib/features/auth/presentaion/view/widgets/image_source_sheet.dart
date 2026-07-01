@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
 import 'package:smart_queue/core/styling/app_styles.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
 
 class ImageSourceSheet {
   static Future<void> show(
@@ -24,10 +25,14 @@ class _ImageSourceSheetContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = context.isDark;
+    final ext = context.appTheme;
+    final titleColor = isDark ? Colors.green[300]! : AppColors.teal;
+
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      decoration: BoxDecoration(
+        color: ext.cardColor,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
       ),
       padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
       child: Column(
@@ -38,26 +43,26 @@ class _ImageSourceSheetContent extends StatelessWidget {
             height: 4,
             margin: const EdgeInsets.only(bottom: 20),
             decoration: BoxDecoration(
-              color: Colors.grey.shade300,
+              color: isDark ? ext.cardBorder : Colors.grey.shade300,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
           Text(
             'choose_photo_source'.tr(),
-            style: const TextStyle(
+            style: TextStyle(
               fontFamily: AppStyle.fontFamily,
               fontSize: 17,
               fontWeight: FontWeight.w700,
-              color: AppColors.teal,
+              color: titleColor,
             ),
           ),
           const SizedBox(height: 6),
           Text(
             'select_photo_source_desc'.tr(),
-            style: const TextStyle(
+            style: TextStyle(
               fontFamily: AppStyle.fontFamily,
-              fontSize: 13, 
-              color: AppColors.greyText,
+              fontSize: 13,
+              color: ext.subtleText,
             ),
           ),
           const SizedBox(height: 24),
@@ -97,14 +102,14 @@ class _ImageSourceSheetContent extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
-                  side: BorderSide(color: Colors.grey.shade200),
+                  side: BorderSide(color: ext.cardBorder),
                 ),
               ),
               child: Text(
                 'cancel'.tr(),
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: AppStyle.fontFamily,
-                  color: AppColors.greyText,
+                  color: ext.subtleText,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -131,15 +136,32 @@ class _SourceOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = context.isDark;
+    final ext = context.appTheme;
+
+    final cardBgColor = isDark
+        ? Colors.green[900]!.withOpacity(0.1)
+        : AppColors.teal.withOpacity(0.04);
+
+    final cardBorderColor = isDark
+        ? Colors.green[800]!.withOpacity(0.4)
+        : AppColors.tealLight.withOpacity(0.5);
+
+    final gradientColors = isDark
+        ? [Colors.green[300]!, Colors.green[800]!]
+        : const [AppColors.tealLight, AppColors.teal];
+
+    final textColor = isDark ? Colors.green[300]! : AppColors.teal;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
         decoration: BoxDecoration(
-          color: AppColors.teal.withOpacity(0.04),
+          color: cardBgColor,
           borderRadius: BorderRadius.circular(18),
           border: Border.all(
-            color: AppColors.tealLight.withOpacity(0.5),
+            color: cardBorderColor,
             width: 1.2,
           ),
         ),
@@ -149,13 +171,10 @@ class _SourceOption extends StatelessWidget {
               width: 52,
               height: 52,
               decoration: BoxDecoration(
-                gradient: const LinearGradient(
+                gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [
-                    AppColors.tealLight,
-                    AppColors.teal,
-                  ],
+                  colors: gradientColors,
                 ),
                 borderRadius: BorderRadius.circular(14),
               ),
@@ -164,20 +183,20 @@ class _SourceOption extends StatelessWidget {
             const SizedBox(height: 12),
             Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontFamily: AppStyle.fontFamily,
                 fontWeight: FontWeight.w700,
                 fontSize: 15,
-                color: AppColors.teal,
+                color: textColor,
               ),
             ),
             const SizedBox(height: 2),
             Text(
               subtitle,
-              style: const TextStyle(
+              style: TextStyle(
                 fontFamily: AppStyle.fontFamily,
-                fontSize: 11, 
-                color: AppColors.greyText,
+                fontSize: 11,
+                color: ext.subtleText,
               ),
             ),
           ],

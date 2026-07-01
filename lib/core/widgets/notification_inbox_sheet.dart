@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smart_queue/core/localization/api_localization.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
 import 'package:smart_queue/core/utils/booking_keys.dart';
 import 'package:smart_queue/features/branch_booking/presentation/cubit/active_booking_cubit.dart';
 
@@ -24,6 +25,7 @@ class BookingStatusSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ext = context.appTheme;
     return BlocBuilder<ActiveBookingCubit, ActiveBookingState>(
       builder: (context, state) {
         final bookings =
@@ -32,9 +34,10 @@ class BookingStatusSheet extends StatelessWidget {
                 : <Map<String, dynamic>>[];
 
         return Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+          decoration: BoxDecoration(
+            color: ext.cardColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+            border: Border(top: BorderSide(color: ext.cardBorder)),
           ),
           padding: EdgeInsets.only(
             bottom: MediaQuery.of(context).padding.bottom,
@@ -76,7 +79,7 @@ class BookingStatusSheet extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
-                          color: Color(0xFF1A1A2E),
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                     ),
@@ -103,7 +106,7 @@ class BookingStatusSheet extends StatelessWidget {
               ),
 
               const SizedBox(height: 8),
-              const Divider(height: 1, color: Color(0xFFF0F0F0)),
+              Divider(height: 1, color: ext.cardBorder),
 
               if (bookings.isEmpty)
                 _buildEmpty(context)
@@ -166,7 +169,7 @@ class BookingStatusSheet extends StatelessWidget {
     return Center(
       child: Text(
         'no_active_bookings'.tr(),
-        style: const TextStyle(fontSize: 14, color: Color(0xFF8A8FA3)),
+        style: TextStyle(fontSize: 14, color: context.appTheme.subtleText),
       ),
     );
   }
@@ -183,6 +186,7 @@ class _BookingCard extends StatelessWidget {
     final serviceName = (booking['serviceName'] as String? ?? '—').localizedApi;
     final orgName = (booking['orgName'] as String? ?? '—').localizedApi;
     final branchName = (booking['branchName'] as String? ?? '').localizedApi;
+    final ext = context.appTheme;
     final slotStartRaw = booking[BookingKeys.slotStart] as String?;
     final slotStartTime = booking[BookingKeys.slotStartTime] as String? ?? '—';
 
@@ -200,10 +204,10 @@ class _BookingCard extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            const Color(0xFFEEFEFF),
-            const Color(0xFFD6F9F7).withAlpha(120),
-          ],
+          colors:
+              context.isDark
+                  ? [ext.cardColor, ext.cardColor]
+                  : [ext.bgGradientTop, ext.bgGradientBottom.withAlpha(120)],
         ),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
@@ -235,51 +239,45 @@ class _BookingCard extends StatelessWidget {
               children: [
                 Text(
                   serviceName,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFF1A1A2E),
+                    color: Theme.of(context).colorScheme.onSurface,
                     height: 1.3,
                   ),
                 ),
                 const SizedBox(height: 3),
                 Text(
                   orgName + (branchName.isNotEmpty ? ' · $branchName' : ''),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
-                    color: Color(0xFF5A6175),
+                    color: ext.subtleText,
                     height: 1.4,
                   ),
                 ),
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.calendar_today_outlined,
                       size: 11,
-                      color: Color(0xFF8A8FA3),
+                      color: ext.subtleText,
                     ),
                     const SizedBox(width: 4),
                     Text(
                       formattedDate ?? '—',
-                      style: const TextStyle(
-                        fontSize: 11,
-                        color: Color(0xFF8A8FA3),
-                      ),
+                      style: TextStyle(fontSize: 11, color: ext.subtleText),
                     ),
                     const SizedBox(width: 10),
-                    const Icon(
+                    Icon(
                       Icons.schedule_rounded,
                       size: 11,
-                      color: Color(0xFF8A8FA3),
+                      color: ext.subtleText,
                     ),
                     const SizedBox(width: 4),
                     Text(
                       slotStartTime,
-                      style: const TextStyle(
-                        fontSize: 11,
-                        color: Color(0xFF8A8FA3),
-                      ),
+                      style: TextStyle(fontSize: 11, color: ext.subtleText),
                     ),
                   ],
                 ),

@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
 import 'package:smart_queue/features/branch_booking/data/models/appointment_response_model.dart';
 import 'package:smart_queue/features/branch_booking/data/models/service_counter_model.dart';
 import 'package:smart_queue/features/map/data/models/branch_model.dart';
@@ -33,14 +34,16 @@ class BookingSuccessDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ext = context.appTheme;
     return Dialog(
       elevation: 0,
       backgroundColor: Colors.transparent,
       child: Container(
         padding: const EdgeInsets.all(28),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: ext.cardColor,
           borderRadius: BorderRadius.circular(28),
+          border: Border.all(color: ext.cardBorder),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -65,7 +68,7 @@ class BookingSuccessDialog extends StatelessWidget {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF2D3436),
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 8),
@@ -75,7 +78,7 @@ class BookingSuccessDialog extends StatelessWidget {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 13,
-                color: Colors.grey.shade500,
+                color: ext.subtleText,
                 height: 1.6,
               ),
             ),
@@ -84,7 +87,7 @@ class BookingSuccessDialog extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               decoration: BoxDecoration(
-                color: Colors.grey.shade50,
+                color: ext.cardBorder.withOpacity(0.35),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Column(
@@ -112,15 +115,15 @@ class BookingSuccessDialog extends StatelessWidget {
                             'estimated_wait'.tr(),
                             style: TextStyle(
                               fontSize: 11,
-                              color: Colors.grey.shade400,
+                              color: ext.subtleText,
                             ),
                           ),
                           Text(
                             hours > 0 ? '${hours}h ${minutes}m' : '${minutes}m',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w700,
-                              color: Color(0xFF2D3436),
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
                         ],
@@ -137,7 +140,7 @@ class BookingSuccessDialog extends StatelessWidget {
                         ),
                         child: Text(
                           'active'.tr(),
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w700,
                             color: Color(0xFF085041),
@@ -146,9 +149,9 @@ class BookingSuccessDialog extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 12),
-                    child: Divider(height: 1, color: Color(0xFFE2E8F0)),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    child: Divider(height: 1, color: ext.cardBorder),
                   ),
                   Row(
                     children: [
@@ -173,15 +176,15 @@ class BookingSuccessDialog extends StatelessWidget {
                             'appointment_id'.tr(),
                             style: TextStyle(
                               fontSize: 11,
-                              color: Colors.grey.shade400,
+                              color: ext.subtleText,
                             ),
                           ),
                           Text(
                             '#${appointment.id}',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w700,
-                              color: Color(0xFF2D3436),
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
                         ],
@@ -208,33 +211,36 @@ class BookingSuccessDialog extends StatelessWidget {
                 ),
                 child: Text(
                   'go_to_home'.tr(),
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton(
-                onPressed: () {
-                  context.pop();
-                  context.go(AppRoutes.main);
-                },
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: Colors.grey.shade600,
-                  side: BorderSide(color: Colors.grey.shade200),
-                  padding: const EdgeInsets.symmetric(vertical: 13),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
-                child: Text(
-                  'maybe_later'.tr(),
-                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
-                ),
               ),
             ),
+            // const SizedBox(height: 8),
+
+            // SizedBox(
+            //   width: double.infinity,
+            //   child: OutlinedButton(
+            //     onPressed: () {
+            //       context.pop();
+            //       context.go(AppRoutes.main);
+            //     },
+            //     style: OutlinedButton.styleFrom(
+            //       foregroundColor: ext.subtleText,
+            //       side: BorderSide(color: ext.cardBorder),
+            //       padding: const EdgeInsets.symmetric(vertical: 13),
+            //       shape: RoundedRectangleBorder(
+            //         borderRadius: BorderRadius.circular(16),
+            //       ),
+            //     ),
+            //     child: Text(
+            //       'maybe_later'.tr(),
+            //       style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ),

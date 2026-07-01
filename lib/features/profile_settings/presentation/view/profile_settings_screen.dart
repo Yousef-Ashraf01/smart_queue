@@ -1,5 +1,6 @@
+import 'dart:ui' as ui;
+
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/material.dart' as material show TextDirection;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -7,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:smart_queue/core/constants/app_assets.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
 import 'package:smart_queue/core/widgets/notification_widget.dart';
 import 'package:smart_queue/features/personal_info/presentation/cubit/personal_info_cubit.dart';
 import 'package:smart_queue/features/personal_info/presentation/cubit/personal_info_state.dart';
@@ -66,11 +68,14 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
     return Container(
       width: double.infinity,
       height: double.infinity,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [Color(0xffEEFEFF), Color(0xffD6F9F7)],
+          colors: [
+            context.appTheme.bgGradientTop,
+            context.appTheme.bgGradientBottom,
+          ],
         ),
       ),
       child: SafeArea(
@@ -87,19 +92,19 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                       children: [
                         Text(
                           'settings_title'.tr(),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 26,
                             fontWeight: FontWeight.w800,
-                            color: Color(0xFF1A1D4E),
+                            color: Theme.of(context).colorScheme.onSurface,
                             letterSpacing: -0.5,
                           ),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           'settings_subtitle'.tr(),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 13,
-                            color: Colors.grey,
+                            color: context.appTheme.subtleText,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -176,17 +181,22 @@ class SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ext = context.appTheme;
     return Align(
       alignment: Alignment.centerLeft,
       child: Padding(
         padding: const EdgeInsets.only(left: 4),
         child: Text(
           title.toUpperCase(),
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w800,
-            color: Color(0xFF5B6BF5),
+            color: Theme.of(context).colorScheme.primary,
             letterSpacing: 0.8,
+            shadows:
+                context.isDark
+                    ? [Shadow(color: ext.cardColor, blurRadius: 2)]
+                    : null,
           ),
         ),
       ),
@@ -225,18 +235,23 @@ class SettingsListContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ext = context.appTheme;
+    final isDark = context.isDark;
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.9),
+        color: ext.cardColor.withOpacity(isDark ? 0.92 : 0.9),
         borderRadius: BorderRadius.circular(22),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withOpacity(isDark ? 0.18 : 0.04),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
         ],
-        border: Border.all(color: Colors.white.withOpacity(0.6), width: 1),
+        border: Border.all(
+          color: isDark ? ext.cardBorder : Colors.white.withOpacity(0.6),
+          width: 1,
+        ),
       ),
       child: Material(
         color: Colors.transparent,
@@ -280,6 +295,8 @@ class SettingsListContainer extends StatelessWidget {
     bool isLast = false,
     Color? textColor,
   }) {
+    final ext = context.appTheme;
+    final onSurface = Theme.of(context).colorScheme.onSurface;
     return Column(
       children: [
         ListTile(
@@ -306,7 +323,7 @@ class SettingsListContainer extends StatelessWidget {
             style: TextStyle(
               fontSize: 14.5,
               fontWeight: FontWeight.w600,
-              color: textColor ?? const Color(0xFF1A1D4E),
+              color: textColor ?? onSurface,
             ),
           ),
           trailing:
@@ -315,15 +332,14 @@ class SettingsListContainer extends StatelessWidget {
                   : Container(
                     padding: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
-                      color: Colors.grey.withOpacity(0.06),
+                      color: ext.subtleText.withOpacity(0.08),
                       shape: BoxShape.circle,
                     ),
                     child: Transform(
                       alignment: Alignment.center,
                       transform:
                           Matrix4.identity()..scale(
-                            Directionality.of(context) ==
-                                    material.TextDirection.rtl
+                            Directionality.of(context) == ui.TextDirection.rtl
                                 ? -1.0
                                 : 1.0,
                             1.0,
@@ -332,7 +348,7 @@ class SettingsListContainer extends StatelessWidget {
                         AppAssets.iconChevronRight,
                         width: 12,
                         colorFilter: ColorFilter.mode(
-                          Colors.grey[400]!,
+                          ext.subtleText,
                           BlendMode.srcIn,
                         ),
                       ),
@@ -344,7 +360,7 @@ class SettingsListContainer extends StatelessWidget {
             height: 1,
             indent: 64,
             endIndent: 16,
-            color: Colors.grey.shade100,
+            color: ext.cardBorder.withOpacity(context.isDark ? 0.75 : 0.25),
           ),
       ],
     );

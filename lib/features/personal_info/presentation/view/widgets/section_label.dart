@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
 
 class SectionLabel extends StatelessWidget {
   final String text;
@@ -6,23 +7,24 @@ class SectionLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final primary = Theme.of(context).colorScheme.primary;
     return Row(
       children: [
         Container(
           width: 4,
           height: 18,
           decoration: BoxDecoration(
-            color: const Color(0xFF00BFA6),
+            color: primary,
             borderRadius: BorderRadius.circular(2),
           ),
         ),
         const SizedBox(width: 8),
         Text(
           text,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w700,
-            color: Color(0xFF2D2D2D),
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
       ],

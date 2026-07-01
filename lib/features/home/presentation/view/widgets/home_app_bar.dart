@@ -88,8 +88,14 @@ class HomeAppBar extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("hi".tr(args: [name]), style: AppStyle.bold16black),
-                    Text("welcome_back".tr(), style: AppStyle.normal16black),
+                    Text(
+                      "hi".tr(args: [name]),
+                      style: AppStyle.bold16black.adaptive(context),
+                    ),
+                    Text(
+                      "welcome_back".tr(),
+                      style: AppStyle.normal16black.adaptive(context),
+                    ),
                   ],
                 ),
               ],

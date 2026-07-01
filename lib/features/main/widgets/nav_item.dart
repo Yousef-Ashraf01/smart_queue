@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
 
 class NavItem extends StatelessWidget {
   final dynamic icon; // Supports String (SVG) or IconData (Material Icons)
@@ -18,7 +19,7 @@ class NavItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const activeColor = Color(0xFF10B981); // Modern emerald/teal
-    final inactiveColor = Colors.grey[400]!;
+    final inactiveColor = context.appTheme.subtleText;
 
     return GestureDetector(
       onTap: onTap,

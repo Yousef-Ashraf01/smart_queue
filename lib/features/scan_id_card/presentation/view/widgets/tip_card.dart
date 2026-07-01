@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
 
 class TipCard extends StatelessWidget {
   final IconData icon;
@@ -8,21 +9,28 @@ class TipCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const activeColor = Color(0xFF10B981);
+    final isDark = context.isDark;
+    final ext = context.appTheme;
+
+    final activeColor = isDark ? Colors.green[300]! : const Color(0xFF10B981);
+    final bgColor = isDark ? ext.cardColor.withOpacity(0.85) : Colors.white.withOpacity(0.85);
+    final borderColor = isDark ? ext.cardBorder : activeColor.withOpacity(0.15);
+    final shadowColor = isDark ? Colors.transparent : Colors.black.withOpacity(0.03);
+    final textColor = Theme.of(context).colorScheme.onSurface;
 
     return Expanded(
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.85),
+          color: bgColor,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: activeColor.withOpacity(0.15),
+            color: borderColor,
             width: 1,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.03),
+              color: shadowColor,
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -47,10 +55,10 @@ class TipCard extends StatelessWidget {
             Text(
               label,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 10.5,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF1A1D4E),
+                color: textColor,
                 height: 1.2,
                 fontFamily: 'Inter Tight',
               ),

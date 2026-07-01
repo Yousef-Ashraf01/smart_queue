@@ -1,11 +1,12 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:smart_queue/core/localization/api_localization.dart';
 import 'package:smart_queue/core/utils/booking_keys.dart';
 import 'package:smart_queue/features/branch_booking/presentation/cubit/active_booking_cubit.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
+
 
 class ActiveBookingSummary extends StatefulWidget {
   final VoidCallback onTap;
@@ -83,18 +84,28 @@ class _ActiveBookingSummaryState extends State<ActiveBookingSummary> {
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors:
-                    hasBookings
-                        ? [const Color(0xFF1A9E7A), const Color(0xFF0D7355)]
-                        : [const Color(0xFFE8F5E9), const Color(0xFFE0F2F1)],
+                colors: hasBookings
+                    ? [const Color(0xFF1A9E7A), const Color(0xFF0D7355)]
+                    : (context.isDark
+                        ? [context.appTheme.cardColor, context.appTheme.cardColor]
+                        : [const Color(0xFFE8F5E9), const Color(0xFFE0F2F1)]),
               ),
               borderRadius: BorderRadius.circular(24),
+              border: Border.all(
+                color: hasBookings
+                    ? Colors.transparent
+                    : (context.isDark
+                        ? context.appTheme.cardBorder
+                        : Colors.transparent),
+                width: 1,
+              ),
               boxShadow: [
                 BoxShadow(
-                  color:
-                      hasBookings
-                          ? const Color(0xFF1A9E7A).withValues(alpha: 0.3)
-                          : Colors.black.withValues(alpha: 0.06),
+                  color: hasBookings
+                      ? const Color(0xFF1A9E7A).withValues(alpha: 0.3)
+                      : (context.isDark
+                          ? Colors.transparent
+                          : Colors.black.withValues(alpha: 0.06)),
                   blurRadius: 20,
                   offset: const Offset(0, 8),
                 ),
@@ -229,6 +240,7 @@ class _ActiveBookingSummaryState extends State<ActiveBookingSummary> {
   }
 
   Widget _buildEmpty() {
+    final isDark = context.isDark;
     return Row(
       children: [
         Container(
@@ -250,8 +262,8 @@ class _ActiveBookingSummaryState extends State<ActiveBookingSummary> {
             children: [
               Text(
                 'no_upcoming_appointments'.tr(),
-                style: const TextStyle(
-                  color: Color(0xFF2D3436),
+                style: TextStyle(
+                  color: isDark ? const Color(0xFFE6EDF3) : const Color(0xFF2D3436),
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
                 ),
@@ -259,14 +271,17 @@ class _ActiveBookingSummaryState extends State<ActiveBookingSummary> {
               const SizedBox(height: 4),
               Text(
                 'book_service_get_started'.tr(),
-                style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
+                style: TextStyle(
+                  color: isDark ? const Color(0xFF8B949E) : Colors.grey.shade600,
+                  fontSize: 13,
+                ),
               ),
             ],
           ),
         ),
         Icon(
           Icons.arrow_forward_ios_rounded,
-          color: Colors.grey.shade400,
+          color: isDark ? const Color(0xFF8B949E) : Colors.grey.shade400,
           size: 16,
         ),
       ],

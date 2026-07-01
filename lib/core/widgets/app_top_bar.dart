@@ -15,7 +15,15 @@ class AppTopBar extends StatelessWidget {
           onPressed: () {
             Navigator.pop(context);
           },
-          icon: SvgPicture.asset(AppAssets.iconBack, width: 20, height: 20),
+          icon: SvgPicture.asset(
+            AppAssets.iconBack,
+            width: 20,
+            height: 20,
+            colorFilter: ColorFilter.mode(
+              Theme.of(context).colorScheme.onSurface,
+              BlendMode.srcIn,
+            ),
+          ),
         ),
 
         const NotificationWidget(),

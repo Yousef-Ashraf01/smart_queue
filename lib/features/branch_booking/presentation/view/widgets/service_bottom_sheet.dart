@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:smart_queue/core/localization/api_localization.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
 import 'package:smart_queue/features/branch_booking/data/models/service_counter_model.dart';
 
 class ServiceBottomSheet extends StatelessWidget {
@@ -17,11 +18,12 @@ class ServiceBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ext = context.appTheme;
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      decoration: BoxDecoration(
+        color: ext.cardColor,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -31,13 +33,17 @@ class ServiceBottomSheet extends StatelessWidget {
             height: 5,
             margin: const EdgeInsets.only(bottom: 12),
             decoration: BoxDecoration(
-              color: Colors.grey[300],
+              color: ext.cardBorder,
               borderRadius: BorderRadius.circular(10),
             ),
           ),
           Text(
             "select_service".tr(),
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
           ),
           const SizedBox(height: 12),
 
@@ -62,7 +68,7 @@ class ServiceBottomSheet extends StatelessWidget {
                       color:
                           isSelected
                               ? Colors.blue.withOpacity(0.08)
-                              : Colors.grey[100],
+                              : ext.cardBorder.withOpacity(0.35),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
                         color: isSelected ? Colors.blue : Colors.transparent,
@@ -76,9 +82,10 @@ class ServiceBottomSheet extends StatelessWidget {
                             children: [
                               Text(
                                 item.serviceName.localizedApi,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 14,
+                                  color: Theme.of(context).colorScheme.onSurface,
                                 ),
                               ),
                               const SizedBox(height: 4),
@@ -88,7 +95,7 @@ class ServiceBottomSheet extends StatelessWidget {
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                   fontSize: 12,
-                                  color: Colors.grey[600],
+                                  color: ext.subtleText,
                                 ),
                               ),
                             ],
@@ -100,8 +107,9 @@ class ServiceBottomSheet extends StatelessWidget {
                           children: [
                             Text(
                               "${item.servicePrice}",
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.onSurface,
                               ),
                             ),
                             const SizedBox(height: 6),

@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:smart_queue/core/localization/api_localization.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
 import 'package:smart_queue/core/widgets/app_flushbar.dart';
 import 'package:smart_queue/features/branch_booking/data/models/appointment_response_model.dart';
 import 'package:smart_queue/features/branch_booking/data/models/service_model.dart';
@@ -34,15 +35,16 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final ext = context.appTheme;
     return Scaffold(
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xffEEFEFF), Color(0xffD6F9F7)],
+            colors: [ext.bgGradientTop, ext.bgGradientBottom],
           ),
         ),
         child: Padding(
@@ -52,9 +54,10 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
               const SizedBox(height: 20),
               Text(
                 "appointment_details".tr(),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               SizedBox(height: 30),
@@ -563,11 +566,12 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.appTheme.cardColor,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: context.appTheme.cardBorder),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withOpacity(context.isDark ? 0.18 : 0.04),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -683,9 +687,9 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
                     const SizedBox(height: 4),
                     Text(
                       feedbackText,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13,
-                        color: Colors.black87,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                   ],
@@ -781,9 +785,9 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
   Widget _sectionLabel(String text) {
     return Text(
       text,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 13,
-        color: Colors.grey,
+        color: context.appTheme.subtleText,
         fontWeight: FontWeight.w500,
       ),
     );
@@ -792,11 +796,11 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
   Widget _detailRow(IconData icon, String label, String value) {
     return Row(
       children: [
-        Icon(icon, size: 14, color: Colors.grey),
+        Icon(icon, size: 14, color: context.appTheme.subtleText),
         const SizedBox(width: 6),
         Text(
           "$label: ",
-          style: const TextStyle(fontSize: 13, color: Colors.grey),
+          style: TextStyle(fontSize: 13, color: context.appTheme.subtleText),
         ),
         Text(
           value,

@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:smart_queue/core/localization/api_localization.dart';
 import 'package:smart_queue/core/styling/app_styles.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
 import 'package:smart_queue/core/widgets/app_flushbar.dart';
 import 'package:smart_queue/features/branch_booking/data/models/appointment_response_model.dart';
 import 'package:smart_queue/features/branch_booking/data/models/service_model.dart';
@@ -262,6 +263,7 @@ class _UpdateAppointmentScreenState extends State<UpdateAppointmentScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final ext = context.appTheme;
     return BlocConsumer<AppointmentDetailsCubit, AppointmentDetailsState>(
       listener: (context, state) {
         if (state is AppointmentDetailsLoaded && _isUpdating) {
@@ -296,11 +298,11 @@ class _UpdateAppointmentScreenState extends State<UpdateAppointmentScreen> {
             children: [
               Container(
                 width: double.infinity,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: [Color(0xffEEFEFF), Color(0xffD6F9F7)],
+                    colors: [ext.bgGradientTop, ext.bgGradientBottom],
                   ),
                 ),
               ),
@@ -312,7 +314,7 @@ class _UpdateAppointmentScreenState extends State<UpdateAppointmentScreen> {
                     const SizedBox(height: 10),
                     Text(
                       "update_appointment_title".tr(),
-                      style: AppStyle.appBarTitle,
+                      style: AppStyle.appBarTitle.adaptive(context),
                     ),
 
                     const SizedBox(height: 20),
@@ -478,9 +480,9 @@ class _UpdateAppointmentScreenState extends State<UpdateAppointmentScreen> {
       alignment: Alignment.centerLeft,
       child: Text(
         text,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 13,
-          color: Colors.grey,
+          color: context.appTheme.subtleText,
           fontWeight: FontWeight.w600,
           letterSpacing: 0.5,
         ),
@@ -502,8 +504,9 @@ class _UpdateAppointmentScreenState extends State<UpdateAppointmentScreen> {
         margin: const EdgeInsets.only(bottom: 8),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.appTheme.cardColor,
           borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: context.appTheme.cardBorder),
         ),
         child: Row(
           children: [
@@ -515,20 +518,26 @@ class _UpdateAppointmentScreenState extends State<UpdateAppointmentScreen> {
                 children: [
                   Text(
                     label,
-                    style: const TextStyle(fontSize: 12, color: Colors.grey),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: context.appTheme.subtleText,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     value.isEmpty
                         ? "select_label".tr(args: [label])
                         : (isTime ? formatTime(value) : value),
-                    style: const TextStyle(fontWeight: FontWeight.w600),
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
                   ),
                 ],
               ),
             ),
             if (showEditIcon)
-              const Icon(Icons.edit, size: 18, color: Colors.grey),
+              Icon(Icons.edit, size: 18, color: context.appTheme.subtleText),
           ],
         ),
       ),
@@ -539,11 +548,12 @@ class _UpdateAppointmentScreenState extends State<UpdateAppointmentScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.appTheme.cardColor,
         borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: context.appTheme.cardBorder),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withOpacity(context.isDark ? 0.18 : 0.04),
             blurRadius: 10,
             offset: const Offset(0, 3),
           ),
@@ -570,15 +580,19 @@ class _UpdateAppointmentScreenState extends State<UpdateAppointmentScreen> {
               children: [
                 Text(
                   service.name,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 14,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
                 const SizedBox(height: 3),
                 Text(
                   service.description,
-                  style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: context.appTheme.subtleText,
+                  ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),

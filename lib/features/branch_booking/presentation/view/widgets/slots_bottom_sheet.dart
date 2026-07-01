@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
 import 'package:smart_queue/core/styling/app_styles.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
 
 class SlotsBottomSheet extends StatelessWidget {
   final List slots;
@@ -20,6 +21,7 @@ class SlotsBottomSheet extends StatelessWidget {
     final List<Map<String, String>> morningSlots = [];
     final List<Map<String, String>> afternoonSlots = [];
     final List<Map<String, String>> eveningSlots = [];
+    final ext = context.appTheme;
 
     for (final rawSlot in slots) {
       if (rawSlot is Map) {
@@ -42,11 +44,11 @@ class SlotsBottomSheet extends StatelessWidget {
         maxHeight: MediaQuery.of(context).size.height * 0.75,
       ),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: ext.cardColor,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
+            color: Colors.black.withOpacity(context.isDark ? 0.22 : 0.1),
             blurRadius: 20,
             offset: const Offset(0, -5),
           ),
@@ -62,7 +64,7 @@ class SlotsBottomSheet extends StatelessWidget {
               height: 5,
               margin: const EdgeInsets.only(bottom: 20),
               decoration: BoxDecoration(
-                color: Colors.grey[300],
+                color: ext.cardBorder,
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
@@ -81,7 +83,7 @@ class SlotsBottomSheet extends StatelessWidget {
                         fontFamily: AppStyle.fontFamily,
                         fontSize: 20,
                         fontWeight: FontWeight.w800,
-                        color: AppColors.blackColor,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -90,7 +92,7 @@ class SlotsBottomSheet extends StatelessWidget {
                       style: TextStyle(
                         fontFamily: AppStyle.fontFamily,
                         fontSize: 13,
-                        color: Colors.grey[500],
+                        color: ext.subtleText,
                       ),
                     ),
                   ],
@@ -103,7 +105,7 @@ class SlotsBottomSheet extends StatelessWidget {
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0xff3CC572).withValues(alpha: 0.1),
+                    color: const Color(0xff3CC572).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
@@ -120,7 +122,7 @@ class SlotsBottomSheet extends StatelessWidget {
           ),
 
           const SizedBox(height: 16),
-          Divider(color: Colors.grey[200], thickness: 1, height: 1),
+          Divider(color: ext.cardBorder, thickness: 1, height: 1),
           const SizedBox(height: 16),
 
           if (slots.isEmpty)
@@ -134,12 +136,12 @@ class SlotsBottomSheet extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: Colors.grey[100],
+                          color: ext.cardBorder.withOpacity(0.35),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
                           Icons.calendar_today_outlined,
-                          color: Colors.grey[400],
+                          color: ext.subtleText,
                           size: 48,
                         ),
                       ),
@@ -150,7 +152,7 @@ class SlotsBottomSheet extends StatelessWidget {
                           fontFamily: AppStyle.fontFamily,
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.blackColor,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -159,7 +161,7 @@ class SlotsBottomSheet extends StatelessWidget {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontFamily: AppStyle.fontFamily,
-                          color: Colors.grey[500],
+                          color: ext.subtleText,
                           fontSize: 13,
                         ),
                       ),
@@ -231,24 +233,25 @@ class SlotsBottomSheet extends StatelessWidget {
     required Color iconColor,
     required int count,
   }) {
+    final ext = context.appTheme;
     return Row(
       children: [
         Icon(icon, color: iconColor, size: 20),
         const SizedBox(width: 8),
         Text(
           title,
-          style: const TextStyle(
+          style: TextStyle(
             fontFamily: AppStyle.fontFamily,
             fontSize: 15,
             fontWeight: FontWeight.bold,
-            color: AppColors.blackColor,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
         const SizedBox(width: 6),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
           decoration: BoxDecoration(
-            color: Colors.grey[100],
+            color: ext.cardBorder.withOpacity(0.35),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Text(
@@ -257,7 +260,7 @@ class SlotsBottomSheet extends StatelessWidget {
               fontFamily: AppStyle.fontFamily,
               fontSize: 11,
               fontWeight: FontWeight.bold,
-              color: Colors.grey[600],
+              color: ext.subtleText,
             ),
           ),
         ),
@@ -269,6 +272,7 @@ class SlotsBottomSheet extends StatelessWidget {
     BuildContext context,
     List<Map<String, String>> periodSlots,
   ) {
+    final ext = context.appTheme;
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -301,22 +305,22 @@ class SlotsBottomSheet extends StatelessWidget {
                         end: Alignment.bottomRight,
                       )
                       : null,
-              color: isSelected ? null : Colors.white,
+              color: isSelected ? null : ext.cardColor,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: isSelected ? Colors.transparent : Colors.grey.shade200,
+                color: isSelected ? Colors.transparent : ext.cardBorder,
                 width: 1.5,
               ),
               boxShadow: [
                 if (isSelected)
                   BoxShadow(
-                    color: const Color(0xff3CC572).withValues(alpha: 0.25),
+                    color: const Color(0xff3CC572).withOpacity(0.25),
                     blurRadius: 8,
                     offset: const Offset(0, 4),
                   )
                 else
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.02),
+                    color: Colors.black.withOpacity(context.isDark ? 0.08 : 0.02),
                     blurRadius: 3,
                     offset: const Offset(0, 1),
                   ),
@@ -330,14 +334,14 @@ class SlotsBottomSheet extends StatelessWidget {
                       ? Icons.check_circle_rounded
                       : Icons.access_time_rounded,
                   size: 16,
-                  color: isSelected ? Colors.white : Colors.grey[400],
+                  color: isSelected ? Colors.white : ext.subtleText,
                 ),
                 const SizedBox(width: 8),
                 Text(
                   "${slotMap['start']} - ${slotMap['end']}",
                   style: TextStyle(
                     fontFamily: AppStyle.fontFamily,
-                    color: isSelected ? Colors.white : AppColors.blackColor,
+                    color: isSelected ? Colors.white : Theme.of(context).colorScheme.onSurface,
                     fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
                     fontSize: 13,
                   ),

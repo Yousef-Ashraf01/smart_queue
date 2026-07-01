@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:smart_queue/core/localization/api_localization.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
 import 'package:smart_queue/features/map/data/models/branch_model.dart';
 import 'package:smart_queue/features/map/presentation/view/widgets/branch_list_tile.dart';
 
@@ -63,17 +64,19 @@ class BranchesBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isBranchSelected = selectedBranch != null;
     final double height = isBranchSelected ? 260 : 320;
+    final ext = context.appTheme;
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 250),
       curve: Curves.easeInOut,
       height: height,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: ext.cardColor,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+        border: Border(top: BorderSide(color: ext.cardBorder)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withOpacity(context.isDark ? 0.24 : 0.08),
             blurRadius: 15,
             offset: const Offset(0, -4),
           ),
@@ -97,6 +100,7 @@ class BranchesBottomSheet extends StatelessWidget {
 
   Widget _buildSelectedBranchView(BuildContext context, BranchModel branch) {
     final isActive = branch.isCurrentlyOpen;
+    final ext = context.appTheme;
     return Padding(
       key: const ValueKey('SelectedBranchView'),
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
@@ -109,7 +113,7 @@ class BranchesBottomSheet extends StatelessWidget {
               width: 40,
               height: 4.5,
               decoration: BoxDecoration(
-                color: Colors.grey.shade300,
+                color: ext.cardBorder,
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
@@ -121,10 +125,10 @@ class BranchesBottomSheet extends StatelessWidget {
               Expanded(
                 child: Text(
                   branch.name.localizedApi,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.teal,
+                    color: Theme.of(context).colorScheme.primary,
                     fontFamily: 'Inter Tight',
                   ),
                   maxLines: 1,
@@ -133,13 +137,13 @@ class BranchesBottomSheet extends StatelessWidget {
               ),
               IconButton(
                 style: IconButton.styleFrom(
-                  backgroundColor: Colors.grey.shade100,
+                  backgroundColor: ext.cardBorder.withOpacity(0.35),
                   padding: const EdgeInsets.all(8),
                 ),
-                icon: const Icon(
+                icon: Icon(
                   Icons.close_rounded,
                   size: 20,
-                  color: Colors.grey,
+                  color: ext.subtleText,
                 ),
                 onPressed: onCloseDetails,
               ),
@@ -151,7 +155,7 @@ class BranchesBottomSheet extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
+                  color: ext.cardBorder.withOpacity(0.35),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
@@ -159,7 +163,7 @@ class BranchesBottomSheet extends StatelessWidget {
                     Icon(
                       Icons.directions_walk_rounded,
                       size: 13,
-                      color: Colors.grey.shade600,
+                      color: ext.subtleText,
                     ),
                     const SizedBox(width: 4),
                     Text(
@@ -167,7 +171,7 @@ class BranchesBottomSheet extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
-                        color: Colors.grey.shade700,
+                        color: ext.subtleText,
                       ),
                     ),
                   ],
@@ -179,8 +183,8 @@ class BranchesBottomSheet extends StatelessWidget {
                 decoration: BoxDecoration(
                   color:
                       isActive
-                          ? Colors.green.withOpacity(0.1)
-                          : Colors.red.withOpacity(0.1),
+                          ? Colors.green.withOpacity(0.12)
+                          : Colors.red.withOpacity(0.12),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -188,21 +192,19 @@ class BranchesBottomSheet extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
-                    color: isActive ? Colors.green[800] : Colors.red[800],
+                    color: isActive
+                        ? (context.isDark ? Colors.green[300] : Colors.green[800])
+                        : (context.isDark ? Colors.red[300] : Colors.red[800]),
                   ),
                 ),
               ),
               const SizedBox(width: 12),
-              Icon(
-                Icons.access_time_rounded,
-                size: 13,
-                color: Colors.grey.shade400,
-              ),
+              Icon(Icons.access_time_rounded, size: 13, color: ext.subtleText),
               const SizedBox(width: 4),
               Expanded(
                 child: Text(
                   _getOperatingHoursText(branch),
-                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                  style: TextStyle(fontSize: 12, color: ext.subtleText),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -213,18 +215,14 @@ class BranchesBottomSheet extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(
-                Icons.location_on_rounded,
-                size: 14,
-                color: Colors.grey.shade400,
-              ),
+              Icon(Icons.location_on_rounded, size: 14, color: ext.subtleText),
               const SizedBox(width: 4),
               Expanded(
                 child: Text(
                   branch.address.localizedApiFallback("no_address_details"),
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.grey.shade500,
+                    color: ext.subtleText,
                     height: 1.3,
                   ),
                   maxLines: 1,
@@ -240,14 +238,17 @@ class BranchesBottomSheet extends StatelessWidget {
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
-                gradient: const LinearGradient(
-                  colors: [AppColors.tealLight, AppColors.teal],
+                gradient: LinearGradient(
+                  colors: context.isDark
+                      ? [Colors.green[400]!, Colors.green[700]!]
+                      : [AppColors.tealLight, AppColors.teal],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.teal.withOpacity(0.3),
+                    color: (context.isDark ? Colors.green[300]! : AppColors.teal)
+                        .withOpacity(0.3),
                     blurRadius: 8,
                     offset: const Offset(0, 4),
                   ),
@@ -281,6 +282,7 @@ class BranchesBottomSheet extends StatelessWidget {
   }
 
   Widget _buildBranchListView(BuildContext context) {
+    final ext = context.appTheme;
     return Padding(
       key: const ValueKey('BranchListView'),
       padding: const EdgeInsets.only(top: 12),
@@ -293,7 +295,7 @@ class BranchesBottomSheet extends StatelessWidget {
               width: 40,
               height: 4.5,
               decoration: BoxDecoration(
-                color: Colors.grey.shade300,
+                color: ext.cardBorder,
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
@@ -305,10 +307,10 @@ class BranchesBottomSheet extends StatelessWidget {
               children: [
                 Text(
                   'nearby_branches'.tr(),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.teal,
+                    color: Theme.of(context).colorScheme.primary,
                     fontFamily: 'Inter Tight',
                   ),
                 ),
@@ -319,15 +321,17 @@ class BranchesBottomSheet extends StatelessWidget {
                     vertical: 3,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.teal.withOpacity(0.1),
+                    color: context.isDark
+                        ? Colors.green[900]!.withOpacity(0.3)
+                        : AppColors.teal.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     '${branches.length}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.teal,
+                      color: context.isDark ? Colors.green[300]! : AppColors.teal,
                     ),
                   ),
                 ),
@@ -345,13 +349,13 @@ class BranchesBottomSheet extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: Colors.grey.shade100,
+                          color: ext.cardBorder.withOpacity(0.35),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
                           Icons.search_off_rounded,
                           size: 48,
-                          color: Colors.grey.shade400,
+                          color: ext.subtleText,
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -360,7 +364,7 @@ class BranchesBottomSheet extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black.withValues(alpha: 0.8),
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                       const SizedBox(height: 6),
@@ -369,10 +373,7 @@ class BranchesBottomSheet extends StatelessWidget {
                         child: Text(
                           "no_branches_search_desc".tr(),
                           textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: Colors.grey.shade500,
-                          ),
+                          style: TextStyle(fontSize: 13, color: ext.subtleText),
                         ),
                       ),
                     ],

@@ -11,6 +11,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:smart_queue/core/localization/api_localization.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
 import 'package:smart_queue/features/scan_id_card/presentation/cubit/id_cubit.dart';
 import 'package:smart_queue/features/scan_id_card/presentation/view/widgets/camera_section.dart';
 import 'package:smart_queue/features/scan_id_card/presentation/view/widgets/capture_button.dart';
@@ -153,6 +154,13 @@ class _ScanIdCardScreenState extends State<ScanIdCardScreen>
   }
 
   Widget _buildGalleryButton(BuildContext context) {
+    final isDark = context.isDark;
+    final ext = context.appTheme;
+
+    final greenColor = isDark ? Colors.green[300]! : const Color(0xFF10B981);
+    final borderColor = isDark ? ext.cardBorder : const Color(0xFF10B981).withOpacity(0.2);
+    final shadowColor = isDark ? Colors.transparent : const Color(0xFF10B981).withOpacity(0.08);
+
     return GestureDetector(
       onTap: _pickFromGallery,
       child: Container(
@@ -160,22 +168,22 @@ class _ScanIdCardScreenState extends State<ScanIdCardScreen>
         height: 56,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: Colors.white,
+          color: ext.cardColor,
           border: Border.all(
-            color: const Color(0xFF10B981).withOpacity(0.2),
+            color: borderColor,
             width: 1.5,
           ),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF10B981).withOpacity(0.08),
+              color: shadowColor,
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
           ],
         ),
-        child: const Icon(
+        child: Icon(
           Icons.photo_library_rounded,
-          color: Color(0xFF10B981),
+          color: greenColor,
           size: 22,
         ),
       ),
@@ -183,6 +191,20 @@ class _ScanIdCardScreenState extends State<ScanIdCardScreen>
   }
 
   Widget _buildActionButtons(BuildContext context) {
+    final isDark = context.isDark;
+    final ext = context.appTheme;
+
+    // Retake button styles
+    final retakeBg = isDark ? const Color(0xFF2D1919) : const Color(0xFFFEF2F2);
+    final retakeBorder = isDark ? const Color(0xFFEF4444).withOpacity(0.4) : const Color(0xFFFCA5A5).withOpacity(0.6);
+    final retakeShadow = isDark ? Colors.transparent : const Color(0xFFEF4444).withOpacity(0.05);
+
+    // Gallery button styles
+    final galleryBg = isDark ? const Color(0xFF132D20) : const Color(0xFFECFDF5);
+    final galleryBorder = isDark ? const Color(0xFF10B981).withOpacity(0.4) : const Color(0xFFA7F3D0).withOpacity(0.6);
+    final galleryShadow = isDark ? Colors.transparent : const Color(0xFF10B981).withOpacity(0.05);
+    final galleryText = isDark ? Colors.green[300]! : const Color(0xFF059669);
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -193,14 +215,14 @@ class _ScanIdCardScreenState extends State<ScanIdCardScreen>
             height: 48,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(24),
-              color: const Color(0xFFFEF2F2),
+              color: retakeBg,
               border: Border.all(
-                color: const Color(0xFFFCA5A5).withOpacity(0.6),
+                color: retakeBorder,
                 width: 1,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFFEF4444).withOpacity(0.05),
+                  color: retakeShadow,
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -217,7 +239,7 @@ class _ScanIdCardScreenState extends State<ScanIdCardScreen>
                 const SizedBox(width: 8),
                 Text(
                   'retake_photo'.tr(),
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Color(0xFFEF4444),
                     fontSize: 13.5,
                     fontWeight: FontWeight.w700,
@@ -236,14 +258,14 @@ class _ScanIdCardScreenState extends State<ScanIdCardScreen>
             height: 48,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(24),
-              color: const Color(0xFFECFDF5),
+              color: galleryBg,
               border: Border.all(
-                color: const Color(0xFFA7F3D0).withOpacity(0.6),
+                color: galleryBorder,
                 width: 1,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF10B981).withOpacity(0.05),
+                  color: galleryShadow,
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -252,16 +274,16 @@ class _ScanIdCardScreenState extends State<ScanIdCardScreen>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(
+                Icon(
                   Icons.photo_library_rounded,
-                  color: Color(0xFF059669),
+                  color: galleryText,
                   size: 18,
                 ),
                 const SizedBox(width: 8),
                 Text(
                   'pick_gallery'.tr(),
                   style: TextStyle(
-                    color: Color(0xFF059669),
+                    color: galleryText,
                     fontSize: 13.5,
                     fontWeight: FontWeight.w700,
                     fontFamily: 'Inter Tight',
@@ -365,14 +387,16 @@ class _ScanIdCardScreenState extends State<ScanIdCardScreen>
         body: BlocBuilder<IdCubit, IdState>(
           builder: (context, state) {
             final isLoading = state is IdLoading;
+            final isDark = context.isDark;
+            final ext = context.appTheme;
             return Stack(
               children: [
                 Container(
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
-                      colors: [AppColors.bgTop, AppColors.bgBottom],
+                      colors: [ext.bgGradientTop, ext.bgGradientBottom],
                     ),
                   ),
                   child: SafeArea(
@@ -418,7 +442,7 @@ class _ScanIdCardScreenState extends State<ScanIdCardScreen>
                               'tap_capture_or_gallery'.tr(),
                               style: TextStyle(
                                 fontSize: 12,
-                                color: AppColors.tealMuted,
+                                color: isDark ? Colors.green[300]! : AppColors.tealMuted,
                               ),
                             ),
                           ] else ...[

@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
 import 'package:smart_queue/features/map/data/models/branch_model.dart';
 
 class UserMapView extends StatelessWidget {
@@ -30,8 +31,9 @@ class UserMapView extends StatelessWidget {
       options: MapOptions(initialCenter: userLocation, initialZoom: 15),
       children: [
         TileLayer(
-          urlTemplate:
-              'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+          urlTemplate: context.isDark
+              ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+              : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
           subdomains: const ['a', 'b', 'c', 'd'],
           userAgentPackageName: 'com.example.smart_queue',
         ),
@@ -194,6 +196,11 @@ class _SelectedBranchMarkerState extends State<_SelectedBranchMarker>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = context.isDark;
+    final teal = isDark ? Colors.green[300]! : AppColors.teal;
+    final tealDark = isDark ? Colors.green[700]! : const Color(0xFF164A27);
+    final tealLight = isDark ? Colors.green[200]! : AppColors.tealLight;
+
     return ScaleTransition(
       scale: _scaleAnimation,
       child: Column(
@@ -202,13 +209,13 @@ class _SelectedBranchMarkerState extends State<_SelectedBranchMarker>
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [AppColors.teal, Color(0xFF164A27)],
+              gradient: LinearGradient(
+                colors: [teal, tealDark],
               ),
               borderRadius: BorderRadius.circular(14),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.teal.withOpacity(0.25),
+                  color: teal.withOpacity(0.25),
                   blurRadius: 6,
                   offset: const Offset(0, 3),
                 ),
@@ -226,9 +233,9 @@ class _SelectedBranchMarkerState extends State<_SelectedBranchMarker>
                   ),
                 ),
                 const SizedBox(width: 3),
-                const Icon(
+                Icon(
                   Icons.arrow_forward_ios,
-                  color: AppColors.tealLight,
+                  color: tealLight,
                   size: 9,
                 ),
               ],
@@ -238,9 +245,9 @@ class _SelectedBranchMarkerState extends State<_SelectedBranchMarker>
           Container(
             padding: const EdgeInsets.all(5),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: context.appTheme.cardColor,
               shape: BoxShape.circle,
-              border: Border.all(color: AppColors.teal, width: 2),
+              border: Border.all(color: teal, width: 2),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.12),
@@ -249,9 +256,9 @@ class _SelectedBranchMarkerState extends State<_SelectedBranchMarker>
                 ),
               ],
             ),
-            child: const Icon(
+            child: Icon(
               Icons.storefront_rounded,
-              color: AppColors.teal,
+              color: teal,
               size: 18,
             ),
           ),
@@ -267,13 +274,16 @@ class _UnselectedBranchMarker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ext = context.appTheme;
+    final isDark = context.isDark;
+    final iconColor = isDark ? Colors.green[400]! : AppColors.tealMuted;
     return Center(
       child: Container(
         padding: const EdgeInsets.all(6),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: ext.cardColor,
           shape: BoxShape.circle,
-          border: Border.all(color: Colors.grey.shade300, width: 1.5),
+          border: Border.all(color: ext.cardBorder, width: 1.5),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.08),
@@ -282,9 +292,9 @@ class _UnselectedBranchMarker extends StatelessWidget {
             ),
           ],
         ),
-        child: const Icon(
+        child: Icon(
           Icons.storefront_rounded,
-          color: AppColors.tealMuted,
+          color: iconColor,
           size: 16,
         ),
       ),

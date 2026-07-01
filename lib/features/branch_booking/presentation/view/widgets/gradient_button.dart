@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
 
 class GradientButton extends StatefulWidget {
   final String text;
@@ -62,17 +63,17 @@ class _GradientButtonState extends State<GradientButton>
           height: 56,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
-            gradient: const LinearGradient(
-              colors: [
-                AppColors.tealLight,
-                AppColors.teal,
-              ],
+            gradient: LinearGradient(
+              colors: context.isDark
+                  ? [Colors.green[400]!, Colors.green[700]!]
+                  : [AppColors.tealLight, AppColors.teal],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             boxShadow: [
               BoxShadow(
-                color: AppColors.teal.withOpacity(0.25),
+                color: (context.isDark ? Colors.green[400]! : AppColors.teal)
+                    .withOpacity(0.25),
                 blurRadius: 10,
                 offset: const Offset(0, 6),
               ),

@@ -7,6 +7,7 @@ import 'package:smart_queue/core/constants/app_assets.dart';
 import 'package:smart_queue/core/localization/api_localization.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
 import 'package:smart_queue/core/widgets/app_flushbar.dart';
 import 'package:smart_queue/features/forget_password/presentation/cubit/forget_password_cubit.dart';
 
@@ -35,15 +36,16 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final ext = context.appTheme;
     return Scaffold(
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xffEEFEFF), Color(0xffD6F9F7)],
+            colors: [ext.bgGradientTop, ext.bgGradientBottom],
           ),
         ),
         child: SafeArea(
@@ -62,9 +64,10 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                 Center(
                   child: Text(
                     'create_new_password'.tr(),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                 ),
@@ -73,7 +76,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                   child: Text(
                     'new_password_hint'.tr(),
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 15, color: Color(0xFF8E8E93)),
+                    style: TextStyle(fontSize: 15, color: ext.subtleText),
                   ),
                 ),
                 const SizedBox(height: 40),
@@ -190,37 +193,40 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
     required bool isHidden,
     required VoidCallback onToggle,
   }) {
+    final ext = context.appTheme;
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: ext.cardColor,
         borderRadius: BorderRadius.circular(30),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x0D000000),
-            blurRadius: 10,
-            offset: Offset(0, 5),
-          ),
-        ],
+        border: Border.all(color: AppColors.greenStart.withOpacity(0.3)),
+        boxShadow:
+            context.isDark
+                ? []
+                : const [
+                  BoxShadow(
+                    color: Color(0x0D000000),
+                    blurRadius: 10,
+                    offset: Offset(0, 5),
+                  ),
+                ],
       ),
       child: TextFormField(
         controller: controller,
         obscureText: isHidden,
         cursorColor: AppColors.greenStart,
+        style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: const TextStyle(color: Color(0xFFC7C7CC)),
+          hintStyle: TextStyle(color: ext.subtleText.withOpacity(0.7)),
           prefixIcon: IntrinsicHeight(
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 const SizedBox(width: 16),
-                const Icon(
-                  Icons.lock_outline_rounded,
-                  color: Color(0xFFC7C7CC),
-                ),
+                Icon(Icons.lock_outline_rounded, color: ext.subtleText),
                 const SizedBox(width: 12),
-                const VerticalDivider(
-                  color: Color(0x7FC7C7CC),
+                VerticalDivider(
+                  color: ext.cardBorder,
                   thickness: 1,
                   indent: 14,
                   endIndent: 14,
@@ -237,7 +243,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                 isHidden
                     ? Icons.visibility_outlined
                     : Icons.visibility_off_outlined,
-                color: const Color(0xFFC7C7CC),
+                color: ext.subtleText,
                 size: 22,
               ),
               onPressed: onToggle,
@@ -300,7 +306,11 @@ class FieldLabel extends StatelessWidget {
       padding: const EdgeInsets.only(left: 8, bottom: 8),
       child: Text(
         text,
-        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+          color: Theme.of(context).colorScheme.onSurface,
+        ),
       ),
     );
   }

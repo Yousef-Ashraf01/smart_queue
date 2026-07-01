@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
 import 'package:smart_queue/features/welcome/presentation/view/widgets/hello_illustration.dart';
 import 'package:smart_queue/features/welcome/presentation/view/widgets/login_button.dart';
 import 'package:smart_queue/features/welcome/presentation/view/widgets/register_button.dart';
@@ -60,15 +61,16 @@ class _WelcomeScreenState extends State<WelcomeScreen>
 
   @override
   Widget build(BuildContext context) {
+    final ext = context.appTheme;
     return Scaffold(
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xffEEFEFF), Color(0xffD6F9F7)],
+            colors: [ext.bgGradientTop, ext.bgGradientBottom],
           ),
         ),
         child: SafeArea(
@@ -99,11 +101,14 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                     margin: const EdgeInsets.fromLTRB(16, 0, 16, 28),
                     padding: const EdgeInsets.fromLTRB(28, 28, 28, 22),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: ext.cardColor,
                       borderRadius: BorderRadius.circular(28),
+                      border: Border.all(color: ext.cardBorder),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF0D7A8A).withOpacity(0.10),
+                          color: Colors.black.withOpacity(
+                            context.isDark ? 0.22 : 0.10,
+                          ),
                           blurRadius: 30,
                           offset: const Offset(0, 10),
                         ),
@@ -115,10 +120,10 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                         Text(
                           'welcome_title'.tr(),
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.w800,
-                            color: Color(0xFF0D2D35),
+                            color: Theme.of(context).colorScheme.onSurface,
                             height: 1.25,
                             letterSpacing: -0.4,
                           ),
@@ -127,9 +132,9 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                         Text(
                           'welcome_desc'.tr(),
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 14,
-                            color: Colors.grey,
+                            color: ext.subtleText,
                             height: 1.5,
                           ),
                         ),

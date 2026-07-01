@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
 import 'package:smart_queue/features/auth/presentaion/cubit/auth_cubit.dart';
 
 class LogoutDialog extends StatelessWidget {
@@ -16,8 +17,10 @@ class LogoutDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ext = context.appTheme;
+    final primary = Theme.of(context).colorScheme.primary;
     return Dialog(
-      backgroundColor: Colors.white,
+      backgroundColor: ext.cardColor,
       elevation: 8,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       child: Padding(
@@ -27,32 +30,28 @@ class LogoutDialog extends StatelessWidget {
           children: [
             Container(
               padding: const EdgeInsets.all(14),
-              decoration: const BoxDecoration(
-                color: Color(0xFFE8F8F6),
+              decoration: BoxDecoration(
+                color: primary.withOpacity(context.isDark ? 0.18 : 0.12),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
-                Icons.logout_rounded,
-                color: Color(0xFF00BFA6),
-                size: 32,
-              ),
+              child: Icon(Icons.logout_rounded, color: primary, size: 32),
             ),
             const SizedBox(height: 20),
             Text(
               "logout_title".tr(),
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.w600,
-                color: Colors.black87,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 12),
             Text(
               "logout_confirm_msg".tr(),
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 15,
-                color: Colors.black54,
+                color: ext.subtleText,
                 height: 1.4,
               ),
             ),
@@ -63,7 +62,7 @@ class LogoutDialog extends StatelessWidget {
                 Expanded(
                   child: OutlinedButton(
                     style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: Color(0xFF00BFA6)),
+                      side: BorderSide(color: primary),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
@@ -74,8 +73,8 @@ class LogoutDialog extends StatelessWidget {
                     },
                     child: Text(
                       "cancel".tr(),
-                      style: const TextStyle(
-                        color: Color(0xFF00BFA6),
+                      style: TextStyle(
+                        color: primary,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -85,7 +84,7 @@ class LogoutDialog extends StatelessWidget {
                 Expanded(
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF00BFA6),
+                      backgroundColor: primary,
                       elevation: 0,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(

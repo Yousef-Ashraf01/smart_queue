@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
 
 class CustomTextField extends StatelessWidget {
   final String? initialValue;
@@ -32,6 +33,13 @@ class CustomTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ext = context.appTheme;
+    final isDark = context.isDark;
+    final disabledColor =
+        isDark ? ext.cardBorder.withOpacity(0.55) : Colors.grey.shade200;
+    final fieldColor = isDisabled ? disabledColor : ext.cardColor;
+    final textColor =
+        isDisabled ? ext.subtleText : Theme.of(context).colorScheme.onSurface;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -40,8 +48,8 @@ class CustomTextField extends StatelessWidget {
             padding: const EdgeInsets.only(left: 4, bottom: 8),
             child: Text(
               label!,
-              style: const TextStyle(
-                color: Color(0xFF8E8E93),
+              style: TextStyle(
+                color: ext.subtleText,
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
               ),
@@ -55,20 +63,14 @@ class CustomTextField extends StatelessWidget {
           onTap: onTap,
           keyboardType: keyboardType,
           cursorColor: isDisabled ? Colors.grey : AppColors.greenStart,
-          style: TextStyle(
-            color: isDisabled ? Colors.grey : Colors.black,
-            fontSize: 15,
-          ),
+          style: TextStyle(color: textColor, fontSize: 15),
           onChanged: onChanged,
           validator: validator,
           decoration: InputDecoration(
             hintText: hintText,
-            hintStyle: TextStyle(
-              color:
-                  isDisabled ? Colors.grey.shade400 : const Color(0xFFC7C7CC),
-            ),
+            hintStyle: TextStyle(color: ext.subtleText.withOpacity(0.7)),
             filled: true,
-            fillColor: isDisabled ? Colors.grey.shade200 : Colors.white,
+            fillColor: fieldColor,
 
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
@@ -76,7 +78,28 @@ class CustomTextField extends StatelessWidget {
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(30),
-              borderSide: BorderSide.none,
+              borderSide: BorderSide(
+                color:
+                    isDisabled
+                        ? ext.cardBorder
+                        : AppColors.greenStart.withOpacity(0.3),
+              ),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(30),
+              borderSide: BorderSide(
+                color:
+                    isDisabled
+                        ? ext.cardBorder
+                        : AppColors.greenStart.withOpacity(0.3),
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(30),
+              borderSide: BorderSide(
+                color: isDisabled ? ext.cardBorder : AppColors.greenStart,
+                width: 1.4,
+              ),
             ),
           ),
         ),

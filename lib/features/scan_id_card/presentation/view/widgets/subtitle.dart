@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
 
 class Subtitle extends StatelessWidget {
   const Subtitle({super.key});
@@ -11,7 +12,7 @@ class Subtitle extends StatelessWidget {
       style: TextStyle(
         fontSize: 13,
         fontWeight: FontWeight.w500,
-        color: Colors.grey[600],
+        color: context.appTheme.subtleText,
         fontFamily: 'Inter Tight',
       ),
     );

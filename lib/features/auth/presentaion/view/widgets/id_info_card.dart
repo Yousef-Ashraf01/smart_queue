@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
 import 'package:smart_queue/core/styling/app_styles.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
 
 class IdInfoCard extends StatelessWidget {
   final String name;
@@ -19,38 +20,46 @@ class IdInfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = context.isDark;
+    final ext = context.appTheme;
+    final borderGreen = isDark
+        ? Colors.green[800]!.withOpacity(0.4)
+        : AppColors.tealLight.withOpacity(0.5);
+
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: ext.cardColor,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: AppColors.tealLight.withOpacity(0.5),
+          color: borderGreen,
           width: 1.2,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.teal.withOpacity(0.07),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
-          ),
-        ],
+        boxShadow: isDark
+            ? []
+            : [
+                BoxShadow(
+                  color: AppColors.teal.withOpacity(0.07),
+                  blurRadius: 16,
+                  offset: const Offset(0, 6),
+                ),
+              ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildHeader(),
+          _buildHeader(context),
           Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
-                _buildInfoRow(Icons.person_outline_rounded, 'full_name_label'.tr(), name),
+                _buildInfoRow(context, Icons.person_outline_rounded, 'full_name_label'.tr(), name),
                 const _InfoDivider(),
-                _buildInfoRow(Icons.badge_outlined, 'national_id_label'.tr(), nationalId),
+                _buildInfoRow(context, Icons.badge_outlined, 'national_id_label'.tr(), nationalId),
                 const _InfoDivider(),
-                _buildInfoRow(Icons.location_on_outlined, 'address_label'.tr(), address),
+                _buildInfoRow(context, Icons.location_on_outlined, 'address_label'.tr(), address),
                 const _InfoDivider(),
-                _buildInfoRow(Icons.cake_outlined, 'birth_date_label'.tr(), birthDate),
+                _buildInfoRow(context, Icons.cake_outlined, 'birth_date_label'.tr(), birthDate),
               ],
             ),
           ),
@@ -59,15 +68,26 @@ class IdInfoCard extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(BuildContext context) {
+    final isDark = context.isDark;
+    final ext = context.appTheme;
+    final headerGradientColors = isDark
+        ? [
+            Colors.green[900]!.withOpacity(0.4),
+            Colors.green[900]!.withOpacity(0.1),
+          ]
+        : [
+            AppColors.tealLight.withOpacity(0.3),
+            AppColors.tealLight.withOpacity(0.1),
+          ];
+    final badgeColor = isDark ? Colors.green[800]! : AppColors.teal;
+    final textColor = isDark ? Colors.green[300]! : AppColors.teal;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            AppColors.tealLight.withOpacity(0.3),
-            AppColors.tealLight.withOpacity(0.1),
-          ],
+          colors: headerGradientColors,
         ),
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -76,7 +96,7 @@ class IdInfoCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
-              color: AppColors.teal,
+              color: badgeColor,
               borderRadius: BorderRadius.circular(8),
             ),
             child: const Icon(
@@ -88,21 +108,26 @@ class IdInfoCard extends StatelessWidget {
           const SizedBox(width: 10),
           Text(
             'verified_from_id'.tr(),
-            style: const TextStyle(
+            style: TextStyle(
               fontFamily: AppStyle.fontFamily,
               fontWeight: FontWeight.w700,
               fontSize: 14,
-              color: AppColors.teal,
+              color: textColor,
             ),
           ),
           const Spacer(),
-          const Icon(Icons.lock_outline_rounded, size: 14, color: AppColors.greyText),
+          Icon(Icons.lock_outline_rounded, size: 14, color: ext.subtleText),
         ],
       ),
     );
   }
 
-  Widget _buildInfoRow(IconData icon, String label, String value) {
+  Widget _buildInfoRow(BuildContext context, IconData icon, String label, String value) {
+    final isDark = context.isDark;
+    final ext = context.appTheme;
+    final iconColor = isDark ? Colors.green[300]!.withOpacity(0.7) : AppColors.teal.withOpacity(0.6);
+    final valueColor = isDark ? Colors.green[300]! : AppColors.teal;
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
@@ -111,7 +136,7 @@ class IdInfoCard extends StatelessWidget {
           Icon(
             icon,
             size: 18,
-            color: AppColors.teal.withOpacity(0.6),
+            color: iconColor,
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -120,20 +145,20 @@ class IdInfoCard extends StatelessWidget {
               children: [
                 Text(
                   label,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: AppStyle.fontFamily,
-                    fontSize: 11, 
-                    color: AppColors.greyText,
+                    fontSize: 11,
+                    color: ext.subtleText,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   value.isEmpty ? '—' : value,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: AppStyle.fontFamily,
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.teal,
+                    color: valueColor,
                   ),
                 ),
               ],
@@ -153,7 +178,7 @@ class _InfoDivider extends StatelessWidget {
     return Divider(
       height: 16,
       thickness: 0.8,
-      color: Colors.grey.withOpacity(0.15),
+      color: context.appTheme.cardBorder.withOpacity(0.15),
     );
   }
 }

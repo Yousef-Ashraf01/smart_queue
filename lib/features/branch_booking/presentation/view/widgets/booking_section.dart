@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
 
 class BookingSection extends StatelessWidget {
   final String title;
@@ -17,6 +18,9 @@ class BookingSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = context.isDark;
+    final teal = isDark ? Colors.green[400]! : AppColors.teal;
+
     return IntrinsicHeight(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -30,11 +34,11 @@ class BookingSection extends StatelessWidget {
                   width: 26,
                   height: 26,
                   decoration: BoxDecoration(
-                    color: AppColors.teal,
+                    color: teal,
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.teal.withOpacity(0.2),
+                        color: teal.withOpacity(0.2),
                         blurRadius: 4,
                         offset: const Offset(0, 2),
                       ),
@@ -55,7 +59,7 @@ class BookingSection extends StatelessWidget {
                   Expanded(
                     child: Container(
                       width: 2,
-                      color: AppColors.teal.withOpacity(0.15),
+                      color: teal.withOpacity(0.15),
                       margin: const EdgeInsets.symmetric(vertical: 6),
                     ),
                   ),
@@ -70,10 +74,10 @@ class BookingSection extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.teal,
+                    color: teal,
                     fontFamily: 'Inter Tight',
                   ),
                 ),

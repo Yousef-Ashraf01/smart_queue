@@ -1,13 +1,14 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:smart_queue/core/constants/app_assets.dart';
 import 'package:smart_queue/core/localization/api_localization.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
 import 'package:smart_queue/core/styling/app_styles.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
 import 'package:smart_queue/core/widgets/app_flushbar.dart';
 import 'package:smart_queue/core/widgets/app_top_bar.dart';
 import 'package:smart_queue/features/auth/data/models/profile_model.dart';
@@ -131,11 +132,14 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
               children: [
                 Container(
                   width: double.infinity,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
-                      colors: [Color(0xffEEFEFF), Color(0xffD6F9F7)],
+                      colors: [
+                        context.appTheme.bgGradientTop,
+                        context.appTheme.bgGradientBottom,
+                      ],
                     ),
                   ),
                 ),
@@ -146,7 +150,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                       AppTopBar(),
                       Text(
                         'personal_info_title'.tr(),
-                        style: AppStyle.appBarTitle,
+                        style: AppStyle.appBarTitle.adaptive(context),
                       ),
                       const SizedBox(height: 20),
                       Expanded(child: _buildContent()),
@@ -226,7 +230,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
       AppButton(
         text: "logout_title".tr(),
         iconPath: AppAssets.iconloginout,
-        backgroundColor: Colors.red,
+        backgroundColor: Theme.of(context).colorScheme.error,
         onPressed: () => LogoutDialog.show(context),
       ),
       const SizedBox(height: 20),

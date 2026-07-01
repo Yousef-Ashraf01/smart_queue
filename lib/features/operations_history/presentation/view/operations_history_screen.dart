@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:smart_queue/core/localization/api_localization.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
 import 'package:smart_queue/core/services/bookmark_service.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
 import 'package:smart_queue/core/widgets/app_flushbar.dart';
 import 'package:smart_queue/core/widgets/notification_widget.dart';
 import 'package:smart_queue/features/operations_history/presentation/cubit/operations_cubit.dart';
@@ -102,14 +103,18 @@ class _OperationsHistoryScreenState extends State<OperationsHistoryScreen>
 
   @override
   Widget build(BuildContext context) {
+    final ext = context.appTheme;
     return Container(
       width: double.infinity,
       height: double.infinity,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [Color(0xffEEFEFF), Color(0xffD6F9F7)],
+          colors: [
+            context.appTheme.bgGradientTop,
+            context.appTheme.bgGradientBottom,
+          ],
         ),
       ),
       child: SafeArea(
@@ -135,7 +140,8 @@ class _OperationsHistoryScreenState extends State<OperationsHistoryScreen>
                                   style: TextStyle(
                                     fontSize: 26,
                                     fontWeight: FontWeight.w800,
-                                    color: const Color(0xFF1A1D4E),
+                                    color:
+                                        Theme.of(context).colorScheme.onSurface,
                                     letterSpacing: -0.5,
                                   ),
                                 ),
@@ -155,7 +161,7 @@ class _OperationsHistoryScreenState extends State<OperationsHistoryScreen>
                                       style: TextStyle(
                                         fontSize: 13,
                                         fontWeight: FontWeight.w500,
-                                        color: Colors.grey[500],
+                                        color: ext.subtleText,
                                       ),
                                     );
                                   },
@@ -247,7 +253,7 @@ class _OperationsHistoryScreenState extends State<OperationsHistoryScreen>
                         context.read<OperationsCubit>().fetchOperations();
                       },
                       color: const Color(0xFF10B981),
-                      backgroundColor: Colors.white,
+                      backgroundColor: ext.cardColor,
                       displacement: 20,
                       child: AnimationLimiter(
                         child: ListView.builder(
@@ -270,7 +276,8 @@ class _OperationsHistoryScreenState extends State<OperationsHistoryScreen>
                                     height: 24,
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2.5,
-                                      color: const Color(0xFF10B981),
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
                                     ),
                                   ),
                                 ),
@@ -384,6 +391,7 @@ class _FilterChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ext = context.appTheme;
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
@@ -397,11 +405,13 @@ class _FilterChip extends StatelessWidget {
                     colors: [Color(0xFF10B981), Color(0xFF34D399)],
                   )
                   : null,
-          color: isSelected ? null : Colors.white.withOpacity(0.7),
+          color:
+              isSelected
+                  ? null
+                  : ext.cardColor.withOpacity(context.isDark ? 0.9 : 0.7),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color:
-                isSelected ? Colors.transparent : Colors.grey.withOpacity(0.15),
+            color: isSelected ? Colors.transparent : ext.cardBorder,
             width: 1,
           ),
           boxShadow:
@@ -421,7 +431,7 @@ class _FilterChip extends StatelessWidget {
             Icon(
               icon,
               size: 15,
-              color: isSelected ? Colors.white : Colors.grey[500],
+              color: isSelected ? Colors.white : ext.subtleText,
             ),
             const SizedBox(width: 6),
             Text(
@@ -429,7 +439,7 @@ class _FilterChip extends StatelessWidget {
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                color: isSelected ? Colors.white : Colors.grey[600],
+                color: isSelected ? Colors.white : ext.subtleText,
               ),
             ),
           ],
@@ -447,6 +457,7 @@ class _EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final data = _emptyData;
+    final ext = context.appTheme;
 
     return Center(
       child: Padding(
@@ -468,15 +479,15 @@ class _EmptyState extends StatelessWidget {
                 ),
                 shape: BoxShape.circle,
               ),
-              child: Icon(data.icon, size: 44, color: Colors.grey[400]),
+              child: Icon(data.icon, size: 44, color: ext.subtleText),
             ),
             const SizedBox(height: 24),
             Text(
               data.title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF1A1D4E),
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 8),
@@ -485,7 +496,7 @@ class _EmptyState extends StatelessWidget {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
-                color: Colors.grey[500],
+                color: ext.subtleText,
                 height: 1.5,
               ),
             ),
@@ -541,6 +552,7 @@ class _ErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ext = context.appTheme;
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 40),
@@ -557,7 +569,7 @@ class _ErrorState extends StatelessWidget {
               child: Icon(
                 Icons.cloud_off_rounded,
                 size: 36,
-                color: Colors.grey[400],
+                color: ext.subtleText,
               ),
             ),
             const SizedBox(height: 20),
@@ -566,7 +578,7 @@ class _ErrorState extends StatelessWidget {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF1A1D4E),
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 8),
@@ -575,7 +587,7 @@ class _ErrorState extends StatelessWidget {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
-                color: Colors.grey[500],
+                color: ext.subtleText,
                 height: 1.4,
               ),
             ),

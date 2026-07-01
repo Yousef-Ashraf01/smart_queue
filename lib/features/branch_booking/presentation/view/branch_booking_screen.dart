@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:smart_queue/core/localization/api_localization.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
 import 'package:smart_queue/core/utils/booking_keys.dart';
 import 'package:smart_queue/core/widgets/app_flushbar.dart';
 import 'package:smart_queue/core/widgets/app_top_bar.dart';
@@ -75,6 +76,7 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final ext = context.appTheme;
     return BranchBookingListener(
       onSlotsLoaded: (slots) {
         _cachedSlots = slots;
@@ -107,11 +109,11 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
 
       child: Scaffold(
         body: Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [AppColors.bgTop, AppColors.bgBottom],
+              colors: [ext.bgGradientTop, ext.bgGradientBottom],
             ),
           ),
           child: SafeArea(
@@ -139,7 +141,7 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
                             }
                             if (state is ServiceCounterLoaded) {
                               if (state.serviceCounter.isEmpty) {
-                                return const EmptyServices();
+                                  return const EmptyServices();
                               }
                               return GestureDetector(
                                 onTap:
@@ -189,11 +191,17 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
                           builder:
                               (context, child) => Theme(
                                 data: Theme.of(context).copyWith(
-                                  colorScheme: const ColorScheme.light(
-                                    primary: AppColors.teal,
-                                    onPrimary: Colors.white,
-                                    onSurface: AppColors.blackColor,
-                                  ),
+                                  colorScheme: context.isDark
+                                      ? const ColorScheme.dark(
+                                          primary: AppColors.teal,
+                                          onPrimary: Colors.white,
+                                          onSurface: Colors.white,
+                                        )
+                                      : const ColorScheme.light(
+                                          primary: AppColors.teal,
+                                          onPrimary: Colors.white,
+                                          onSurface: AppColors.blackColor,
+                                        ),
                                   textButtonTheme: TextButtonThemeData(
                                     style: TextButton.styleFrom(
                                       foregroundColor: AppColors.teal,
@@ -245,13 +253,13 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
                               color:
                                   selectedSlot != null
                                       ? AppColors.teal.withValues(alpha: 0.03)
-                                      : Colors.white,
+                                      : ext.cardColor,
                               borderRadius: BorderRadius.circular(14),
                               border: Border.all(
                                 color:
                                     selectedSlot != null
                                         ? AppColors.teal.withValues(alpha: 0.3)
-                                        : Colors.grey.shade200,
+                                        : ext.cardBorder,
                                 width: 1.2,
                               ),
                               boxShadow: [
@@ -307,7 +315,7 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
                                         color:
                                             selectedSlot != null
                                                 ? AppColors.teal
-                                                : Colors.grey.shade500,
+                                                : ext.subtleText,
                                         fontFamily: 'Inter Tight',
                                       ),
                                     ),
@@ -325,7 +333,7 @@ class _BranchBookingScreenState extends State<BranchBookingScreen> {
                                   else
                                     Icon(
                                       Icons.keyboard_arrow_down_rounded,
-                                      color: Colors.grey.shade400,
+                                      color: ext.subtleText,
                                       size: 20,
                                     ),
                                 ],

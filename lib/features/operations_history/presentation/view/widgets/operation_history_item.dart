@@ -1,7 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:smart_queue/core/localization/api_localization.dart';
-import 'package:smart_queue/core/styling/app_colors.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
 import 'package:smart_queue/features/branch_booking/data/models/appointment_response_model.dart';
 
 class OperationHistoryItem extends StatelessWidget {
@@ -73,6 +73,7 @@ class OperationHistoryItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final status = _status;
+    final ext = context.appTheme;
 
     return GestureDetector(
       onTap: onTap,
@@ -98,10 +99,10 @@ class OperationHistoryItem extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
           child: Container(
             decoration: BoxDecoration(
-              color: AppColors.whiteColor.withOpacity(0.85),
+              color: ext.cardColor.withOpacity(0.88),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: Colors.white.withOpacity(0.6),
+                color: ext.cardBorder.withOpacity(0.6),
                 width: 1,
               ),
             ),
@@ -161,10 +162,13 @@ class OperationHistoryItem extends StatelessWidget {
                                   children: [
                                     Text(
                                       item.counter.service.name.localizedApi,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 15,
                                         fontWeight: FontWeight.w700,
-                                        color: Color(0xFF1A1D4E),
+                                        color:
+                                            Theme.of(
+                                              context,
+                                            ).colorScheme.onSurface,
                                         letterSpacing: -0.2,
                                       ),
                                       overflow: TextOverflow.ellipsis,
@@ -178,7 +182,7 @@ class OperationHistoryItem extends StatelessWidget {
                                           .localizedApi,
                                       style: TextStyle(
                                         fontSize: 12,
-                                        color: Colors.grey[500],
+                                        color: ext.subtleText.withOpacity(0.8),
                                         height: 1.2,
                                       ),
                                       maxLines: 1,
@@ -203,8 +207,8 @@ class OperationHistoryItem extends StatelessWidget {
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
                                 colors: [
-                                  Colors.grey.shade200,
-                                  Colors.grey.shade100,
+                                  ext.subtleText.withOpacity(0.2),
+                                  ext.subtleText.withOpacity(0.1),
                                   Colors.transparent,
                                 ],
                               ),
@@ -339,7 +343,7 @@ class OperationHistoryItem extends StatelessWidget {
                                             ? const Color(
                                               0xFF10B981,
                                             ).withOpacity(0.1)
-                                            : Colors.grey.withOpacity(0.06),
+                                            : ext.subtleText.withOpacity(0.08),
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                   child: Icon(
@@ -350,7 +354,7 @@ class OperationHistoryItem extends StatelessWidget {
                                     color:
                                         isBookmarked
                                             ? const Color(0xFF10B981)
-                                            : Colors.grey[400],
+                                            : ext.subtleText,
                                   ),
                                 ),
                               ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
 
 import 'app_colors.dart';
 
@@ -131,3 +132,18 @@ class AppStyle {
     color: AppColors.greyText,
   );
 }
+
+extension TextStyleExtension on TextStyle {
+  TextStyle adaptive(BuildContext context) {
+    return copyWith(
+      color: context.isDark ? const Color(0xFFE6EDF3) : color,
+    );
+  }
+
+  TextStyle adaptiveDim(BuildContext context) {
+    return copyWith(
+      color: context.isDark ? const Color(0xFF8B949E) : color,
+    );
+  }
+}
+

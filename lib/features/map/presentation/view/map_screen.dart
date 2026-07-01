@@ -7,6 +7,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:smart_queue/core/localization/api_localization.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
 import 'package:smart_queue/features/map/data/models/branch_model.dart';
 import 'package:smart_queue/features/map/presentation/cubit/branch_cubit.dart';
 import 'package:smart_queue/features/map/presentation/view/widgets/branches_bottom_sheet.dart';
@@ -153,6 +154,7 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final ext = context.appTheme;
     if (isLoading) {
       return const _MapScreenLoadingView();
     }
@@ -210,20 +212,23 @@ class _MapScreenState extends State<MapScreen> {
                     children: [
                       Container(
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: ext.cardColor,
                           borderRadius: BorderRadius.circular(14),
+                          border: Border.all(color: ext.cardBorder),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.08),
+                              color: Colors.black.withOpacity(
+                                context.isDark ? 0.22 : 0.08,
+                              ),
                               blurRadius: 10,
                               offset: const Offset(0, 4),
                             ),
                           ],
                         ),
                         child: IconButton(
-                          icon: const Icon(
+                          icon: Icon(
                             Icons.arrow_back_ios_new_rounded,
-                            color: AppColors.teal,
+                            color: Theme.of(context).colorScheme.primary,
                             size: 20,
                           ),
                           onPressed: () => Navigator.of(context).pop(),
@@ -233,14 +238,14 @@ class _MapScreenState extends State<MapScreen> {
                       Expanded(
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.95),
+                            color: ext.cardColor.withOpacity(0.95),
                             borderRadius: BorderRadius.circular(14),
-                            border: Border.all(
-                              color: Colors.white.withOpacity(0.6),
-                            ),
+                            border: Border.all(color: ext.cardBorder),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.08),
+                                color: Colors.black.withOpacity(
+                                  context.isDark ? 0.22 : 0.08,
+                                ),
                                 blurRadius: 10,
                                 offset: const Offset(0, 4),
                               ),
@@ -249,26 +254,27 @@ class _MapScreenState extends State<MapScreen> {
                           child: TextField(
                             controller: searchController,
                             onChanged: _searchBranches,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 14,
                               fontFamily: 'Inter Tight',
                               fontWeight: FontWeight.w500,
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
-                            cursorColor: AppColors.teal,
+                            cursorColor: Theme.of(context).colorScheme.primary,
                             decoration: InputDecoration(
                               hintText: "search_nearby_branches".tr(),
-                              hintStyle: TextStyle(color: Colors.grey.shade500),
-                              prefixIcon: const Icon(
+                              hintStyle: TextStyle(color: ext.subtleText),
+                              prefixIcon: Icon(
                                 Icons.search_rounded,
-                                color: AppColors.teal,
+                                color: Theme.of(context).colorScheme.primary,
                                 size: 22,
                               ),
                               suffixIcon:
                                   searchController.text.isNotEmpty
                                       ? IconButton(
-                                        icon: const Icon(
+                                        icon: Icon(
                                           Icons.clear_rounded,
-                                          color: Colors.grey,
+                                          color: ext.subtleText,
                                           size: 20,
                                         ),
                                         onPressed: () {
@@ -299,8 +305,8 @@ class _MapScreenState extends State<MapScreen> {
                         mapController.move(userLocation!, 15);
                       }
                     },
-                    backgroundColor: Colors.white,
-                    foregroundColor: AppColors.teal,
+                    backgroundColor: ext.cardColor,
+                    foregroundColor: Theme.of(context).colorScheme.primary,
                     elevation: 4,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -349,15 +355,22 @@ class _MapScreenLoadingView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final shimmerBase = isDark ? Colors.grey[850]! : Colors.grey[200]!;
+    final shimmerHighlight = isDark ? Colors.grey[700]! : Colors.grey[50]!;
+    final shimmerBg = isDark ? Colors.grey[900]! : Colors.white;
+    final shimmerItem = isDark ? Colors.grey[800]! : Colors.white;
+    final sheetColor = isDark ? Colors.grey[900]! : Colors.white;
+
     return Scaffold(
       body: Stack(
         children: [
           // Background grid simulating map
           Shimmer.fromColors(
-            baseColor: Colors.grey[200]!,
-            highlightColor: Colors.grey[50]!,
+            baseColor: shimmerBase,
+            highlightColor: shimmerHighlight,
             child: Container(
-              color: Colors.white,
+              color: shimmerBg,
               child: GridView.builder(
                 physics: const NeverScrollableScrollPhysics(),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -369,7 +382,7 @@ class _MapScreenLoadingView extends StatelessWidget {
                     (context, index) => Container(
                       decoration: BoxDecoration(
                         border: Border.all(
-                          color: Colors.grey[100]!,
+                          color: isDark ? Colors.grey[800]! : Colors.grey[100]!,
                           width: 0.5,
                         ),
                       ),
@@ -387,13 +400,13 @@ class _MapScreenLoadingView extends StatelessWidget {
             child: Container(
               height: MediaQuery.of(context).size.height * 0.38,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+              decoration: BoxDecoration(
+                color: sheetColor,
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
               ),
               child: Shimmer.fromColors(
-                baseColor: Colors.grey[300]!,
-                highlightColor: Colors.grey[100]!,
+                baseColor: isDark ? Colors.grey[800]! : Colors.grey[300]!,
+                highlightColor: isDark ? Colors.grey[600]! : Colors.grey[100]!,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -402,7 +415,7 @@ class _MapScreenLoadingView extends StatelessWidget {
                         width: 40,
                         height: 5,
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: shimmerItem,
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
@@ -412,7 +425,7 @@ class _MapScreenLoadingView extends StatelessWidget {
                       width: 150,
                       height: 20,
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: shimmerItem,
                         borderRadius: BorderRadius.circular(6),
                       ),
                     ),
@@ -426,7 +439,7 @@ class _MapScreenLoadingView extends StatelessWidget {
                             (context, index) => Container(
                               height: 80,
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: shimmerItem,
                                 borderRadius: BorderRadius.circular(16),
                               ),
                             ),
@@ -489,10 +502,12 @@ class _LoadingRadarAnimationState extends State<_LoadingRadarAnimation>
             Container(
               width: 24,
               height: 24,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white,
-                boxShadow: [
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.grey[850]
+                    : Colors.white,
+                boxShadow: const [
                   BoxShadow(
                     color: Colors.black12,
                     blurRadius: 4,
@@ -551,7 +566,7 @@ class _MapErrorView extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black.withValues(alpha: 0.8),
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               const SizedBox(height: 12),
@@ -560,7 +575,7 @@ class _MapErrorView extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 14,
-                  color: Colors.grey.shade600,
+                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
                   height: 1.4,
                 ),
               ),

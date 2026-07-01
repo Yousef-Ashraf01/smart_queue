@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
 
 class ReadOnlyInfoCard extends StatelessWidget {
   final List<InfoItem> items;
@@ -6,11 +7,13 @@ class ReadOnlyInfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ext = context.appTheme;
+    final primary = Theme.of(context).colorScheme.primary;
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.7),
+        color: ext.cardColor.withOpacity(context.isDark ? 0.92 : 0.7),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFF00BFA6).withOpacity(0.2)),
+        border: Border.all(color: primary.withOpacity(0.25)),
       ),
       child: Column(
         children: List.generate(items.length, (index) {
@@ -24,7 +27,7 @@ class ReadOnlyInfoCard extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    Icon(item.icon, size: 20, color: const Color(0xFF00BFA6)),
+                    Icon(item.icon, size: 20, color: primary),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
@@ -32,18 +35,18 @@ class ReadOnlyInfoCard extends StatelessWidget {
                         children: [
                           Text(
                             item.label,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 12,
-                              color: Color(0xFF8E8E93),
+                              color: ext.subtleText,
                               fontWeight: FontWeight.w400,
                             ),
                           ),
                           const SizedBox(height: 2),
                           Text(
                             item.value.isEmpty ? '—' : item.value,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 14,
-                              color: Color(0xFF2D2D2D),
+                              color: Theme.of(context).colorScheme.onSurface,
                               fontWeight: FontWeight.w500,
                             ),
                             overflow: TextOverflow.ellipsis,
@@ -59,7 +62,7 @@ class ReadOnlyInfoCard extends StatelessWidget {
                 Divider(
                   height: 1,
                   indent: 48,
-                  color: const Color(0xFF00BFA6).withOpacity(0.15),
+                  color: primary.withOpacity(0.15),
                 ),
             ],
           );

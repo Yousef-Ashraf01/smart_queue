@@ -5,6 +5,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smart_queue/core/constants/app_assets.dart';
 import 'package:smart_queue/core/localization/api_localization.dart';
+import 'package:smart_queue/core/styling/app_colors.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
 import 'package:smart_queue/core/widgets/app_flushbar.dart';
 import 'package:smart_queue/features/app_settings/change_password/presentation/cubit/change_password_cubit.dart';
 import 'package:smart_queue/features/forget_password/presentation/view/create_new_password_screen.dart';
@@ -27,6 +29,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final ext = context.appTheme;
     return BlocListener<ChangePasswordCubit, ChangePasswordState>(
       listener: (context, state) {
         if (state is ChangePasswordSuccess) {
@@ -53,9 +56,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       child: Scaffold(
         body: Container(
           width: double.infinity,
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xffEEFEFF), Color(0xffD6F9F7)],
+              colors: [ext.bgGradientTop, ext.bgGradientBottom],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
             ),
@@ -77,9 +80,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   Center(
                     child: Text(
                       "change_password".tr(),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 26,
                         fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                   ),
@@ -90,7 +94,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     child: Text(
                       "change_password_subtitle".tr(),
                       textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.grey),
+                      style: TextStyle(color: ext.subtleText),
                     ),
                   ),
 
@@ -171,22 +175,29 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     required bool isHidden,
     required VoidCallback onToggle,
   }) {
+    final ext = context.appTheme;
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: ext.cardColor,
         borderRadius: BorderRadius.circular(30),
+        border: Border.all(color: AppColors.greenStart.withOpacity(0.3)),
       ),
       child: TextFormField(
         controller: controller,
         obscureText: isHidden,
-        cursorColor: Colors.green[200],
+        cursorColor: Theme.of(context).colorScheme.primary,
+        style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
         decoration: InputDecoration(
           hintText: hint,
+          hintStyle: TextStyle(color: ext.subtleText.withOpacity(0.7)),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(vertical: 18),
-          prefixIcon: const Icon(Icons.lock_outline),
+          prefixIcon: Icon(Icons.lock_outline, color: ext.subtleText),
           suffixIcon: IconButton(
-            icon: Icon(isHidden ? Icons.visibility : Icons.visibility_off),
+            icon: Icon(
+              isHidden ? Icons.visibility : Icons.visibility_off,
+              color: ext.subtleText,
+            ),
             onPressed: onToggle,
           ),
         ),

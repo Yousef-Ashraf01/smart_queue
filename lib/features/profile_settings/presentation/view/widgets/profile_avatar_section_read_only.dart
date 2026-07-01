@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:smart_queue/core/constants/app_assets.dart';
 import 'package:smart_queue/core/styling/app_styles.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
 
 class ProfileAvatarSectionReadOnly extends StatelessWidget {
   final String name;
@@ -24,6 +25,7 @@ class ProfileAvatarSectionReadOnly extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ext = context.appTheme;
     return Column(
       children: [
         // Premium Double-Ring Avatar
@@ -49,16 +51,14 @@ class ProfileAvatarSectionReadOnly extends StatelessWidget {
           ),
           child: Container(
             padding: const EdgeInsets.all(3),
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: Colors.white,
+              color: ext.cardColor,
             ),
             child: CircleAvatar(
               radius: 50,
-              backgroundColor: Colors.grey.shade100,
-              child: ClipOval(
-                child: _buildImage(),
-              ),
+              backgroundColor: ext.cardBorder.withOpacity(0.3),
+              child: ClipOval(child: _buildImage()),
             ),
           ),
         ),
@@ -67,18 +67,20 @@ class ProfileAvatarSectionReadOnly extends StatelessWidget {
         // Profile details cards
         Text(
           name,
-          style: AppStyle.userName.copyWith(
-            fontSize: 21,
-            fontWeight: FontWeight.w800,
-            letterSpacing: -0.5,
-          ),
+          style: AppStyle.userName
+              .copyWith(
+                fontSize: 21,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.5,
+              )
+              .adaptive(context),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 4),
         Text(
           email,
           style: TextStyle(
-            color: Colors.grey[500],
+            color: ext.subtleText,
             fontSize: 13.5,
             fontWeight: FontWeight.w500,
           ),
@@ -104,16 +106,17 @@ class ProfileAvatarSectionReadOnly extends StatelessWidget {
         width: 100,
         height: 100,
         fit: BoxFit.cover,
-        placeholder: (context, url) => const SizedBox(
-          width: 100,
-          height: 100,
-          child: Center(
-            child: CircularProgressIndicator(
-              strokeWidth: 2.5,
-              color: Color(0xFF10B981),
+        placeholder:
+            (context, url) => const SizedBox(
+              width: 100,
+              height: 100,
+              child: Center(
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.5,
+                  color: Color(0xFF10B981),
+                ),
+              ),
             ),
-          ),
-        ),
         errorWidget: (context, url, error) => _fallbackImage(),
       );
     }

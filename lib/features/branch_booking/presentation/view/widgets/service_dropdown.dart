@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:smart_queue/core/localization/api_localization.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
 import 'package:smart_queue/features/branch_booking/data/models/service_counter_model.dart';
 
 class ServiceDropdown extends StatelessWidget {
@@ -12,21 +13,22 @@ class ServiceDropdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isSelected = selectedService != null;
+    final ext = context.appTheme;
 
     return Container(
       decoration: BoxDecoration(
-        color: isSelected ? AppColors.teal.withOpacity(0.03) : Colors.white,
+        color: isSelected ? AppColors.teal.withOpacity(0.03) : ext.cardColor,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
           color:
               isSelected
                   ? AppColors.teal.withOpacity(0.3)
-                  : Colors.grey.shade200,
+                  : ext.cardBorder,
           width: 1.2,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withOpacity(context.isDark ? 0.12 : 0.02),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),
@@ -68,7 +70,7 @@ class ServiceDropdown extends StatelessWidget {
                       fontSize: 14,
                       fontWeight:
                           isSelected ? FontWeight.bold : FontWeight.w500,
-                      color: isSelected ? AppColors.teal : Colors.grey.shade500,
+                      color: isSelected ? AppColors.teal : ext.subtleText,
                       fontFamily: 'Inter Tight',
                     ),
                   ),
@@ -80,7 +82,7 @@ class ServiceDropdown extends StatelessWidget {
                       selectedService!.serviceDescription.localizedApi,
                       style: TextStyle(
                         fontSize: 11,
-                        color: Colors.grey.shade600,
+                        color: ext.subtleText,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -110,7 +112,7 @@ class ServiceDropdown extends StatelessWidget {
             ],
             Icon(
               Icons.keyboard_arrow_down_rounded,
-              color: Colors.grey.shade400,
+              color: ext.subtleText,
               size: 20,
             ),
           ],

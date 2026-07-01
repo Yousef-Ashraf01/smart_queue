@@ -11,6 +11,7 @@ import 'package:smart_queue/core/di/service_locator.dart';
 import 'package:smart_queue/core/localization/api_localization.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
 import 'package:smart_queue/core/styling/app_styles.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
 import 'package:smart_queue/features/home/data/models/organization_model.dart';
 import 'package:smart_queue/features/home/presentation/cubit/organization_cubit.dart';
 import 'package:smart_queue/features/map/data/models/branch_model.dart';
@@ -168,7 +169,7 @@ class _LiveBranchesMapCarouselState extends State<LiveBranchesMapCarousel> {
       children: [
         Text(
           'nearby_branches_for'.tr(args: [_selectedOrgName ?? '']),
-          style: AppStyle.bold16black,
+          style: AppStyle.bold16black.adaptive(context),
         ),
         const SizedBox(height: 16),
 
@@ -182,6 +183,7 @@ class _LiveBranchesMapCarouselState extends State<LiveBranchesMapCarousel> {
   }
 
   Widget _buildOrganizationSelector(List<OrganizationModel> organizations) {
+    final isDark = context.isDark;
     return SizedBox(
       height: 38,
       child: ListView.separated(
@@ -206,19 +208,20 @@ class _LiveBranchesMapCarouselState extends State<LiveBranchesMapCarousel> {
               duration: const Duration(milliseconds: 200),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                color: isSelected ? const Color(0xFF1A9E7A) : Colors.white,
+                color: isSelected ? const Color(0xFF1A9E7A) : context.appTheme.cardColor,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color:
-                      isSelected
-                          ? const Color(0xFF1A9E7A)
-                          : Colors.grey.shade300,
+                  color: isSelected
+                      ? const Color(0xFF1A9E7A)
+                      : (isDark ? context.appTheme.cardBorder : Colors.grey.shade300),
                 ),
               ),
               child: Text(
                 org.name.localizedApi,
                 style: TextStyle(
-                  color: isSelected ? Colors.white : Colors.grey.shade700,
+                  color: isSelected
+                      ? Colors.white
+                      : (isDark ? const Color(0xFF8B949E) : Colors.grey.shade700),
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
                 ),
@@ -229,6 +232,7 @@ class _LiveBranchesMapCarouselState extends State<LiveBranchesMapCarousel> {
       ),
     );
   }
+
 
   Widget _buildContent(OrganizationState orgState) {
     if (_isLoadingLocation ||
@@ -272,19 +276,26 @@ class _LiveBranchesMapCarouselState extends State<LiveBranchesMapCarousel> {
             (a, b) => (a.distanceInKm ?? 0).compareTo(b.distanceInKm ?? 0),
           );
 
+    final isDark = context.isDark;
     if (branches.isEmpty) {
       return Container(
         padding: const EdgeInsets.all(32),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.appTheme.cardColor,
           borderRadius: BorderRadius.circular(24),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-            ),
-          ],
+          border: Border.all(
+            color: isDark ? context.appTheme.cardBorder : Colors.transparent,
+            width: 1,
+          ),
+          boxShadow: isDark
+              ? []
+              : [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.04),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -293,22 +304,22 @@ class _LiveBranchesMapCarouselState extends State<LiveBranchesMapCarousel> {
               width: 64,
               height: 64,
               decoration: BoxDecoration(
-                color: Colors.grey.shade100,
+                color: isDark ? const Color(0xFF161B22) : Colors.grey.shade100,
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 Icons.location_off_rounded,
                 size: 28,
-                color: Colors.grey.shade400,
+                color: isDark ? const Color(0xFF8B949E) : Colors.grey.shade400,
               ),
             ),
             const SizedBox(height: 16),
             Text(
               'no_branches_found'.tr(),
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF2D3436),
+                color: isDark ? const Color(0xFFE6EDF3) : const Color(0xFF2D3436),
               ),
             ),
             const SizedBox(height: 6),
@@ -317,7 +328,7 @@ class _LiveBranchesMapCarouselState extends State<LiveBranchesMapCarousel> {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 13,
-                color: Colors.grey.shade500,
+                color: isDark ? const Color(0xFF8B949E) : Colors.grey.shade500,
                 height: 1.5,
               ),
             ),
@@ -325,8 +336,12 @@ class _LiveBranchesMapCarouselState extends State<LiveBranchesMapCarousel> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                color: Colors.grey.shade100,
+                color: isDark ? const Color(0xFF161B22) : Colors.grey.shade100,
                 borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: isDark ? context.appTheme.cardBorder : Colors.transparent,
+                  width: 1,
+                ),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -334,12 +349,15 @@ class _LiveBranchesMapCarouselState extends State<LiveBranchesMapCarousel> {
                   Icon(
                     Icons.refresh_rounded,
                     size: 14,
-                    color: Colors.grey.shade500,
+                    color: isDark ? const Color(0xFF8B949E) : Colors.grey.shade500,
                   ),
                   const SizedBox(width: 6),
                   Text(
                     'try_another_organization'.tr(),
-                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: isDark ? const Color(0xFF8B949E) : Colors.grey.shade600,
+                    ),
                   ),
                 ],
               ),
@@ -374,7 +392,10 @@ class _LiveBranchesMapCarouselState extends State<LiveBranchesMapCarousel> {
               ),
               children: [
                 TileLayer(
-                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  urlTemplate: context.isDark
+                      ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+                      : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+                  subdomains: const ['a', 'b', 'c', 'd'],
                   userAgentPackageName: 'com.smartqueue.app',
                 ),
                 MarkerLayer(
@@ -468,6 +489,9 @@ class _LiveBranchesMapCarouselState extends State<LiveBranchesMapCarousel> {
 
   Widget _buildBranchCard(BranchModel branch) {
     final bid = branch.id ?? 1;
+    final isDark = context.isDark;
+    final ext = context.appTheme;
+
     final String trafficText;
     final Color trafficColor;
     final Color trafficBg;
@@ -476,17 +500,17 @@ class _LiveBranchesMapCarouselState extends State<LiveBranchesMapCarousel> {
     if (bid % 3 == 0) {
       trafficText = 'low_traffic'.tr();
       trafficColor = const Color(0xFF2ECC71);
-      trafficBg = const Color(0xFFE8F5E9);
+      trafficBg = isDark ? const Color(0xFF1E2E20) : const Color(0xFFE8F5E9);
       waitTime = 'wait_mins'.tr(args: ['5']);
     } else if (bid % 3 == 1) {
       trafficText = 'moderate_traffic'.tr();
       trafficColor = const Color(0xFFFB8C00);
-      trafficBg = const Color(0xFFFFF3E0);
+      trafficBg = isDark ? const Color(0xFF382B1B) : const Color(0xFFFFF3E0);
       waitTime = 'wait_mins'.tr(args: ['20']);
     } else {
       trafficText = 'busy_traffic'.tr();
       trafficColor = Colors.red.shade700;
-      trafficBg = Colors.red.shade50;
+      trafficBg = isDark ? const Color(0xFF3E1E1E) : Colors.red.shade50;
       waitTime = 'wait_mins'.tr(args: ['45']);
     }
 
@@ -495,19 +519,27 @@ class _LiveBranchesMapCarouselState extends State<LiveBranchesMapCarousel> {
             ? 'km_away'.tr(args: [branch.distanceInKm!.toStringAsFixed(1)])
             : '';
 
+    final labelColor = isDark ? const Color(0xFF8B949E) : Colors.grey.shade500;
+
     return Container(
       margin: const EdgeInsets.only(right: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: ext.cardColor,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        border: Border.all(
+          color: isDark ? ext.cardBorder : Colors.transparent,
+          width: 1,
+        ),
+        boxShadow: isDark
+            ? []
+            : [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.04),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -522,10 +554,10 @@ class _LiveBranchesMapCarouselState extends State<LiveBranchesMapCarousel> {
                   children: [
                     Text(
                       branch.name.localizedApi,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
-                        color: Color(0xFF2D3436),
+                        color: isDark ? const Color(0xFFE6EDF3) : const Color(0xFF2D3436),
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -535,7 +567,7 @@ class _LiveBranchesMapCarouselState extends State<LiveBranchesMapCarousel> {
                       dist,
                       style: TextStyle(
                         fontSize: 11,
-                        color: Colors.grey.shade500,
+                        color: labelColor,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -567,14 +599,14 @@ class _LiveBranchesMapCarouselState extends State<LiveBranchesMapCarousel> {
                 children: [
                   Text(
                     'estimated_wait_short'.tr(),
-                    style: TextStyle(fontSize: 10, color: Colors.grey.shade500),
+                    style: TextStyle(fontSize: 10, color: labelColor),
                   ),
                   Text(
                     waitTime,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w800,
-                      color: Color(0xFF2D3436),
+                      color: isDark ? const Color(0xFFE6EDF3) : const Color(0xFF2D3436),
                     ),
                   ),
                 ],
@@ -599,7 +631,7 @@ class _LiveBranchesMapCarouselState extends State<LiveBranchesMapCarousel> {
                   children: [
                     Text(
                       'book_btn'.tr(),
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
                       ),
@@ -617,6 +649,7 @@ class _LiveBranchesMapCarouselState extends State<LiveBranchesMapCarousel> {
   }
 
   Widget _buildSkeletonLoader() {
+    final isDark = context.isDark;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -640,9 +673,11 @@ class _LiveBranchesMapCarouselState extends State<LiveBranchesMapCarousel> {
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: context.appTheme.cardColor,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.grey.shade100),
+            border: Border.all(
+              color: isDark ? context.appTheme.cardBorder : Colors.grey.shade100,
+            ),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -725,6 +760,7 @@ class _SkeletonBoxState extends State<_SkeletonBox>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = context.isDark;
     return AnimatedBuilder(
       animation: _animation,
       builder: (_, __) {
@@ -741,11 +777,17 @@ class _SkeletonBoxState extends State<_SkeletonBox>
                 _animation.value.clamp(0.0, 1.0),
                 (_animation.value + 0.3).clamp(0.0, 1.0),
               ],
-              colors: const [
-                Color(0xFFE8F5E9),
-                Color(0xFFC8EAD8),
-                Color(0xFFE8F5E9),
-              ],
+              colors: isDark
+                  ? const [
+                      Color(0xFF161B22),
+                      Color(0xFF30363D),
+                      Color(0xFF161B22),
+                    ]
+                  : const [
+                      Color(0xFFE8F5E9),
+                      Color(0xFFC8EAD8),
+                      Color(0xFFE8F5E9),
+                    ],
             ),
           ),
         );
@@ -753,3 +795,4 @@ class _SkeletonBoxState extends State<_SkeletonBox>
     );
   }
 }
+

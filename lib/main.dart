@@ -5,6 +5,8 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:smart_queue/core/di/service_locator.dart';
 import 'package:smart_queue/core/routing/app_router.dart';
 import 'package:smart_queue/core/services/notification_service.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
+import 'package:smart_queue/core/theme/theme_cubit.dart';
 import 'package:smart_queue/features/auth/presentaion/cubit/auth_cubit.dart';
 import 'package:smart_queue/features/branch_booking/presentation/cubit/active_booking_cubit.dart';
 import 'package:smart_queue/features/personal_info/presentation/cubit/personal_info_cubit.dart';
@@ -31,6 +33,9 @@ void main() async {
     personalInfoCubit.getProfile();
   }
 
+  final themeCubit = ThemeCubit();
+  await themeCubit.loadTheme();
+
   runApp(
     EasyLocalization(
       supportedLocales: const [Locale('en'), Locale('ar')],
@@ -41,6 +46,7 @@ void main() async {
           BlocProvider.value(value: authCubit),
           BlocProvider.value(value: personalInfoCubit),
           BlocProvider(create: (_) => sl<ActiveBookingCubit>()),
+          BlocProvider.value(value: themeCubit),
         ],
         child: const SmartQueueApp(),
       ),
@@ -54,12 +60,19 @@ class SmartQueueApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authCubit = context.read<AuthCubit>();
-    return MaterialApp.router(
-      localizationsDelegates: context.localizationDelegates,
-      supportedLocales: context.supportedLocales,
-      locale: context.locale,
-      routerConfig: AppRouter.createRouter(authCubit),
-      debugShowCheckedModeBanner: false,
+    return BlocBuilder<ThemeCubit, ThemeMode>(
+      builder: (context, themeMode) {
+        return MaterialApp.router(
+          localizationsDelegates: context.localizationDelegates,
+          supportedLocales: context.supportedLocales,
+          locale: context.locale,
+          routerConfig: AppRouter.createRouter(authCubit),
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.light,
+          darkTheme: AppTheme.dark,
+          themeMode: themeMode,
+        );
+      },
     );
   }
 }

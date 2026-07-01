@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
 import 'package:smart_queue/core/styling/app_styles.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
 import 'package:smart_queue/features/auth/presentaion/cubit/auth_cubit.dart';
 import 'package:smart_queue/features/auth/presentaion/view/widgets/custom_text_field.dart';
 import 'package:smart_queue/features/auth/presentaion/view/widgets/gradient_button.dart';
@@ -75,19 +76,21 @@ class RegisterUserSection extends StatelessWidget {
         if (hasIdData) ...[
           Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.edit_rounded,
                 size: 16,
-                color: AppColors.tealMuted,
+                color:
+                    context.isDark ? Colors.green[300]! : AppColors.tealMuted,
               ),
               const SizedBox(width: 6),
               Text(
                 'complete_profile'.tr(),
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: AppStyle.fontFamily,
                   fontWeight: FontWeight.w700,
                   fontSize: 15,
-                  color: AppColors.tealMuted,
+                  color:
+                      context.isDark ? Colors.green[300]! : AppColors.tealMuted,
                 ),
               ),
             ],
@@ -196,12 +199,12 @@ class RegisterUserSection extends StatelessWidget {
               children: [
                 TextSpan(
                   text: 'already_have_account'.tr(),
-                  style: const TextStyle(color: AppColors.greyText),
+                  style: TextStyle(color: context.appTheme.subtleText),
                 ),
                 TextSpan(
                   text: 'login'.tr(),
-                  style: const TextStyle(
-                    color: AppColors.teal,
+                  style: TextStyle(
+                    color: context.isDark ? Colors.green[300]! : AppColors.teal,
                     fontWeight: FontWeight.w700,
                   ),
                   recognizer:

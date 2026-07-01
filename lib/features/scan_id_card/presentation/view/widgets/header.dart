@@ -7,16 +7,18 @@ class Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textColor = Theme.of(context).colorScheme.onSurface;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
       child: Row(
         children: [
           CircleButton(
             onTap: () => Navigator.pop(context),
-            child: const Icon(
+            child: Icon(
               Icons.arrow_back_ios_new_rounded,
               size: 16,
-              color: Color(0xFF1A1D4E),
+              color: textColor,
             ),
           ),
           Expanded(
@@ -26,7 +28,7 @@ class Header extends StatelessWidget {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w800,
-                color: Color(0xFF1A1D4E),
+                color: textColor,
                 letterSpacing: -0.3,
                 fontFamily: 'Inter Tight',
               ),

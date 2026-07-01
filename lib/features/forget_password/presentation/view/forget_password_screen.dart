@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:smart_queue/core/constants/app_assets.dart';
 import 'package:smart_queue/core/localization/api_localization.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
 import 'package:smart_queue/core/widgets/app_flushbar.dart';
 import 'package:smart_queue/features/forget_password/presentation/cubit/forget_password_cubit.dart';
 import 'package:smart_queue/features/personal_info/presentation/view/widgets/phone_input_field.dart';
@@ -29,15 +30,16 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final ext = context.appTheme;
     return Scaffold(
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xffEEFEFF), Color(0xffD6F9F7)],
+            colors: [ext.bgGradientTop, ext.bgGradientBottom],
           ),
         ),
         child: SafeArea(
@@ -61,7 +63,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                 ),
@@ -80,7 +82,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 15,
-                                color: Color(0xFF8E8E93),
+                                color: ext.subtleText,
                               ),
                             ),
                             const SizedBox(height: 40),
@@ -127,10 +129,12 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                                 ),
                                 child: Text(
                                   'phone'.tr(),
-                                  style: const TextStyle(
+
+                                  style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
-                                    color: Colors.black,
+                                    color:
+                                        Theme.of(context).colorScheme.onSurface,
                                   ),
                                 ),
                               ),

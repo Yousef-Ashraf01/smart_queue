@@ -9,6 +9,7 @@ import 'package:smart_queue/core/constants/app_assets.dart';
 import 'package:smart_queue/core/localization/api_localization.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
 import 'package:smart_queue/core/widgets/app_flushbar.dart';
 import 'package:smart_queue/features/auth/data/models/register_request_model.dart';
 import 'package:smart_queue/features/auth/presentaion/cubit/auth_cubit.dart';
@@ -198,15 +199,16 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
   }
 
   Widget _buildScaffold(BuildContext context, bool isLoading) {
+    final ext = context.appTheme;
     return Scaffold(
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xffEEFEFF), Color(0xffD6F9F7)],
+            colors: [ext.bgGradientTop, ext.bgGradientBottom],
           ),
         ),
         child: SafeArea(
@@ -225,10 +227,10 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
                   child: Text(
                     'verification_code_title'.tr(),
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                 ),
@@ -244,18 +246,18 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
                             Text(
                               'otp_sent_expired_msg'.tr(),
                               textAlign: TextAlign.center,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 15,
-                                color: Color(0xFF8E8E93),
+                                color: ext.subtleText,
                               ),
                             ),
                             const SizedBox(height: 8),
 
                             Text(
                               _timerDisplay,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 16,
-                                color: Color(0xFF8E8E93),
+                                color: ext.subtleText,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -277,9 +279,7 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
                               children: [
                                 Text(
                                   "didnt_receive_code".tr(),
-                                  style: const TextStyle(
-                                    color: Color(0xFF8E8E93),
-                                  ),
+                                  style: TextStyle(color: ext.subtleText),
                                 ),
                                 GestureDetector(
                                   onTap:
@@ -310,8 +310,10 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
                                       fontWeight: FontWeight.bold,
                                       color:
                                           _secondsRemaining == 0
-                                              ? Colors.black
-                                              : Colors.grey,
+                                              ? Theme.of(
+                                                context,
+                                              ).colorScheme.onSurface
+                                              : ext.subtleText,
                                     ),
                                   ),
                                 ),
@@ -381,19 +383,30 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
   }
 
   Widget _buildOTPField(int index) {
+    final ext = context.appTheme;
     return Container(
-      width: 46,
-      height: 46,
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      width: 52,
+      height: 52,
+      decoration: BoxDecoration(
+        color: ext.cardColor,
         shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: Color(0x0D000000),
-            blurRadius: 10,
-            offset: Offset(0, 5),
-          ),
-        ],
+        border: Border.all(
+          color:
+              focusNodes[index].hasFocus
+                  ? AppColors.greenStart
+                  : AppColors.greenStart.withOpacity(0.3),
+          width: focusNodes[index].hasFocus ? 1.5 : 1.0,
+        ),
+        boxShadow:
+            context.isDark
+                ? []
+                : const [
+                  BoxShadow(
+                    color: Color(0x0D000000),
+                    blurRadius: 10,
+                    offset: Offset(0, 5),
+                  ),
+                ],
       ),
       child: Center(
         child: TextField(
@@ -404,10 +417,19 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
           keyboardType: TextInputType.number,
           cursorColor: AppColors.greenStart,
           maxLength: 1,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
           decoration: const InputDecoration(
             border: InputBorder.none,
+            enabledBorder: InputBorder.none,
+            focusedBorder: InputBorder.none,
             counterText: "",
+            contentPadding: EdgeInsets.zero,
+            isDense: true,
+            filled: false,
           ),
           onChanged: (value) {
             if (value.length == 1 && index < 5) {

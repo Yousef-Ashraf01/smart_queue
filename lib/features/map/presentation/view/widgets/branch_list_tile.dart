@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:smart_queue/core/localization/api_localization.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
 import 'package:smart_queue/features/map/data/models/branch_model.dart';
 
 class BranchListTile extends StatelessWidget {
@@ -51,21 +52,22 @@ class BranchListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isActive = branch.isCurrentlyOpen;
+    final ext = context.appTheme;
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 2),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: ext.cardColor,
         borderRadius: BorderRadius.circular(16),
         border: BorderDirectional(
           start: BorderSide(
-            color: isActive ? AppColors.teal : Colors.grey.shade300,
+            color: isActive ? AppColors.teal : ext.cardBorder,
             width: 4,
           ),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withOpacity(context.isDark ? 0.18 : 0.04),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -94,10 +96,10 @@ class BranchListTile extends StatelessWidget {
                           Expanded(
                             child: Text(
                               branch.name.localizedApi,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
-                                color: AppColors.teal,
+                                color: Theme.of(context).colorScheme.primary,
                                 fontFamily: 'Inter Tight',
                               ),
                               maxLines: 1,
@@ -113,8 +115,8 @@ class BranchListTile extends StatelessWidget {
                             decoration: BoxDecoration(
                               color:
                                   isActive
-                                      ? Colors.green.withOpacity(0.1)
-                                      : Colors.red.withOpacity(0.1),
+                                      ? Colors.green.withOpacity(0.12)
+                                      : Colors.red.withOpacity(0.12),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
@@ -122,10 +124,9 @@ class BranchListTile extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.bold,
-                                color:
-                                    isActive
-                                        ? Colors.green[800]
-                                        : Colors.red[800],
+                                color: isActive
+                                    ? (context.isDark ? Colors.green[300] : Colors.green[800])
+                                    : (context.isDark ? Colors.red[300] : Colors.red[800]),
                               ),
                             ),
                           ),
@@ -140,7 +141,7 @@ class BranchListTile extends StatelessWidget {
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.grey.shade100,
+                              color: ext.cardBorder.withOpacity(0.35),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Row(
@@ -149,7 +150,7 @@ class BranchListTile extends StatelessWidget {
                                 Icon(
                                   Icons.directions_walk_rounded,
                                   size: 13,
-                                  color: Colors.grey.shade600,
+                                  color: ext.subtleText,
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
@@ -157,7 +158,7 @@ class BranchListTile extends StatelessWidget {
                                   style: TextStyle(
                                     fontSize: 11,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.grey.shade700,
+                                    color: ext.subtleText,
                                   ),
                                 ),
                               ],
@@ -167,7 +168,7 @@ class BranchListTile extends StatelessWidget {
                           Icon(
                             Icons.access_time_rounded,
                             size: 13,
-                            color: Colors.grey.shade400,
+                            color: ext.subtleText,
                           ),
                           const SizedBox(width: 4),
                           Expanded(
@@ -175,7 +176,7 @@ class BranchListTile extends StatelessWidget {
                               _getOperatingHoursText(),
                               style: TextStyle(
                                 fontSize: 12,
-                                color: Colors.grey.shade600,
+                                color: ext.subtleText,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -190,7 +191,7 @@ class BranchListTile extends StatelessWidget {
                           Icon(
                             Icons.location_on_rounded,
                             size: 14,
-                            color: Colors.grey.shade400,
+                            color: ext.subtleText,
                           ),
                           const SizedBox(width: 4),
                           Expanded(
@@ -200,7 +201,7 @@ class BranchListTile extends StatelessWidget {
                               ),
                               style: TextStyle(
                                 fontSize: 12,
-                                color: Colors.grey.shade500,
+                                color: ext.subtleText,
                                 height: 1.3,
                               ),
                               maxLines: 2,
@@ -217,12 +218,14 @@ class BranchListTile extends StatelessWidget {
                   height: 38,
                   width: 38,
                   decoration: BoxDecoration(
-                    color: AppColors.tealLight.withOpacity(0.15),
+                    color: context.isDark
+                        ? Colors.green[900]!.withOpacity(0.3)
+                        : AppColors.tealLight.withOpacity(0.15),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.calendar_month_rounded,
-                    color: AppColors.teal,
+                    color: context.isDark ? Colors.green[300]! : AppColors.teal,
                     size: 18,
                   ),
                 ),

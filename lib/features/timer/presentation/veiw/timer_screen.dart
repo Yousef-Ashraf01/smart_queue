@@ -13,6 +13,8 @@ import 'package:smart_queue/features/branch_booking/presentation/cubit/active_bo
 import 'package:smart_queue/features/timer/presentation/veiw/widgets/gradient_button.dart';
 import 'package:smart_queue/features/timer/presentation/veiw/widgets/service_card.dart';
 import 'package:smart_queue/features/timer/presentation/veiw/widgets/time_circle.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
+
 
 class TimerScreen extends StatefulWidget {
   final Duration initialDuration;
@@ -188,15 +190,17 @@ class _TimerScreenState extends State<TimerScreen> {
                       : _lastBookings);
 
           final int bookingsCount = currentBookings.length;
+          final isDark = context.isDark;
+          final ext = context.appTheme;
 
           return Scaffold(
             body: Container(
               width: double.infinity,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [AppColors.bgTop, AppColors.bgBottom],
+                  colors: [ext.bgGradientTop, ext.bgGradientBottom],
                 ),
               ),
               child: SafeArea(
@@ -208,11 +212,11 @@ class _TimerScreenState extends State<TimerScreen> {
                     Expanded(
                       child:
                           state is ActiveBookingLoading
-                              ? const Center(
-                                child: CircularProgressIndicator(
-                                  color: AppColors.teal,
-                                ),
-                              )
+                              ? Center(
+                                  child: CircularProgressIndicator(
+                                    color: isDark ? const Color(0xFF10B981) : AppColors.teal,
+                                  ),
+                                )
                               : bookingsCount > 0
                               ? _buildMultiBookingView(currentBookings)
                               : _buildEmptyState(context),
@@ -228,6 +232,7 @@ class _TimerScreenState extends State<TimerScreen> {
   }
 
   Widget _buildHeader(int count) {
+    final isDark = context.isDark;
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
       child: Row(
@@ -240,11 +245,11 @@ class _TimerScreenState extends State<TimerScreen> {
               children: [
                 Text(
                   "my_queue".tr(),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: AppStyle.fontFamily,
                     fontSize: 26,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.primaryDark,
+                    color: isDark ? const Color(0xFFE6EDF3) : AppColors.primaryDark,
                     letterSpacing: -0.5,
                   ),
                 ),
@@ -253,11 +258,11 @@ class _TimerScreenState extends State<TimerScreen> {
                   count > 0
                       ? "active_tickets_progress".tr(args: [count.toString()])
                       : "check_active_queue_status".tr(),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: AppStyle.fontFamily,
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
-                    color: AppColors.greyText,
+                    color: isDark ? const Color(0xFF8B949E) : AppColors.greyText,
                   ),
                 ),
               ],
@@ -316,6 +321,7 @@ class _TimerScreenState extends State<TimerScreen> {
     final orgName =
         (booking['orgName'] as String? ?? 'Egyptian Post').localizedApi;
     final canCancel = booking['canCancel'] as bool? ?? true;
+    final isDark = context.isDark;
 
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
@@ -326,21 +332,21 @@ class _TimerScreenState extends State<TimerScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                color: AppColors.teal.withValues(alpha: 0.06),
+                color: isDark ? const Color(0xFF1E2E20) : AppColors.teal.withValues(alpha: 0.06),
                 borderRadius: BorderRadius.circular(30),
                 border: Border.all(
-                  color: AppColors.tealLight.withValues(alpha: 0.2),
+                  color: isDark ? const Color(0xFF3CC572).withOpacity(0.3) : AppColors.tealLight.withValues(alpha: 0.2),
                   width: 1,
                 ),
               ),
               child: Text(
                 orgName,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: AppStyle.fontFamily,
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.teal,
+                  color: isDark ? const Color(0xFF10B981) : AppColors.teal,
                   letterSpacing: 0.3,
                 ),
               ),
@@ -376,9 +382,12 @@ class _TimerScreenState extends State<TimerScreen> {
                 margin: const EdgeInsets.only(top: 16),
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFFF2F2),
+                  color: isDark ? const Color(0xFF3E1E1E) : const Color(0xFFFFF2F2),
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: const Color(0xFFFEE2E2), width: 1),
+                  border: Border.all(
+                    color: isDark ? const Color(0xFF8B2524) : const Color(0xFFFEE2E2),
+                    width: 1,
+                  ),
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -394,7 +403,7 @@ class _TimerScreenState extends State<TimerScreen> {
                         "cancellation_limit_reached".tr(),
                         style: TextStyle(
                           fontFamily: AppStyle.fontFamily,
-                          color: Colors.red[900],
+                          color: isDark ? const Color(0xFFFEE2E2) : Colors.red[900],
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
                           height: 1.4,
@@ -414,6 +423,9 @@ class _TimerScreenState extends State<TimerScreen> {
   }
 
   void _showCancelDialog(BuildContext context, Map<String, dynamic> booking) {
+    final isDark = context.isDark;
+    final ext = context.appTheme;
+
     showDialog(
       context: context,
       barrierDismissible: true,
@@ -424,19 +436,21 @@ class _TimerScreenState extends State<TimerScreen> {
             child: Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: ext.cardColor,
                 borderRadius: BorderRadius.circular(24),
                 border: Border.all(
-                  color: AppColors.tealLight.withValues(alpha: 0.15),
+                  color: isDark ? ext.cardBorder : AppColors.tealLight.withValues(alpha: 0.15),
                   width: 1,
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.08),
-                    blurRadius: 24,
-                    offset: const Offset(0, 10),
-                  ),
-                ],
+                boxShadow: isDark
+                    ? []
+                    : [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.08),
+                          blurRadius: 24,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -445,10 +459,10 @@ class _TimerScreenState extends State<TimerScreen> {
                     width: 64,
                     height: 64,
                     decoration: BoxDecoration(
-                      color: const Color(0xFFFFF2F2),
+                      color: isDark ? const Color(0xFF3E1E1E) : const Color(0xFFFFF2F2),
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: const Color(0xFFFEE2E2),
+                        color: isDark ? const Color(0xFF8B2524) : const Color(0xFFFEE2E2),
                         width: 1.5,
                       ),
                     ),
@@ -461,11 +475,11 @@ class _TimerScreenState extends State<TimerScreen> {
                   const SizedBox(height: 16),
                   Text(
                     "cancel_booking_question".tr(),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: AppStyle.fontFamily,
                       fontSize: 19,
                       fontWeight: FontWeight.w700,
-                      color: AppColors.blackColor,
+                      color: isDark ? const Color(0xFFE6EDF3) : AppColors.blackColor,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -475,7 +489,7 @@ class _TimerScreenState extends State<TimerScreen> {
                     style: TextStyle(
                       fontFamily: AppStyle.fontFamily,
                       fontSize: 14,
-                      color: AppColors.greyText,
+                      color: isDark ? const Color(0xFF8B949E) : AppColors.greyText,
                       height: 1.5,
                     ),
                   ),
@@ -484,10 +498,10 @@ class _TimerScreenState extends State<TimerScreen> {
                     width: double.infinity,
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: AppColors.bgBottom.withValues(alpha: 0.4),
+                      color: isDark ? const Color(0xFF161B22) : AppColors.bgBottom.withValues(alpha: 0.4),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: AppColors.tealLight.withValues(alpha: 0.15),
+                        color: isDark ? ext.cardBorder : AppColors.tealLight.withValues(alpha: 0.15),
                         width: 1,
                       ),
                     ),
@@ -516,11 +530,11 @@ class _TimerScreenState extends State<TimerScreen> {
                                 (booking['serviceName'] as String? ?? "")
                                     .localizedApi,
                                 textAlign: TextAlign.end,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontFamily: AppStyle.fontFamily,
                                   fontSize: 13,
                                   fontWeight: FontWeight.w700,
-                                  color: AppColors.blackColor,
+                                  color: isDark ? const Color(0xFFE6EDF3) : AppColors.blackColor,
                                 ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
@@ -550,11 +564,11 @@ class _TimerScreenState extends State<TimerScreen> {
                             Text(
                               booking[BookingKeys.slotStartTime] as String? ??
                                   "",
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontFamily: AppStyle.fontFamily,
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
-                                color: AppColors.blackColor,
+                                color: isDark ? const Color(0xFFE6EDF3) : AppColors.blackColor,
                               ),
                             ),
                           ],
@@ -571,7 +585,7 @@ class _TimerScreenState extends State<TimerScreen> {
                           style: OutlinedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             side: BorderSide(
-                              color: AppColors.tealLight.withValues(alpha: 0.6),
+                              color: isDark ? const Color(0xFF30363D) : AppColors.tealLight.withValues(alpha: 0.6),
                             ),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(14),
@@ -579,9 +593,9 @@ class _TimerScreenState extends State<TimerScreen> {
                           ),
                           child: Text(
                             "keep_it".tr(),
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontFamily: AppStyle.fontFamily,
-                              color: AppColors.teal,
+                              color: isDark ? const Color(0xFFE6EDF3) : AppColors.teal,
                               fontWeight: FontWeight.w600,
                             ),
                           ),

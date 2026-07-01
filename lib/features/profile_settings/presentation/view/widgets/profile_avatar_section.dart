@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:smart_queue/core/constants/app_assets.dart';
 import 'package:smart_queue/core/styling/app_styles.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
 import 'package:smart_queue/features/auth/presentaion/view/widgets/image_source_sheet.dart';
 
 class ProfileAvatarSection extends StatelessWidget {
@@ -27,6 +28,7 @@ class ProfileAvatarSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ext = context.appTheme;
     return Column(
       children: [
         Stack(
@@ -42,7 +44,7 @@ class ProfileAvatarSection extends StatelessWidget {
               ),
               child: CircleAvatar(
                 radius: 55,
-                backgroundColor: Colors.grey.shade200,
+                backgroundColor: ext.cardBorder.withOpacity(0.35),
                 child: ClipOval(child: _buildImage()),
               ),
             ),
@@ -53,32 +55,38 @@ class ProfileAvatarSection extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: ext.cardColor,
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: const Color.fromRGBO(0, 0, 0, 0.1),
+                      color: Colors.black.withOpacity(
+                        context.isDark ? 0.28 : 0.1,
+                      ),
                       blurRadius: 5,
                       spreadRadius: 1,
                     ),
                   ],
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.camera_alt,
                   size: 18,
-                  color: Colors.black,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
             ),
           ],
         ),
         const SizedBox(height: 10),
-        Text(name, style: AppStyle.userName, textAlign: TextAlign.center),
+        Text(
+          name,
+          style: AppStyle.userName.adaptive(context),
+          textAlign: TextAlign.center,
+        ),
         const SizedBox(height: 4),
         Text(
           email,
-          style: const TextStyle(
-            color: Color(0xFF8E8E93),
+          style: TextStyle(
+            color: ext.subtleText,
             fontSize: 14,
             fontWeight: FontWeight.w400,
           ),

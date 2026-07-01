@@ -9,6 +9,7 @@ import 'package:smart_queue/core/localization/api_localization.dart';
 import 'package:smart_queue/core/routing/app_routes.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
 import 'package:smart_queue/core/styling/app_styles.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
 import 'package:smart_queue/core/widgets/app_flushbar.dart';
 import 'package:smart_queue/features/auth/presentaion/cubit/auth_cubit.dart';
 import 'package:smart_queue/features/auth/presentaion/view/widgets/custom_text_field.dart';
@@ -29,6 +30,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final ext = context.appTheme;
     return BlocListener<AuthCubit, AuthState>(
       listener: (context, state) {
         if (state is LoginSuccess) {
@@ -47,11 +49,11 @@ class _LoginPageState extends State<LoginPage> {
         body: Container(
           width: double.infinity,
           height: double.infinity,
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [AppColors.bgTop, AppColors.bgBottom],
+              colors: [ext.bgGradientTop, ext.bgGradientBottom],
             ),
           ),
           child: SafeArea(
@@ -68,10 +70,12 @@ class _LoginPageState extends State<LoginPage> {
                       alignment: AlignmentDirectional.centerEnd,
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.65),
+                          color: ext.cardColor.withOpacity(0.65),
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                            color: AppColors.tealLight.withOpacity(0.25),
+                            color: context.isDark
+                                ? ext.cardBorder
+                                : AppColors.tealLight.withOpacity(0.25),
                             width: 1,
                           ),
                         ),
@@ -91,19 +95,19 @@ class _LoginPageState extends State<LoginPage> {
                             minimumSize: Size.zero,
                             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                           ),
-                          icon: const Icon(
+                          icon: Icon(
                             Icons.language,
                             size: 16,
-                            color: AppColors.teal,
+                            color: context.isDark ? Colors.green[300]! : AppColors.teal,
                           ),
                           label: Text(
                             context.locale.languageCode == 'ar'
                                 ? 'English'
                                 : 'العربية',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 13,
-                              color: AppColors.teal,
+                              color: context.isDark ? Colors.green[300]! : AppColors.teal,
                             ),
                           ),
                         ),
@@ -115,17 +119,21 @@ class _LoginPageState extends State<LoginPage> {
                       margin: const EdgeInsets.only(top: 15, bottom: 20),
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: ext.cardColor,
                         shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.teal.withOpacity(0.06),
-                            blurRadius: 24,
-                            offset: const Offset(0, 8),
-                          ),
-                        ],
+                        boxShadow: context.isDark
+                            ? []
+                            : [
+                                BoxShadow(
+                                  color: AppColors.teal.withOpacity(0.06),
+                                  blurRadius: 24,
+                                  offset: const Offset(0, 8),
+                                ),
+                              ],
                         border: Border.all(
-                          color: AppColors.tealLight.withOpacity(0.15),
+                          color: context.isDark
+                              ? ext.cardBorder
+                              : AppColors.tealLight.withOpacity(0.15),
                           width: 2,
                         ),
                       ),
@@ -141,21 +149,21 @@ class _LoginPageState extends State<LoginPage> {
 
                     Text(
                       "welcome_back".tr(),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontFamily: AppStyle.fontFamily,
                         fontSize: 26,
                         fontWeight: FontWeight.w800,
-                        color: AppColors.teal,
+                        color: context.isDark ? Colors.green[300]! : AppColors.teal,
                         letterSpacing: -0.5,
                       ),
                     ),
                     const SizedBox(height: 6),
                     Text(
                       "login_subtitle".tr(),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontFamily: AppStyle.fontFamily,
                         fontSize: 14,
-                        color: AppColors.greyText,
+                        color: ext.subtleText,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -165,19 +173,23 @@ class _LoginPageState extends State<LoginPage> {
                     Container(
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.92),
+                        color: ext.cardColor.withOpacity(0.92),
                         borderRadius: BorderRadius.circular(28),
                         border: Border.all(
-                          color: AppColors.tealLight.withOpacity(0.2),
+                          color: context.isDark
+                              ? ext.cardBorder
+                              : AppColors.tealLight.withOpacity(0.2),
                           width: 1,
                         ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.teal.withOpacity(0.04),
-                            blurRadius: 24,
-                            offset: const Offset(0, 12),
-                          ),
-                        ],
+                        boxShadow: context.isDark
+                            ? []
+                            : [
+                                BoxShadow(
+                                  color: AppColors.teal.withOpacity(0.04),
+                                  blurRadius: 24,
+                                  offset: const Offset(0, 12),
+                                ),
+                              ],
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -228,7 +240,7 @@ class _LoginPageState extends State<LoginPage> {
                             },
                           ),
 
-                          // Forgot Password
+                           // Forgot Password
                           Align(
                             alignment: AlignmentDirectional.centerEnd,
                             child: TextButton(
@@ -236,7 +248,7 @@ class _LoginPageState extends State<LoginPage> {
                                 context.push(AppRoutes.forgetPassword);
                               },
                               style: TextButton.styleFrom(
-                                foregroundColor: AppColors.teal,
+                                foregroundColor: context.isDark ? Colors.green[300]! : AppColors.teal,
                                 padding: EdgeInsets.zero,
                                 minimumSize: const Size(50, 30),
                                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -282,23 +294,23 @@ class _LoginPageState extends State<LoginPage> {
                     Center(
                       child: RichText(
                         text: TextSpan(
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontFamily: AppStyle.fontFamily,
                             fontSize: 14,
-                            color: AppColors.greyText,
+                            color: ext.subtleText,
                             fontWeight: FontWeight.w500,
                           ),
                           children: [
                             TextSpan(
                               text: 'no_account'.tr(),
-                              style: const TextStyle(
-                                color: AppColors.greyColor,
+                              style: TextStyle(
+                                color: ext.subtleText,
                               ),
                             ),
                             TextSpan(
                               text: 'register'.tr(),
-                              style: const TextStyle(
-                                color: AppColors.teal,
+                              style: TextStyle(
+                                color: context.isDark ? Colors.green[300]! : AppColors.teal,
                                 fontWeight: FontWeight.w700,
                               ),
                               recognizer:

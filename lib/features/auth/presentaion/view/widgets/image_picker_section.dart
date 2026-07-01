@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
 
 class ImagePickerSection extends StatelessWidget {
   final XFile? pickedImage;
@@ -16,6 +17,36 @@ class ImagePickerSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = context.isDark;
+    final ext = context.appTheme;
+
+    final borderColor = pickedImage != null
+        ? (isDark ? Colors.green[400]! : const Color.fromARGB(255, 118, 226, 136))
+        : (isDark ? ext.cardBorder : Colors.grey.shade300);
+
+    final shadowColor = isDark
+        ? Colors.transparent
+        : const Color.fromARGB(255, 11, 58, 30).withOpacity(0.12);
+
+    final innerCircleBg = isDark
+        ? Colors.green[900]!.withOpacity(0.25)
+        : const Color.fromARGB(255, 118, 226, 136).withOpacity(0.15);
+
+    final innerIconColor = isDark
+        ? Colors.green[300]!
+        : const Color.fromARGB(255, 11, 58, 30);
+
+    final gradientColors = isDark
+        ? [Colors.green[300]!, Colors.green[700]!]
+        : const [
+            Color.fromARGB(255, 118, 226, 136),
+            Color.fromARGB(255, 11, 58, 30),
+          ];
+
+    final textColor = pickedImage != null
+        ? (isDark ? Colors.green[300]! : const Color.fromARGB(255, 11, 58, 30))
+        : (isDark ? ext.subtleText : Colors.grey);
+
     return Center(
       child: GestureDetector(
         onTap: onTap,
@@ -28,22 +59,14 @@ class ImagePickerSection extends StatelessWidget {
                   height: 110,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.white,
+                    color: ext.cardColor,
                     border: Border.all(
-                      color:
-                          pickedImage != null
-                              ? const Color.fromARGB(255, 118, 226, 136)
-                              : Colors.grey.shade300,
+                      color: borderColor,
                       width: 2.5,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color.fromARGB(
-                          255,
-                          11,
-                          58,
-                          30,
-                        ).withOpacity(0.12),
+                        color: shadowColor,
                         blurRadius: 18,
                         offset: const Offset(0, 6),
                       ),
@@ -65,18 +88,13 @@ class ImagePickerSection extends StatelessWidget {
                                   width: 44,
                                   height: 44,
                                   decoration: BoxDecoration(
-                                    color: const Color.fromARGB(
-                                      255,
-                                      118,
-                                      226,
-                                      136,
-                                    ).withOpacity(0.15),
+                                    color: innerCircleBg,
                                     shape: BoxShape.circle,
                                   ),
-                                  child: const Icon(
+                                  child: Icon(
                                     Icons.person_rounded,
                                     size: 26,
-                                    color: Color.fromARGB(255, 11, 58, 30),
+                                    color: innerIconColor,
                                   ),
                                 ),
                               ],
@@ -89,15 +107,12 @@ class ImagePickerSection extends StatelessWidget {
                   child: Container(
                     width: 30,
                     height: 30,
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
-                        colors: [
-                          Color.fromARGB(255, 118, 226, 136),
-                          Color.fromARGB(255, 11, 58, 30),
-                        ],
+                        colors: gradientColors,
                       ),
                     ),
                     child: const Icon(
@@ -117,10 +132,7 @@ class ImagePickerSection extends StatelessWidget {
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w500,
-                color:
-                    pickedImage != null
-                        ? const Color.fromARGB(255, 11, 58, 30)
-                        : Colors.grey,
+                color: textColor,
               ),
             ),
           ],

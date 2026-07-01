@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
 
 class PaymentMethodSelector extends StatelessWidget {
   final String? selectedMethod;
@@ -85,6 +86,7 @@ class _PaymentOptionCardState extends State<_PaymentOptionCard>
 
   @override
   Widget build(BuildContext context) {
+    final ext = context.appTheme;
     return GestureDetector(
       onTapDown: (_) => _controller.forward(),
       onTapUp: (_) {
@@ -102,21 +104,21 @@ class _PaymentOptionCardState extends State<_PaymentOptionCard>
             color:
                 widget.isSelected
                     ? AppColors.teal.withValues(alpha: 0.06)
-                    : Colors.white,
+                    : ext.cardColor,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: widget.isSelected ? AppColors.teal : Colors.grey.shade200,
+              color: widget.isSelected ? AppColors.teal : ext.cardBorder,
               width: widget.isSelected ? 1.8 : 1.2,
             ),
             boxShadow: [
               if (widget.isSelected)
                 BoxShadow(
-                  color: AppColors.teal.withValues(alpha: 0.12),
+                  color: AppColors.teal.withOpacity(context.isDark ? 0.25 : 0.12),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.03),
+                color: Colors.black.withOpacity(context.isDark ? 0.12 : 0.03),
                 blurRadius: 6,
                 offset: const Offset(0, 2),
               ),
@@ -131,7 +133,7 @@ class _PaymentOptionCardState extends State<_PaymentOptionCard>
                   color:
                       widget.isSelected
                           ? AppColors.teal.withValues(alpha: 0.12)
-                          : AppColors.tealLight.withValues(alpha: 0.12),
+                          : AppColors.tealLight.withOpacity(context.isDark ? 0.25 : 0.12),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
@@ -149,7 +151,7 @@ class _PaymentOptionCardState extends State<_PaymentOptionCard>
                   fontWeight:
                       widget.isSelected ? FontWeight.bold : FontWeight.w600,
                   color:
-                      widget.isSelected ? AppColors.teal : AppColors.blackColor,
+                      widget.isSelected ? AppColors.teal : Theme.of(context).colorScheme.onSurface,
                   fontFamily: 'Inter Tight',
                 ),
               ),
@@ -159,7 +161,7 @@ class _PaymentOptionCardState extends State<_PaymentOptionCard>
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w400,
-                  color: Colors.grey.shade500,
+                  color: ext.subtleText,
                   fontFamily: 'Inter Tight',
                 ),
               ),
@@ -176,7 +178,7 @@ class _PaymentOptionCardState extends State<_PaymentOptionCard>
                     color:
                         widget.isSelected
                             ? AppColors.teal
-                            : Colors.grey.shade300,
+                            : ext.cardBorder,
                     width: 2,
                   ),
                 ),

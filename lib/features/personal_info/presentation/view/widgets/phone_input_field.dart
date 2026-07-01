@@ -2,6 +2,7 @@ import 'package:country_picker/country_picker.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
 import 'package:smart_queue/features/personal_info/presentation/view/widgets/custom_text_field.dart';
 
 class PhoneInputField extends StatefulWidget {
@@ -32,6 +33,7 @@ class _PhoneInputFieldState extends State<PhoneInputField> {
 
   @override
   Widget build(BuildContext context) {
+    final ext = context.appTheme;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -52,8 +54,9 @@ class _PhoneInputFieldState extends State<PhoneInputField> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: ext.cardColor,
               borderRadius: BorderRadius.circular(15),
+              border: Border.all(color: ext.cardBorder),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -62,15 +65,12 @@ class _PhoneInputFieldState extends State<PhoneInputField> {
                 const SizedBox(width: 8),
                 Text(
                   "+$countryCode",
-                  style: const TextStyle(
-                    color: Color(0xFF8E8E93),
-                    fontSize: 15,
-                  ),
+                  style: TextStyle(color: ext.subtleText, fontSize: 15),
                 ),
-                const Icon(
+                Icon(
                   Icons.keyboard_arrow_down,
                   size: 18,
-                  color: Color(0xFF8E8E93),
+                  color: ext.subtleText,
                 ),
               ],
             ),

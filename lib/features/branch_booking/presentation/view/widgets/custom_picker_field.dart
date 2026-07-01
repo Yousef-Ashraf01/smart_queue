@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
 
 class CustomPickerField extends StatelessWidget {
   final String hint;
@@ -18,15 +19,16 @@ class CustomPickerField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hasValue = valueText != null && valueText!.isNotEmpty;
+    final ext = context.appTheme;
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: ext.cardColor,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.grey.shade200, width: 1.2),
+        border: Border.all(color: ext.cardBorder, width: 1.2),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withOpacity(context.isDark ? 0.12 : 0.02),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),
@@ -45,12 +47,14 @@ class CustomPickerField extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: AppColors.tealLight.withOpacity(0.15),
+                    color: context.isDark
+                        ? Colors.green[900]!.withOpacity(0.3)
+                        : AppColors.tealLight.withOpacity(0.15),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(
                     icon,
-                    color: AppColors.teal,
+                    color: context.isDark ? Colors.green[300]! : AppColors.teal,
                     size: 20,
                   ),
                 ),
@@ -62,7 +66,7 @@ class CustomPickerField extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: hasValue ? FontWeight.w600 : FontWeight.w500,
-                      color: hasValue ? AppColors.blackColor : Colors.grey.shade500,
+                      color: hasValue ? Theme.of(context).colorScheme.onSurface : ext.subtleText,
                       fontFamily: 'Inter Tight',
                     ),
                   ),
@@ -70,7 +74,7 @@ class CustomPickerField extends StatelessWidget {
                 // Trailing Arrow indicator
                 Icon(
                   Icons.keyboard_arrow_down_rounded,
-                  color: Colors.grey.shade400,
+                  color: ext.subtleText,
                   size: 20,
                 ),
               ],

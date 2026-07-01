@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:smart_queue/core/localization/api_localization.dart';
 import 'package:smart_queue/core/styling/app_colors.dart';
+import 'package:smart_queue/core/theme/app_theme.dart';
 import 'package:smart_queue/features/map/data/models/branch_model.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -65,20 +66,21 @@ class BranchInfoHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isActive = branch.isCurrentlyOpen;
+    final ext = context.appTheme;
 
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: ext.cardColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withOpacity(context.isDark ? 0.18 : 0.04),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
         ],
-        border: Border.all(color: Colors.grey.shade100),
+        border: Border.all(color: ext.cardBorder),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -86,11 +88,13 @@ class BranchInfoHeader extends StatelessWidget {
           // Top accent gradient bar
           Container(
             height: 6,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [AppColors.tealLight, AppColors.teal],
+                colors: context.isDark
+                    ? [Colors.green[400]!, Colors.green[700]!]
+                    : [AppColors.tealLight, AppColors.teal],
               ),
-              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
             ),
           ),
           Padding(
@@ -105,10 +109,10 @@ class BranchInfoHeader extends StatelessWidget {
                     Expanded(
                       child: Text(
                         branch.name.localizedApi,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.teal,
+                          color: context.isDark ? Colors.green[300]! : AppColors.teal,
                           fontFamily: 'Inter Tight',
                         ),
                       ),
@@ -122,8 +126,8 @@ class BranchInfoHeader extends StatelessWidget {
                       decoration: BoxDecoration(
                         color:
                             isActive
-                                ? Colors.green.withOpacity(0.1)
-                                : Colors.red.withOpacity(0.1),
+                                ? Colors.green.withOpacity(0.12)
+                                : Colors.red.withOpacity(0.12),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
@@ -131,7 +135,9 @@ class BranchInfoHeader extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.bold,
-                          color: isActive ? Colors.green[800] : Colors.red[800],
+                          color: isActive
+                              ? (context.isDark ? Colors.green[300] : Colors.green[800])
+                              : (context.isDark ? Colors.red[300] : Colors.red[800]),
                         ),
                       ),
                     ),
@@ -146,7 +152,7 @@ class BranchInfoHeader extends StatelessWidget {
                     Icon(
                       Icons.location_on_rounded,
                       size: 16,
-                      color: Colors.grey.shade400,
+                      color: ext.subtleText,
                     ),
                     const SizedBox(width: 6),
                     Expanded(
@@ -156,7 +162,7 @@ class BranchInfoHeader extends StatelessWidget {
                         ),
                         style: TextStyle(
                           fontSize: 13,
-                          color: Colors.grey.shade600,
+                          color: ext.subtleText,
                           height: 1.4,
                         ),
                       ),
@@ -171,7 +177,7 @@ class BranchInfoHeader extends StatelessWidget {
                     Icon(
                       Icons.access_time_rounded,
                       size: 16,
-                      color: Colors.grey.shade400,
+                      color: ext.subtleText,
                     ),
                     const SizedBox(width: 6),
                     Text(
@@ -179,14 +185,15 @@ class BranchInfoHeader extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.bold,
-                        color: Colors.grey.shade700,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
+                    const SizedBox(width: 4),
                     Text(
                       _getOperatingHoursText(),
                       style: TextStyle(
                         fontSize: 13,
-                        color: Colors.grey.shade600,
+                        color: ext.subtleText,
                       ),
                     ),
                   ],
@@ -213,9 +220,9 @@ class BranchInfoHeader extends StatelessWidget {
                             style: const TextStyle(fontSize: 12),
                           ),
                           style: OutlinedButton.styleFrom(
-                            foregroundColor: AppColors.teal,
+                            foregroundColor: context.isDark ? Colors.green[300]! : AppColors.teal,
                             side: BorderSide(
-                              color: AppColors.teal.withOpacity(0.2),
+                              color: (context.isDark ? Colors.green[300]! : AppColors.teal).withOpacity(0.2),
                             ),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
@@ -245,10 +252,10 @@ class BranchInfoHeader extends StatelessWidget {
                           style: const TextStyle(fontSize: 12),
                         ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.tealLight.withOpacity(
-                            0.15,
-                          ),
-                          foregroundColor: AppColors.teal,
+                          backgroundColor: context.isDark
+                              ? Colors.green[900]!.withOpacity(0.25)
+                              : AppColors.tealLight.withOpacity(0.15),
+                          foregroundColor: context.isDark ? Colors.green[300]! : AppColors.teal,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -276,8 +283,8 @@ class BranchInfoHeader extends StatelessWidget {
                         style: const TextStyle(fontSize: 12),
                       ),
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.tealMuted,
-                        side: BorderSide(color: Colors.grey.shade300),
+                        foregroundColor: context.isDark ? ext.subtleText : AppColors.tealMuted,
+                        side: BorderSide(color: ext.cardBorder),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
